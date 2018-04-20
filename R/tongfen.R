@@ -66,6 +66,8 @@ tongfen_cancensus <- function(data1,data2,prefix=c("x_","y_")) {
   # not impemented yet. will take cancensus outputs data1 and data2 and return a common geography with both variables on it.
   # will call cancensus::list_census_vectors to get aggregation rules and will download the census correspondence files at DA or DB level
   # will also query region information for intermediate regions to aggregate up the hierarchy
+
+  # It might be better to just run this on CensusMapper and make the resulting datasets on common geographies available for general download....
 }
 
 
