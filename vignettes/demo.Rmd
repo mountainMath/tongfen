@@ -105,3 +105,19 @@ ggplot(plot_data %>% mutate(c=cut(`Population Change`,breaks=breaks, labels=labe
   labs(fill="Average Annual\nPopulation Change")
 
 ```
+
+
+
+```{r}
+rent_variables <- c("v_CA16_4901",  "v_CA11N_2292","v_CA06_2050")
+regions=list(CMA="59933")
+rent_data <- get_tongfen_census_ct(regions=regions,vectors=rent_variables,geo_format = 'sf')
+```
+
+
+```{r}
+library(tidyverse)
+library(sf)
+ggplot(rent_data,aes(fill=v_CA16_4901)) + geom_sf(size=0)
+```
+
