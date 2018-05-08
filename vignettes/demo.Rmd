@@ -118,6 +118,35 @@ rent_data <- get_tongfen_census_ct(regions=regions,vectors=rent_variables,geo_fo
 ```{r}
 library(tidyverse)
 library(sf)
-ggplot(rent_data,aes(fill=v_CA16_4901)) + geom_sf(size=0)
+plot_data <- rent_data %>%
+  mutate(`2006-2011`=v_CA11N_2292/v_CA06_2050,
+         `2011-2016`=v_CA16_4901/v_CA11N_2292,
+         `2006-2016`=v_CA16_4901/v_CA06_2050) %>%
+  gather(key="Period",value="Change",c("2006-2011","2011-2016","2006-2016"))
+ggplot(plot_data,aes(fill=Change)) + 
+  geom_sf(size=0) +
+  ggplot2::theme_void() +
+  ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "transparent")) +
+  scale_fill_viridis_c() +
+  facet_wrap("Period",ncol=2)
+```
+
+
+# Aggregating up data across regions
+
+Another application is simply aggregating up variables for a selection of regions from a single census. Suppose we want to understand the share of renters in Old Toronto, as well as the share of renter households spending more than 30% of income on housing.
+
+(This functionality should get integrated into `get_old_toronto_data`)
+
+```{r}
+library(cancensusHelpers)
+vectors <- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+meta=meta_for_vectors(vectors,also_for_first = TRUE)
+old_toronto <- get_old_toronto_data("CA16",vectors=meta$variable)
+old_toronto <- aggregate_data_with_meta(old_toronto,bind_rows(meta,tibble(variable=c("Population","Dwellings","Households")))) %>%
+  mutate(Total=v_CA16_4836,Renters=v_CA16_4838,rent_poor=v_CA16_4899/100) %>%
+  mutate(rent_share=Renters/Total)
+
+
 ```
 
