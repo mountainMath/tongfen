@@ -142,7 +142,7 @@ Another application is simply aggregating up variables for a selection of region
 library(cancensusHelpers)
 vectors <- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
 meta=meta_for_vectors(vectors,also_for_first = TRUE)
-old_toronto <- get_old_toronto_data("CA16",vectors=meta$variable)
+old_toronto <- get_old_toronto_data("CA16",vectors=meta$variable,also_new_toronto = FALSE)
 old_toronto <- aggregate_data_with_meta(old_toronto,bind_rows(meta,tibble(variable=c("Population","Dwellings","Households")))) %>%
   mutate(Total=v_CA16_4836,Renters=v_CA16_4838,rent_poor=v_CA16_4899/100) %>%
   mutate(rent_share=Renters/Total)
@@ -150,3 +150,4 @@ old_toronto <- aggregate_data_with_meta(old_toronto,bind_rows(meta,tibble(variab
 
 ```
 
+`r scales::percent(old_toronto$rent_share)` of Old Toronot households rent, `r scales::percent(old_toronto$rent_poor)` of which are shelter cost burdened.

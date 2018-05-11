@@ -190,14 +190,20 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
       #   nnew <- nnew %>% mutate(!!x := !!as.name(x)/!!as.name(parent_lookup[x]))
       # }
 
-      nnew <- aggregate_data_with_meta(data2 %>% group_by(GeoUID),bind_rows(meta %>% filter(dataset==!!dataset),tibble(variable=base)))
+      new2 <- data2 %>% as.data.frame %>%
+        dplyr::select(-geometry) %>%
+        dplyr::mutate(GeoUID2=GeoUID) %>%
+        dplyr::mutate(GeoUID=ifelse(GeoUID %in% names(ct_translation2),as.character(ct_translation2[GeoUID2]),GeoUID)) %>%
+        group_by(GeoUID)
+
+      nnew <- aggregate_data_with_meta(new2, bind_rows(meta %>% filter(dataset==!!dataset),tibble(variable=base)))
 
       nnew <- nnew %>% rename_at(base,function(x){paste0(x,"_",dataset)})
 
       data1 <- data1 %>% left_join(nnew,by="GeoUID")
     }
   }
-  data1 <- data1 %>% select_at(names(data1) %>% setdiff(extras))
+  data1 <- data1 %>% select_at(names(data1) %>% setdiff(meta$extras))
   if (is.na(geo_format)) {
     data1 <- data1 %>% as.data.frame %>% dplyr::select(-geometry)
   } else if (geo_format=="sp") {
