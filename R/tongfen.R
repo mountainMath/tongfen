@@ -43,7 +43,11 @@ tongfen_ct <- function(data1,data2,data2_sum_vars) {
   return(data_2)
 }
 
-
+#' Estimate variable values for custom geography
+#' @param data1 custom geography to estimate values for
+#' @param data2 input geography with values
+#' @param data_2_sum_vars columns of data2 to be summed up
+#' @param unique_key optional unique key for each geography in data1
 #' @export
 tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
   # right now this only works for variables that are sums. Does not quite sum up to total in case areas don't overlap all that well.
@@ -51,11 +55,24 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
   # the exlicit use of the "Group.1" variable feels fishy
   if (is.na(unique_key)) {
     unique_key="tongfen_row_number"
-    data1 <- data1 %>% mutate(!!unique_key:=row_number())
+    data1 <- data1 %>% dplyr::mutate(!!unique_key:=dplyr::row_number())
   }
-  result <- st_interpolate_aw(data2[data2_sum_vars],data1,extensive = TRUE) %>%
-    left_join(data1 %>% as.data.frame %>% select(unique_key) %>% mutate(Group.1=row_number()),by="Group.1") %>%
-    select(-Group.1)
+  # rename variables, st_interpolate_aw does not handle column names with special characters
+  rename_vars <- purrr::set_names(data2_sum_vars,paste0("v",seq(1,length(data2_sum_vars))))
+  rename_back <- purrr::set_names(names(rename_vars),as.character(rename_vars))
+  result <- sf::st_interpolate_aw(data2 %>%
+                                    dplyr::select(data2_sum_vars) %>%
+                                    dplyr::rename(!!!rename_vars) %>%
+                                    dplyr::mutate_all(function(x)tidyr::replace_na(x,0)),
+                                  data1,
+                                  extensive = TRUE) %>%
+    left_join(data1 %>%
+                as.data.frame %>%
+                dplyr::select(unique_key) %>%
+                dplyr::mutate(Group.1=row_number()),
+              by="Group.1") %>%
+    dplyr::select(-Group.1) %>%
+    dplyr::rename(!!!rename_back)
 
  result
 }
@@ -81,11 +98,11 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
   datasets <- meta$dataset %>% unique %>% sort
   for (dataset in datasets){
     d<- list_census_vectors(dataset) %>% filter(vector %in% (meta %>% filter(`dataset`==dataset) %>% pull(variable))) %>% select(vector,aggregation)
-    lookup <- set_names(d$aggregation,d$vector)
+    lookup <- setNames(d$aggregation,d$vector)
     meta <- meta %>% mutate(aggregation=ifelse(variable %in% names(lookup),lookup[variable],aggregation))
   }
   get_vector <- function(g){
-    g %>% strsplit(" ") %>% map(function(a){ifelse(length(a)==3,a[3],NA)}) %>% unlist
+    g %>% strsplit(" ") %>% purrr::map(function(a){ifelse(length(a)==3,a[3],NA)}) %>% unlist
   }
   meta <- meta %>% mutate(rule=sub(" .+$","",aggregation),parent=get_vector(aggregation))
   if (also_for_first) {
@@ -105,7 +122,7 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
 #' @param meta list with variables and aggregation infromation as obtained from meta_for_vectors
 #' @export
 aggregate_data_with_meta <- function(data,meta){
-  parent_lookup <- set_names(meta$parent,meta$variable)
+  parent_lookup <- setNames(meta$parent,meta$variable)
   to_scale <- meta %>% filter(rule %in% c("Median","Average")) %>% pull(variable)
 
   for (x in to_scale) {
@@ -152,9 +169,9 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
       d<-sf::st_intersection(
         data2 %>% dplyr::filter(GeoUID %in% cts_diff_2) %>%
           rename(GeoUID2=GeoUID) %>%
-          sf::select.sf(GeoUID2) %>% dplyr::mutate(area2=sf::st_area(geometry)),
+          select(GeoUID2,geometry) %>% dplyr::mutate(area2=sf::st_area(geometry)),
         data1 %>% dplyr::filter(GeoUID %in% cts_diff_1) %>%
-          sf::select.sf(GeoUID) %>% dplyr::mutate(area=sf::st_area(geometry))
+          select(GeoUID,geometry) %>% dplyr::mutate(area=sf::st_area(geometry))
       )
 
       d <- d %>% dplyr::mutate(area3=sf::st_area(geometry)) %>%
@@ -203,7 +220,7 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
       data1 <- data1 %>% left_join(nnew,by="GeoUID")
     }
   }
-  data1 <- data1 %>% select_at(names(data1) %>% setdiff(meta$extras))
+  data1 <- data1 %>% select_at(names(data1) %>% setdiff(dplyr::filter(meta,type=="Extra")$variable))
   if (is.na(geo_format)) {
     data1 <- data1 %>% as.data.frame %>% dplyr::select(-geometry)
   } else if (geo_format=="sp") {
@@ -217,5 +234,6 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
 
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data
+#' @import sf
 NULL
 
