@@ -2,8 +2,10 @@
 #' @param data1 Cancensus CT level datatset for year1 < year2 to serve as base for common geography
 #' @param data2 Cancensus CT level datatset for year2 to be aggregated to common geography
 #' @param data2_sum_vars vector of variable names to by summed up when aggregating geographies
+#' @param data_2_group_vars optional vector of grouping variables
+#' @param na.rm optional parameter to remove NA values when summing, default = `TRUE`
 #' @export
-tongfen_ct <- function(data1,data2,data2_sum_vars) {
+tongfen_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c(),na.rm=TRUE) {
   cts_1 <- data1$GeoUID
   cts_2 <- data2$GeoUID
   cts_diff_1 <- setdiff(cts_1,cts_2) %>% sort
@@ -28,18 +30,18 @@ tongfen_ct <- function(data1,data2,data2_sum_vars) {
 
   if(dd %>% dplyr::filter(n<=1) %>% nrow >0) {base::stop("problem with computing common ct data")}
 
-  ct_translation <- lapply(split(d, d$GeoUID), function(x) x$GeoUID2)
-  ct_translation2 <- lapply(split(d, d$GeoUID2), function(x) x$GeoUID)
+  ct_translation <- lapply(split(d, d$GeoUID), function(x) x$GeoUID2 %>% unique)
+  ct_translation2 <- lapply(split(d, d$GeoUID2), function(x) x$GeoUID %>% unique)
 
   new2 <- data2 %>%
     dplyr::filter(GeoUID %in% cts_diff_2) %>%
     dplyr::mutate(GeoUID2=GeoUID) %>%
     dplyr::mutate(GeoUID=as.character(ct_translation2[GeoUID2])) %>%
-    dplyr::group_by(GeoUID)
+    dplyr::group_by(!!!c("GeoUID",data2_group_vars) %>% purrr::map(as.name) %>% unlist)
 
-  nnew <- summarize_at(new2,data2_sum_vars,sum)
+  nnew <- new2 %>% dplyr::summarize_at(data2_sum_vars,function(x)sum(x,na.rm=na.rm))
 
-  data_2 <- rbind(data2 %>% dplyr::filter(!(GeoUID %in% cts_diff_2)) %>% dplyr::select("GeoUID",data2_sum_vars), nnew)
+  data_2 <- rbind(data2 %>% dplyr::filter(!(GeoUID %in% cts_diff_2)) %>% dplyr::select("GeoUID",data2_group_vars,data2_sum_vars), nnew)
   return(data_2)
 }
 

@@ -5,7 +5,8 @@
 \title{Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
 Will return CT level data}
 \usage{
-get_tongfen_census_ct(regions, vectors, geo_format = NA, labels = "short")
+get_tongfen_census_ct(regions, vectors, geo_format = NA,
+  labels = "short")
 }
 \arguments{
 \item{regions}{census region list, should be inclusive list of GeoUIDs across censuses}
