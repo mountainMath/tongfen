@@ -234,6 +234,60 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
   data1
 }
 
+
+
+#' Proportionally re-aggregate hierarchichal data to lower-level w.r.t. values of the *base* variable
+#' Also handles cases where lower level data may be available but blinded at times by filling in data from higher level
+#'
+#' Data at lower aggregation levels may not add up to the more accurate aggregate counts.
+#' This function distributes the aggregate level counts proprtionally (by population) to the containing lower
+#' leve geographic regions.
+#'
+#' @param data The base geographic data
+#' @param parent_data Higher level geographic data
+#' @param geo_match A named string informing on what column names to match data and parent_data
+#' @param categories Vector of column names to re-aggreagte
+#' @param base Column name to use for proportional weighting when re-aggregating
+#' @keywords reaggregate proportionally wrt base variable
+#' @export
+#' @examples
+#' proportional_re_aggregate(data=geo_db@data,parent_data=geo_da@data,geo_match=setNames("GeoUID","DA_UID"),categories=categories)
+proportional_reaggregate <- function(data,parent_data,geo_match,categories,base="Population"){
+  # create zero categories if we don't have them on base (for example DB geo)
+  for (v in setdiff(categories,names(data))) {
+    data <- data %>% dplyr::mutate(!!v := 0)
+  }
+  ## join and compute the weights
+  ## maybe should be left join, but then have to worry about what happens if there is no match. For hierarchial data should always have higher level geo!
+  d1 <- inner_join(data  %>% dplyr::mutate(!!base:=tidyr::replace_na(!!as.name(base),0)),
+                   dplyr::select(d2 %>% as.data.frame,c(categories,c(as.character(geo_match)))),
+                   by=geo_match) %>%
+    dplyr::group_by(!!as.name(names(geo_match))) %>%
+    dplyr::mutate(weight=!!as.name(base)/sum(!!as.name(base),na.rm=TRUE)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(weight=tidyr::replace_na(weight,0))
+  ## aggregate variables up and down
+  ## lower level geography counts might have been suppressed, reaggregating these makes sure that the total number of
+  ## dots on the map are given by more accurate higher level geo counts, difference is distributed proportionally by *base*
+  for (v in categories) {
+    vss=paste(v,'s',sep=".")
+    vs=as.name(vss)
+    vx=as.name(paste(v,'x',sep="."))
+    vy=as.name(paste(v,'y',sep="."))
+    d1 <- d1 %>%
+      dplyr::mutate(!!vx:=tidyr::replace_na(!!vx,0)) %>%
+      dplyr::group_by(!!as.name(names(geo_match))) %>%
+      dplyr::mutate(!!vss := sum(!!vx,na.rm=TRUE)) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(!!v := !!quo(UQ(vx) + weight * (UQ(vy) - UQ(vs))))
+  }
+  ## clean up and return
+  d1 %>%
+    dplyr::select(-dplyr::one_of(c(paste0(categories,".s"),paste0(categories,".x"),paste0(categories,".y"))))
+}
+
+
+
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data
 #' @import sf
