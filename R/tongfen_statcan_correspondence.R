@@ -37,8 +37,7 @@ get_single_correspondence_for <- function(year,level,refresh=FALSE) {
 
 
 get_correspondence_for <- function(years,level,refresh=FALSE){
-  if (length(years)!=2) stop("Sorry, right now this only works for two years")
-
+  #if (length(years)!=2) stop("Sorry, right now this only works for two years")
   years<-as.integer(years)
   all_years=seq(min(years),max(years),5)[-1]
 
@@ -106,8 +105,8 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA) {
     if (ds==datasets[1]) gf=geo_format else gf=NA
     match_column <- ds %>% gsub("CA","",.) %>% paste0("DAUID20",.)
     get_census(dataset=ds,regions=regions,vectors=meta %>% dplyr::filter(dataset==ds) %>% dplyr::pull(variable),level="DA",geo_format=gf,labels="short") %>%
-      dplyr::left_join(correspondence %>% select(c(match_column,"TongfenUID")),by=c("GeoUID"=match_column)) %>%
-      dplyr::group_by(TongfenUID) %>%
+      dplyr::left_join(correspondence %>% select(c(match_column,"TongfenID","TongfenUID")) %>% unique,by=c("GeoUID"=match_column)) %>%
+      dplyr::group_by(TongfenID,TongfenUID) %>%
       aggregate_data_with_meta(.,dplyr::bind_rows(meta %>% filter(dataset==ds),tibble::tibble(variable=base)),geo=ds==datasets[1]) %>%
       dplyr::rename_at(base,function(x){paste0(x,"_",ds)}) %>%
       ungroup
@@ -117,7 +116,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA) {
   new_data <- data[[ds]]
 
   for (ds in datasets[-1]) {
-    new_data <- new_data %>% left_join(data[[ds]],by = "TongfenUID")
+    new_data <- new_data %>% left_join(data[[ds]],by = c("TongfenID","TongfenUID"))
   }
 
   new_data
