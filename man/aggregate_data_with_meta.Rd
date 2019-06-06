@@ -5,12 +5,16 @@
 \title{Aggregate census data up, assumes data is grouped for aggregation
 Uses data from meta to determine how to aggregate up}
 \usage{
-aggregate_data_with_meta(data, meta)
+aggregate_data_with_meta(data, meta, geo = FALSE, na.rm = TRUE)
 }
 \arguments{
 \item{data}{census data as obtained from get_census call}
 
 \item{meta}{list with variables and aggregation infromation as obtained from meta_for_vectors}
+
+\item{geo}{logical, should also aggregate geographic data}
+
+\item{na.rm}{logical, should NA values be ignored or carried through.}
 }
 \description{
 Aggregate census data up, assumes data is grouped for aggregation

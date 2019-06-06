@@ -77,10 +77,10 @@ get_correspondence_for <- function(years,level,refresh=FALSE){
 
   ddd <- ddd %>%
     dplyr::group_by(TongfenID) %>%
-    dplyr::mutate(TongfenUID=paste0(hs[1],":",paste0(!!as.name(sort(hs[1])),collapse=",")))
+    dplyr::mutate(TongfenUID=paste0(hs[1],":",paste0(sort(unique(!!as.name(hs[1]))),collapse=",")))
   for (n in hs[-1]) {
     ddd <- ddd %>%
-      dplyr::mutate(TongfenUID=paste0(TongfenUID," ",n,":",paste0(!!as.name(n),collapse=",")))
+      dplyr::mutate(TongfenUID=paste0(TongfenUID," ",n,":",paste0(sort(unique(!!as.name(n))),collapse=",")))
   }
 
   ddd
@@ -92,8 +92,11 @@ get_correspondence_for <- function(years,level,refresh=FALSE){
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
+#' @param na.rm logical, determines how NA values should be treated when aggregating variables
+#' @param use_cashe logical, passed to `cancensus::get_census` to regulate caching
+#' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
 #' @export
-get_tongfen_census_da <- function(regions,vectors,geo_format=NA) {
+get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
   meta <- meta_for_vectors(vectors)
   datasets <- meta$dataset %>% unique %>% sort
   years=datasets %>% gsub("CA","",.) %>% paste0("20",.) %>% as.integer
@@ -104,10 +107,11 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA) {
   data <- lapply(datasets,function(ds){
     if (ds==datasets[1]) gf=geo_format else gf=NA
     match_column <- ds %>% gsub("CA","",.) %>% paste0("DAUID20",.)
-    get_census(dataset=ds,regions=regions,vectors=meta %>% dplyr::filter(dataset==ds) %>% dplyr::pull(variable),level="DA",geo_format=gf,labels="short") %>%
+    get_census(dataset=ds,regions=regions,vectors=meta %>% dplyr::filter(dataset==ds) %>% dplyr::pull(variable),level="DA",geo_format=gf,labels="short",use_cache = use_cache) %>%
+      census_data_transform %>%
       dplyr::left_join(correspondence %>% select(c(match_column,"TongfenID","TongfenUID")) %>% unique,by=c("GeoUID"=match_column)) %>%
       dplyr::group_by(TongfenID,TongfenUID) %>%
-      aggregate_data_with_meta(.,dplyr::bind_rows(meta %>% filter(dataset==ds),tibble::tibble(variable=base)),geo=ds==datasets[1]) %>%
+      aggregate_data_with_meta(.,dplyr::bind_rows(meta %>% filter(dataset==ds),tibble::tibble(variable=base)),geo=ds==datasets[1],na.rm=na.rm) %>%
       dplyr::rename_at(base,function(x){paste0(x,"_",ds)}) %>%
       ungroup
   }) %>% stats::setNames(datasets)

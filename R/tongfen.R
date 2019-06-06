@@ -122,8 +122,10 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
 #' Uses data from meta to determine how to aggregate up
 #' @param data census data as obtained from get_census call
 #' @param meta list with variables and aggregation infromation as obtained from meta_for_vectors
+#' @param geo logical, should also aggregate geographic data
+#' @param na.rm logical, should NA values be ignored or carried through.
 #' @export
-aggregate_data_with_meta <- function(data,meta,geo=FALSE){
+aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
   grouping_var=groups(data) %>% as.character
   parent_lookup <- setNames(meta$parent,meta$variable)
   to_scale <- meta %>% dplyr::filter(rule %in% c("Median","Average")) %>% dplyr::pull(variable)
@@ -137,11 +139,11 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE){
     data <- dplyr::left_join(data %>%
                          dplyr::select(c(geo_column,grouping_var)) %>%
                         dplyr::summarize(!!geo_column:=sf::st_union(!!as.name(geo_column))),
-                      data %>% sf::st_set_geometry(NULL) %>% dplyr::summarize_at(meta$variable,sum,na.rm=TRUE),
+                      data %>% sf::st_set_geometry(NULL) %>% dplyr::summarize_at(meta$variable,sum,na.rm=na.rm),
                       by=grouping_var
     )
   } else {
-    data <- data %>% dplyr::summarize_at(meta$variable,sum,na.rm=TRUE)
+    data <- data %>% dplyr::summarize_at(meta$variable,sum,na.rm=na.rm)
   }
   for (x in to_scale) {
     data <- data %>% dplyr::mutate(!!x := !!as.name(x)/!!as.name(parent_lookup[x]))
