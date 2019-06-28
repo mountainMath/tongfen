@@ -225,6 +225,9 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
   if (labels=="detailed") {
     stop("NOT IMPLEMENTED YET")
   }
+  if (!is.null(names(vectors))){
+    data1 <- data1 %>% rename(!!!vectors)
+  }
   data1
 }
 
