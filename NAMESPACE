@@ -2,6 +2,7 @@
 
 export(aggregate_data_with_meta)
 export(get_tongfen_census_ct)
+export(get_tongfen_census_ct_from_da)
 export(get_tongfen_census_da)
 export(meta_for_vectors)
 export(proportional_reaggregate)
