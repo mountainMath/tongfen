@@ -12,11 +12,11 @@ tongfen_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c(),na.rm=TRU
   cts_diff_2 <- setdiff(cts_2,cts_1) %>% sort
 
   d<-st_intersection(
-    data2 %>% dplyr::filter(GeoUID %in% cts_diff_2) %>%
+    data2 %>% dplyr::filter(.data$GeoUID %in% cts_diff_2) %>%
       dplyr::rename(GeoUID2=GeoUID) %>%
-      dplyr::select(GeoUID2) %>% dplyr::mutate(area2=st_area(geometry)),
-    data1 %>% dplyr::filter(GeoUID %in% cts_diff_1) %>%
-      dplyr::select(GeoUID) %>% dplyr::mutate(area=st_area(geometry))
+      dplyr::select(GeoUID2) %>% dplyr::mutate(area2=st_area(.data$geometry)),
+    data1 %>% dplyr::filter(.data$GeoUID %in% cts_diff_1) %>%
+      dplyr::select(GeoUID) %>% dplyr::mutate(area=st_area(.data$geometry))
   )
 
   d <- d %>% dplyr::mutate(area3=st_area(geometry)) %>%
@@ -24,7 +24,8 @@ tongfen_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c(),na.rm=TRU
     dplyr::filter(ratio>0.1) %>%
     dplyr::arrange(ratio)
 
-  dd<- d %>% as.data.frame %>%
+  dd<- d %>%
+    sf::st_set_geometry(NULL) %>%
     dplyr::group_by(GeoUID) %>%
     summarize(ratio=sum(ratio)/n(),n=n())
 
@@ -68,10 +69,10 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
                                     dplyr::mutate_all(function(x)tidyr::replace_na(x,0)),
                                   data1,
                                   extensive = TRUE) %>%
-    left_join(data1 %>%
-                as.data.frame %>%
+    dplyr::left_join(data1 %>%
+                sf::st_set_geometry(NULL) %>%
                 dplyr::select(unique_key) %>%
-                dplyr::mutate(Group.1=row_number()),
+                dplyr::mutate(Group.1=dplyr::row_number()),
               by="Group.1") %>%
     dplyr::select(-Group.1) %>%
     dplyr::rename(!!!rename_back)
@@ -80,14 +81,6 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
 }
 
 
-#' @export
-tongfen_cancensus <- function(data1,data2,prefix=c("x_","y_")) {
-  # not impemented yet. will take cancensus outputs data1 and data2 and return a common geography with both variables on it.
-  # will call cancensus::list_census_vectors to get aggregation rules and will download the census correspondence files at DA or DB level
-  # will also query region information for intermediate regions to aggregate up the hierarchy
-
-  # It might be better to just run this on CensusMapper and make the resulting datasets on common geographies available for general download....
-}
 
 
 #' Build tibble with information on how to aggregate variables given vectors
@@ -96,24 +89,26 @@ tongfen_cancensus <- function(data1,data2,prefix=c("x_","y_")) {
 #' @param also_for_first also get extra variables for first dataset
 #' @export
 meta_for_vectors <- function(vectors,also_for_first=FALSE){
-  meta <- tibble(variable=vectors,dataset=vectors %>% substr(3,6)) %>% mutate(type="Original",aggregation=NA)
+  meta <- tibble::tibble(variable=vectors,dataset=vectors %>% substr(3,6)) %>% dplyr::mutate(type="Original",aggregation=NA)
   datasets <- meta$dataset %>% unique %>% sort
   for (dataset in datasets){
-    d<- list_census_vectors(dataset) %>% filter(vector %in% (meta %>% filter(`dataset`==dataset) %>% pull(variable))) %>% select(vector,aggregation)
+    d<- list_census_vectors(dataset) %>%
+      dplyr::filter(vector %in% (dplyr::filter(meta,`dataset`==dataset)$variable)) %>%
+      dplyr::select(vector,aggregation)
     lookup <- setNames(d$aggregation,d$vector)
-    meta <- meta %>% mutate(aggregation=ifelse(variable %in% names(lookup),lookup[variable],aggregation))
+    meta <- meta %>% dplyr::mutate(aggregation=ifelse(variable %in% names(lookup),lookup[variable],aggregation))
   }
   get_vector <- function(g){
     g %>% strsplit(" ") %>% purrr::map(function(a){ifelse(length(a)==3,a[3],NA)}) %>% unlist
   }
-  meta <- meta %>% mutate(rule=sub(" .+$","",aggregation),parent=get_vector(aggregation))
+  meta <- meta %>% dplyr::mutate(rule=sub(" .+$","",aggregation),parent=get_vector(aggregation))
   if (also_for_first) {
-    extras <- meta %>% pull(parent) %>% na.omit %>% unique %>% setdiff(meta$variable)
+    extras <- meta$parent %>% na.omit %>% unique %>% setdiff(meta$variable)
   } else {
-    extras <- meta %>% filter(dataset != datasets[1]) %>% pull(parent) %>% na.omit %>% unique %>% setdiff(meta$variable)
+    extras <-  dplyr::filter(meta,dataset != datasets[1])$parent %>% na.omit %>% unique %>% setdiff(meta$variable)
   }
   meta <- meta %>% bind_rows(
-    tibble(variable=extras) %>% mutate(dataset=variable %>% substr(3,6),type="Extra")
+    tibble(variable=extras) %>% dplyr::mutate(dataset=variable %>% substr(3,6),type="Extra")
   )
   meta
 }
@@ -128,7 +123,7 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
 aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
   grouping_var=groups(data) %>% as.character
   parent_lookup <- setNames(meta$parent,meta$variable)
-  to_scale <- meta %>% dplyr::filter(rule %in% c("Median","Average")) %>% dplyr::pull(variable)
+  to_scale <-  dplyr::filter(meta,rule %in% c("Median","Average"))$variable
 
   for (x in to_scale) {
     data <- data %>% dplyr::mutate(!!x := !!as.name(x)*!!as.name(parent_lookup[x]))
@@ -137,10 +132,10 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
   if ("sf" %in% class(data)) {
     geo_column=attr(data,"sf_column")
     data <- dplyr::left_join(data %>%
-                         dplyr::select(c(geo_column,grouping_var)) %>%
-                        dplyr::summarize(!!geo_column:=sf::st_union(!!as.name(geo_column))),
-                      data %>% sf::st_set_geometry(NULL) %>% dplyr::summarize_at(meta$variable,sum,na.rm=na.rm),
-                      by=grouping_var
+                               dplyr::select(c(geo_column,grouping_var)) %>%
+                               dplyr::summarize(!!geo_column:=sf::st_union(!!as.name(geo_column))),
+                             data %>% sf::st_set_geometry(NULL) %>% dplyr::summarize_at(meta$variable,sum,na.rm=na.rm),
+                             by=grouping_var
     )
   } else {
     data <- data %>% dplyr::summarize_at(meta$variable,sum,na.rm=na.rm)
@@ -155,13 +150,17 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
 #' Will return CT level data
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
+#' @param geo_format geographic format for returned data, 'sf' for sf format and `NA``
+#' for no gegraphic data, (default `NA`)
 #' @export
-get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") {
+get_tongfen_census_ct <- function(regions,vectors,geo_format=NA) {
+  labels="short"
   meta <- meta_for_vectors(vectors)
   datasets <- meta$dataset %>% unique %>% sort
 
   data <- lapply(datasets,function(ds){
-    cancensus::get_census(dataset=ds,regions=regions,vectors=meta %>% filter(dataset==ds) %>% pull(variable),level="CT",geo_format='sf',labels="short")
+    cancensus::get_census(dataset=ds,regions=regions,vectors=dplyr::filter(meta,dataset==ds)$variable,
+                          level="CT",geo_format='sf',labels="short")
   })
 
   base <- c("Population","Dwellings","Households")
@@ -182,21 +181,21 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
       # Some CTs change boundaries even through they don't change GeoUID
       # <sticking finger in ears and singing ...lalalala.../>
       d<-sf::st_intersection(
-        data2 %>% dplyr::filter(GeoUID %in% cts_diff_2) %>%
-          rename(GeoUID2=GeoUID) %>%
-          dplyr::select(GeoUID2,geometry) %>% dplyr::mutate(area2=sf::st_area(geometry)),
+        data2 %>% dplyr::filter(.data$GeoUID %in% cts_diff_2) %>%
+          dplyr::rename(GeoUID2=GeoUID) %>%
+          dplyr::select(GeoUID2,geometry) %>% dplyr::mutate(area2=sf::st_area(.data$geometry)),
         data1 %>% dplyr::filter(GeoUID %in% cts_diff_1) %>%
-          dplyr::select(GeoUID,geometry) %>% dplyr::mutate(area=sf::st_area(geometry))
+          dplyr::select(GeoUID,geometry) %>% dplyr::mutate(area=sf::st_area(.data$geometry))
       )
 
-      d <- d %>% dplyr::mutate(area3=sf::st_area(geometry)) %>%
+      d <- d %>% dplyr::mutate(area3=sf::st_area(.data$geometry)) %>%
         dplyr::mutate(ratio=as.numeric(area3/area2)) %>%
         dplyr::filter(ratio>0.1) %>%
         dplyr::arrange(ratio)
 
       dd<- d %>% as.data.frame %>%
         dplyr::group_by(GeoUID) %>%
-        dplyr::summarize(ratio=sum(ratio)/n(),n=n())
+        dplyr::summarize(ratio=sum(.data$ratio)/n(),n=n())
 
       if(dd %>% dplyr::filter(n<=1) %>% nrow >0) {base::stop("problem with computing common ct data")}
 
@@ -211,16 +210,17 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
 
       nnew <- aggregate_data_with_meta(new2, dplyr::bind_rows(meta %>% dplyr::filter(dataset==!!dataset),tibble(variable=base)))
 
-      nnew <- nnew %>% rename_at(base,function(x){paste0(x,"_",dataset)})
+      nnew <- nnew %>% dplyr::rename_at(base,function(x){paste0(x,"_",dataset)})
 
-      data1 <- data1 %>% left_join(nnew,by="GeoUID")
+      data1 <- data1 %>% dplyr::left_join(nnew,by="GeoUID")
     }
   }
-  data1 <- data1 %>% dplyr::select_at(names(data1) %>% setdiff(dplyr::filter(meta,type=="Extra")$variable))
+  data1 <- data1 %>%
+    dplyr::select_at(names(data1) %>% setdiff(dplyr::filter(meta,type=="Extra")$variable))
   if (is.na(geo_format)) {
     data1 <- data1 %>% sf::st_set_geometry(NULL)
   } else if (geo_format=="sp") {
-    data1 <- data1 %>% as("Spatial")
+    data1 <- data1 %>% sf::as_Spatial()
   }
   if (labels=="detailed") {
     stop("NOT IMPLEMENTED YET")
@@ -247,8 +247,6 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,labels="short") 
 #' @param base Column name to use for proportional weighting when re-aggregating
 #' @keywords reaggregate proportionally wrt base variable
 #' @export
-#' @examples
-#' proportional_re_aggregate(data=geo_db@data,parent_data=geo_da@data,geo_match=setNames("GeoUID","DA_UID"),categories=categories)
 proportional_reaggregate <- function(data,parent_data,geo_match,categories,base="Population"){
   # create zero categories if we don't have them on base (for example DB geo)
   for (v in setdiff(categories,names(data))) {

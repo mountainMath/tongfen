@@ -4,7 +4,15 @@
 \alias{get_single_correspondence_for}
 \title{Get StatCan DA or DB level correspondence file}
 \usage{
-get_single_correspondence_for(year, level, refresh = FALSE)
+get_single_correspondence_for(year, level = c("DA", "DB"),
+  refresh = FALSE)
+}
+\arguments{
+\item{year}{census year}
+
+\item{level}{geographic level, DA or DB}
+
+\item{refresh}{reload the correspondence files, default is `FALSE``}
 }
 \description{
 Get StatCan DA or DB level correspondence file

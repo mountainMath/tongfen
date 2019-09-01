@@ -16,11 +16,11 @@ get_tongfen_census_da(regions, vectors, geo_format = NA,
 
 \item{geo_format}{`NA` to only get the variables or 'sf' to also get geographic data}
 
+\item{use_cache}{logical, passed to `cancensus::get_census` to regulate caching}
+
 \item{na.rm}{logical, determines how NA values should be treated when aggregating variables}
 
 \item{census_data_transform}{optional transofrm function to be abllied to census data after being returned from cancensus}
-
-\item{use_cashe}{logical, passed to `cancensus::get_census` to regulate caching}
 }
 \description{
 Grab variables from several censuses on a common geography. Requires sf package to be avaialbe

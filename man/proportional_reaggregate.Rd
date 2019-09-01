@@ -24,9 +24,6 @@ Data at lower aggregation levels may not add up to the more accurate aggregate c
 This function distributes the aggregate level counts proprtionally (by population) to the containing lower
 leve geographic regions.
 }
-\examples{
-proportional_re_aggregate(data=geo_db@data,parent_data=geo_da@data,geo_match=setNames("GeoUID","DA_UID"),categories=categories)
-}
 \keyword{base}
 \keyword{proportionally}
 \keyword{reaggregate}

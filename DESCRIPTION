@@ -3,17 +3,24 @@ Type: Package
 Title: Make data based on different geographies comarable
 Version: 0.1.0
 Authors@R: c(
-    person("Jens", "von Bergmann", email = "jens@mountainmath.ca", role = c("aut"), comment = "creator and maintainer"),
-    person("Dmitry", "Shkolnik", email = "shkolnikd@gmail.com", role = c("aut", "cre")))
+    person("Jens", "von Bergmann", email = "jens@mountainmath.ca", role = c("aut", "cre"), comment = "creator and maintainer"))
 Description: Several functions to allow comparisons of data across different geographies, in particular for Canadian census data from different censuses.
 License: MIT
 Encoding: UTF-8
 LazyData: true
 Depends: dplyr (>= 0.7.2),
     cancensus,
-    tidyr
+    tidyr,
+    sf,
+    tibble,
+    rlang,
+    purrr,
+    readr
 RoxygenNote: 6.1.1
 Suggests: knitr,
     rmarkdown,
-    tidyverse
+    tidyverse,
+    RColorBrewer,
+    ggplot2,
+    cancensusHelpers
 VignetteBuilder: knitr

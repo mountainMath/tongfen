@@ -9,7 +9,10 @@ correspondence_urls <- list(
 
 
 #' Get StatCan DA or DB level correspondence file
-get_single_correspondence_for <- function(year,level,refresh=FALSE) {
+#' @param year census year
+#' @param level geographic level, DA or DB
+#' @param refresh reload the correspondence files, default is `FALSE``
+get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE) {
   year=as.character(year)
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
   if (!(year %in% c("2006","2011","2016"))) stop("Year needds to be 2006, 2011 or 2016")
@@ -99,7 +102,7 @@ get_correspondence_for <- function(years,level,refresh=FALSE){
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
-#' @param use_cashe logical, passed to `cancensus::get_census` to regulate caching
+#' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
 #' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
 #' @export
 get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
@@ -138,8 +141,8 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
+#' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
-#' @param use_cashe logical, passed to `cancensus::get_census` to regulate caching
 #' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
 #' @export
 get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {

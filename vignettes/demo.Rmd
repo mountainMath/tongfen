@@ -20,6 +20,7 @@ library(tidyverse)
 library(cancensus)
 library(sf)
 library(tongfen)
+#Sys.setenv(CM_API_KEY = getOption("cancensus.api_key"))
 ```
 
 ```{r}
