@@ -12,6 +12,10 @@ meta_for_vectors(vectors, also_for_first = FALSE)
 
 \item{also_for_first}{also get extra variables for first dataset}
 }
+\value{
+tidy dataframe with metadata information for requested variables and additional variables
+needed for tongfen operations
+}
 \description{
 Build tibble with information on how to aggregate variables given vectors
 Queries list_census_variables to obtain needed information and add in vectors needed for aggregation

@@ -5,8 +5,13 @@
 \title{Proportionally re-aggregate hierarchichal data to lower-level w.r.t. values of the *base* variable
 Also handles cases where lower level data may be available but blinded at times by filling in data from higher level}
 \usage{
-proportional_reaggregate(data, parent_data, geo_match, categories,
-  base = "Population")
+proportional_reaggregate(
+  data,
+  parent_data,
+  geo_match,
+  categories,
+  base = "Population"
+)
 }
 \arguments{
 \item{data}{The base geographic data}
@@ -18,6 +23,9 @@ proportional_reaggregate(data, parent_data, geo_match, categories,
 \item{categories}{Vector of column names to re-aggreagte}
 
 \item{base}{Column name to use for proportional weighting when re-aggregating}
+}
+\value{
+dataframe with downsampled variables from parent_data
 }
 \description{
 Data at lower aggregation levels may not add up to the more accurate aggregate counts.

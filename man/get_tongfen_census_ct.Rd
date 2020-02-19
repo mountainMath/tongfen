@@ -15,6 +15,9 @@ get_tongfen_census_ct(regions, vectors, geo_format = NA)
 \item{geo_format}{geographic format for returned data, 'sf' for sf format and `NA``
 for no gegraphic data, (default `NA`)}
 }
+\value{
+dataframe with census variables on common geography
+}
 \description{
 Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
 Will return CT level data

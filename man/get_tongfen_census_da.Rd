@@ -5,9 +5,14 @@
 \title{Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
 Will return CT level data}
 \usage{
-get_tongfen_census_da(regions, vectors, geo_format = NA,
-  use_cache = TRUE, na.rm = TRUE,
-  census_data_transform = function(id) {     id })
+get_tongfen_census_da(
+  regions,
+  vectors,
+  geo_format = NA,
+  use_cache = TRUE,
+  na.rm = TRUE,
+  census_data_transform = function(id) {     id }
+)
 }
 \arguments{
 \item{regions}{census region list, should be inclusive list of GeoUIDs across censuses}
@@ -21,6 +26,9 @@ get_tongfen_census_da(regions, vectors, geo_format = NA,
 \item{na.rm}{logical, determines how NA values should be treated when aggregating variables}
 
 \item{census_data_transform}{optional transofrm function to be abllied to census data after being returned from cancensus}
+}
+\value{
+dataframe with variables on common geography
 }
 \description{
 Grab variables from several censuses on a common geography. Requires sf package to be avaialbe

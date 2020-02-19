@@ -1,22 +1,26 @@
 Package: tongfen
 Type: Package
-Title: Make data based on different geographies comarable
-Version: 0.1.0
+Title: Make data based on different geographies comparable
+Version: 0.1.1
 Authors@R: c(
     person("Jens", "von Bergmann", email = "jens@mountainmath.ca", role = c("aut", "cre"), comment = "creator and maintainer"))
 Description: Several functions to allow comparisons of data across different geographies, in particular for Canadian census data from different censuses.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
+ByteCompile: yes
 LazyData: true
-Depends: dplyr (>= 0.7.2),
+NeedsCompilation: no
+Imports: dplyr (>= 0.7.2),
     cancensus,
     tidyr,
     sf,
     tibble,
     rlang,
     purrr,
-    readr
-RoxygenNote: 6.1.1
+    stringr,
+    readr,
+    utils
+RoxygenNote: 7.0.2
 Suggests: knitr,
     rmarkdown,
     tidyverse,
@@ -24,3 +28,5 @@ Suggests: knitr,
     ggplot2,
     cancensusHelpers
 VignetteBuilder: knitr
+URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
+BugReports: https://github.com/mountainMath/tongfen/issues

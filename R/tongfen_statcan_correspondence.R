@@ -11,7 +11,8 @@ correspondence_urls <- list(
 #' Get StatCan DA or DB level correspondence file
 #' @param year census year
 #' @param level geographic level, DA or DB
-#' @param refresh reload the correspondence files, default is `FALSE``
+#' @param refresh reload the correspondence files, default is `FALSE`
+#' @return tibble with correspondence table`
 get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE) {
   year=as.character(year)
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
@@ -22,10 +23,10 @@ get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE)
   if (refresh || !file.exists(path)) {
     url=correspondence_urls[[year]][[level]]
     tmp=tempfile()
-    download.file(url,tmp)
+    utils::download.file(url,tmp)
     exdir=file.path(tempdir(),"correspondence")
     dir.create(exdir,showWarnings = FALSE)
-    unzip(tmp,exdir=exdir)
+    utils::unzip(tmp,exdir=exdir)
     file=dir(exdir,"\\.txt|\\.csv")
     if (level=="DB") headers=c(new_field,old_field,"flag") else headers=c(new_field,old_field,paste0("DBUID",year),"flag")
     d<-readr::read_csv(file.path(exdir,file),col_types = readr::cols(.default = "c"),col_names = headers) %>%
@@ -39,61 +40,6 @@ get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE)
 }
 
 
-get_tongfen_correspondence <- function(dd){
-  hs <- names(dd)
-  ddd<- dd %>%
-    dplyr::mutate(TongfenID=!!as.name(hs[1]))
-
-
-  num_grp_old=ddd$TongfenID %>% unique() %>% length()
-  iterations <- 0
-  repeat {
-    for (n in hs) {
-      ddd <- ddd %>%
-        dplyr::group_by(!!as.name(n)) %>%
-        dplyr::mutate(TongfenID=min(TongfenID))
-    }
-    num_grp_new=ddd$TongfenID %>% unique() %>% length()
-    if(num_grp_new == num_grp_old) {break}
-    num_grp_old=num_grp_new
-    iterations=iterations+1
-  }
-
-  groups <- unique(ddd$TongfenID)
-  grp_lookup <- setNames(seq(1,length(groups)),groups)
-
-  ddd <- ddd %>%
-    dplyr::group_by(TongfenID) %>%
-    dplyr::mutate(TongfenUID=paste0(hs[1],":",paste0(sort(unique(!!as.name(hs[1]))),collapse=",")))
-  for (n in hs[-1]) {
-    ddd <- ddd %>%
-      dplyr::mutate(TongfenUID=paste0(TongfenUID," ",n,":",paste0(sort(unique(!!as.name(n))),collapse=",")))
-  }
-  ddd
-}
-
-get_correspondence_for <- function(years,level,refresh=FALSE){
-  #if (length(years)!=2) stop("Sorry, right now this only works for two years")
-  years<-as.integer(years)
-  all_years=seq(min(years),max(years),5)[-1]
-
-  d <- get_single_correspondence_for(all_years[1],level,refresh) %>%
-    dplyr::rename(!!paste0("flag",all_years[1]):=flag)
-  all_years=all_years[-1]
-  while (length(all_years)>0) {
-    d <- dplyr::left_join(d,get_single_correspondence_for(all_years[1],level,refresh) %>%
-                     dplyr::rename(!!paste0("flag",all_years[1]):=flag))
-    all_years=all_years[-1]
-  }
-  dd<-d %>% dplyr::select_if(grepl(years %>% paste0(collapse = "|"),names(.))) %>%
-    dplyr::select_if(!grepl("flag",names(.))) %>%
-    unique
-
-  ddd <- get_tongfen_correspondence(dd)
-
-
-  ddd
-}
 
 
 #' Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
@@ -104,24 +50,32 @@ get_correspondence_for <- function(years,level,refresh=FALSE){
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
 #' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
 #' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
+#' @return dataframe with variables on common geography
 #' @export
 get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
   meta <- meta_for_vectors(vectors)
-  datasets <- meta$dataset %>% unique %>% sort
-  years=datasets %>% gsub("CA","",.) %>% paste0("20",.) %>% as.integer
+  datasets <- meta$geo_dataset %>% unique() %>% sort()
+  years <- meta$year %>% unique() %>% sort()
 
   correspondence <- get_correspondence_for(years,"DA")
   base <- c("Population","Dwellings","Households")
 
   data <- lapply(datasets,function(ds){
     if (ds==datasets[1]) gf=geo_format else gf=NA
-    match_column <- ds %>% gsub("CA","",.) %>% paste0("DAUID20",.)
-    get_census(dataset=ds,regions=regions,vectors=meta %>% dplyr::filter(dataset==ds) %>% dplyr::pull(variable),level="DA",geo_format=gf,labels="short",use_cache = use_cache) %>%
+    match_column <- ds %>%  years_from_datasets() %>% paste0("DAUID",.)
+    cancensus::get_census(dataset=ds,regions=regions,
+               vectors=meta %>% filter(.data$geo_dataset==ds) %>% pull(.data$variable),
+               level="DA",geo_format=gf,labels="short",use_cache = use_cache) %>%
       census_data_transform %>%
-      dplyr::left_join(correspondence %>% select(c(match_column,"TongfenID","TongfenUID")) %>% unique,by=c("GeoUID"=match_column)) %>%
-      dplyr::group_by(TongfenID,TongfenUID) %>%
-      aggregate_data_with_meta(.,dplyr::bind_rows(meta %>% filter(dataset==ds),tibble::tibble(variable=base)),geo=ds==datasets[1],na.rm=na.rm) %>%
-      dplyr::rename_at(base,function(x){paste0(x,"_",ds)}) %>%
+      left_join(correspondence %>%
+                         select(c(match_column,"TongfenID","TongfenUID")) %>%
+                         unique,
+                       by=c("GeoUID"=match_column)) %>%
+      group_by(.data$TongfenID,.data$TongfenUID) %>%
+      aggregate_data_with_meta(.,bind_rows(meta %>% filter(.data$geo_dataset==ds),
+                                                  tibble::tibble(variable=base)),
+                               geo=ds==datasets[1],na.rm=na.rm) %>%
+      rename_at(base,function(x){paste0(x,"_",ds)}) %>%
       ungroup
   }) %>% stats::setNames(datasets)
 
@@ -144,58 +98,70 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 #' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
 #' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
+#' @return dataframe with variables on common geography
 #' @export
 get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
   meta <- meta_for_vectors(vectors)
   datasets <- meta$dataset %>% unique %>% sort
-  years=datasets %>% gsub("CA","",.) %>% paste0("20",.) %>% as.integer
+  geo_datasets <- meta$geo_dataset %>% unique %>% sort
+  years <- meta$year %>% unique %>% sort
 
   correspondence <- get_correspondence_for(years,"DA")
-  for (ds in datasets) {
-    da_column <- ds %>% gsub("CA","",.) %>% paste0("DAUID20",.)
-    match_column=ds %>% gsub("CA","",.) %>% paste0("CTUID20",.)
-    ct_link <-get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache) %>%
-      dplyr::select(GeoUID,CT_UID) %>%
-      dplyr::rename(!!match_column:=CT_UID,
-                    !!da_column:=GeoUID)
+  for (ds in geo_datasets) {
+    da_column <- ds %>% years_from_datasets() %>% paste0("DAUID",.)
+    match_column <- ds %>% years_from_datasets() %>% paste0("CTUID",.)
+    ct_link <-cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache) %>%
+      select(.data$GeoUID,.data$CT_UID) %>%
+      rename(!!match_column:=.data$CT_UID,
+                    !!da_column:=.data$GeoUID)
 
-    correspondence <- dplyr::inner_join(correspondence,ct_link,by=da_column) %>%
-      dplyr::ungroup()
+    correspondence <- inner_join(correspondence,ct_link,by=da_column) %>%
+      ungroup()
   }
 
   correspondence <- correspondence %>%
-    dplyr::select(matches("CTUID")) %>%
+    select(matches("CTUID")) %>%
     get_tongfen_correspondence()
 
   base <- c("Population","Dwellings","Households")
 
-  data <- lapply(datasets,function(ds){
-    if (ds==datasets[1]) gf=geo_format else gf=NA
-    match_column=ds %>% gsub("CA","",.) %>% paste0("CTUID20",.)
-
-    get_census(dataset=ds,regions=regions,vectors=meta %>% dplyr::filter(dataset==ds) %>% dplyr::pull(variable),level="CT",geo_format=gf,labels="short",use_cache = use_cache) %>%
+  data <- lapply(geo_datasets,function(ds){
+    if (ds==geo_datasets[1]) gf=geo_format else gf=NA
+    match_column=ds %>% years_from_datasets() %>% paste0("CTUID",.)
+    cancensus::get_census(dataset=ds,regions=regions,
+               vectors=filter(meta,.data$geo_dataset==ds)$variable,
+               level="CT",geo_format=gf,labels="short",use_cache = use_cache) %>%
       census_data_transform %>%
-      dplyr::left_join(correspondence %>% select(c(match_column,"TongfenID","TongfenUID")) %>% unique,by=c("GeoUID"=match_column)) %>%
-      dplyr::group_by(TongfenID,TongfenUID) %>%
-      aggregate_data_with_meta(.,dplyr::bind_rows(meta %>% dplyr::filter(dataset==ds),tibble::tibble(variable=base)),geo=ds==datasets[1],na.rm=na.rm) %>%
-      dplyr::rename_at(base,function(x){paste0(x,"_",ds)}) %>%
-      dplyr::ungroup()
-  }) %>% stats::setNames(datasets)
+      left_join(correspondence %>%
+                         select(c(match_column,"TongfenID","TongfenUID")) %>%
+                         unique,
+                       by=c("GeoUID"=match_column)) %>%
+      group_by(.data$TongfenID,.data$TongfenUID) %>%
+      aggregate_data_with_meta(.,bind_rows(filter(meta,.data$geo_dataset==ds),
+                                               tibble::tibble(variable=base)),
+                               geo=ds==geo_datasets[1],na.rm=na.rm) %>%
+      rename_at(base,function(x){paste0(x,"_",ds)}) %>%
+      ungroup()
+  }) %>% stats::setNames(geo_datasets)
 
-  ds=datasets[1]
+  ds=geo_datasets[1]
   new_data <- data[[ds]]
 
-  for (ds in datasets[-1]) {
-    new_data <- new_data %>% dplyr::left_join(data[[ds]],by = c("TongfenID","TongfenUID"))
+  for (ds in geo_datasets[-1]) {
+    new_data <- new_data %>% left_join(data[[ds]],by = c("TongfenID","TongfenUID"))
   }
 
   if (length(names(vectors))==length(vectors)) {
-    new_data <- new_data %>% dplyr::rename(!!!vectors)
+    new_data <- new_data %>% rename(!!!vectors)
   }
 
   new_data
 }
 
 
+#' @import dplyr
+#' @importFrom rlang .data
+NULL
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 

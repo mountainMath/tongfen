@@ -11,9 +11,9 @@ tongfen_estimate(data1, data2, data2_sum_vars, unique_key = NA)
 
 \item{data2}{input geography with values}
 
-\item{unique_key}{optional unique key for each geography in data1}
+\item{data2_sum_vars}{columns of data2 to be summed up}
 
-\item{data_2_sum_vars}{columns of data2 to be summed up}
+\item{unique_key}{optional unique key for each geography in data1}
 }
 \description{
 Estimate variable values for custom geography

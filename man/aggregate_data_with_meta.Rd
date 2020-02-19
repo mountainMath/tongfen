@@ -8,13 +8,16 @@ Uses data from meta to determine how to aggregate up}
 aggregate_data_with_meta(data, meta, geo = FALSE, na.rm = TRUE)
 }
 \arguments{
-\item{data}{census data as obtained from get_census call}
+\item{data}{census data as obtained from get_census call, grouped by TongfenID}
 
 \item{meta}{list with variables and aggregation infromation as obtained from meta_for_vectors}
 
 \item{geo}{logical, should also aggregate geographic data}
 
 \item{na.rm}{logical, should NA values be ignored or carried through.}
+}
+\value{
+datafreame with variables aggregated to new commen geography
 }
 \description{
 Aggregate census data up, assumes data is grouped for aggregation
