@@ -42,7 +42,7 @@ get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE)
 
 
 
-#' Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+#' Grab variables from several censuses on a common geography. Requires sf package to be avaiable
 #' Will return CT level data
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
@@ -53,7 +53,7 @@ get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE)
 #' @return dataframe with variables on common geography
 #' @export
 get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
-  meta <- meta_for_vectors(vectors)
+  meta <- meta_for_vectors(vectors,also_for_first=TRUE)
   datasets <- meta$geo_dataset %>% unique() %>% sort()
   years <- meta$year %>% unique() %>% sort()
 
@@ -101,7 +101,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 #' @return dataframe with variables on common geography
 #' @export
 get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
-  meta <- meta_for_vectors(vectors)
+  meta <- meta_for_vectors(vectors,also_for_first=TRUE)
   datasets <- meta$dataset %>% unique %>% sort
   geo_datasets <- meta$geo_dataset %>% unique %>% sort
   years <- meta$year %>% unique %>% sort
