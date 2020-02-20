@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen.R
 \name{proportional_reaggregate}
 \alias{proportional_reaggregate}
-\title{Proportionally re-aggregate hierarchichal data to lower-level w.r.t. values of the *base* variable
+\title{Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
 Also handles cases where lower level data may be available but blinded at times by filling in data from higher level}
 \usage{
 proportional_reaggregate(
@@ -20,7 +20,7 @@ proportional_reaggregate(
 
 \item{geo_match}{A named string informing on what column names to match data and parent_data}
 
-\item{categories}{Vector of column names to re-aggreagte}
+\item{categories}{Vector of column names to re-aggregate}
 
 \item{base}{Column name to use for proportional weighting when re-aggregating}
 }
@@ -29,8 +29,8 @@ dataframe with downsampled variables from parent_data
 }
 \description{
 Data at lower aggregation levels may not add up to the more accurate aggregate counts.
-This function distributes the aggregate level counts proprtionally (by population) to the containing lower
-leve geographic regions.
+This function distributes the aggregate level counts proportionally (by population) to the containing lower
+level geographic regions.
 }
 \keyword{base}
 \keyword{proportionally}

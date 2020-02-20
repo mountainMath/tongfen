@@ -42,14 +42,14 @@ get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE)
 
 
 
-#' Grab variables from several censuses on a common geography. Requires sf package to be avaiable
+#' Grab variables from several censuses on a common geography. Requires sf package to be available
 #' Will return CT level data
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
 #' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
-#' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
+#' @param census_data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
 get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
@@ -90,14 +90,14 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 }
 
 
-#' Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+#' Grab variables from several censuses on a common geography. Requires sf package to be available
 #' Will return CT level data
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
 #' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
-#' @param census_data_transform optional transofrm function to be abllied to census data after being returned from cancensus
+#' @param census_data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
 get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {

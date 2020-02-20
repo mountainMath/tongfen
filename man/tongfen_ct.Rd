@@ -2,14 +2,14 @@
 % Please edit documentation in R/tongfen.R
 \name{tongfen_ct}
 \alias{tongfen_ct}
-\title{Aggregate variables to common cts, returns data2 on new tiling matching data1 geography}
+\title{Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography}
 \usage{
 tongfen_ct(data1, data2, data2_sum_vars, data2_group_vars = c(), na.rm = TRUE)
 }
 \arguments{
-\item{data1}{Cancensus CT level datatset for year1 < year2 to serve as base for common geography}
+\item{data1}{cancensus CT level datatset for year1 < year2 to serve as base for common geography}
 
-\item{data2}{Cancensus CT level datatset for year2 to be aggregated to common geography}
+\item{data2}{cancensus CT level datatset for year2 to be aggregated to common geography}
 
 \item{data2_sum_vars}{vector of variable names to by summed up when aggregating geographies}
 
@@ -18,5 +18,5 @@ tongfen_ct(data1, data2, data2_sum_vars, data2_group_vars = c(), na.rm = TRUE)
 \item{na.rm}{optional parameter to remove NA values when summing, default = `TRUE`}
 }
 \description{
-Aggregate variables to common cts, returns data2 on new tiling matching data1 geography
+Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography
 }

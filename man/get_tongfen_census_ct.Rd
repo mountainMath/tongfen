@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen.R
 \name{get_tongfen_census_ct}
 \alias{get_tongfen_census_ct}
-\title{Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+\title{Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data}
 \usage{
 get_tongfen_census_ct(regions, vectors, geo_format = NA)
@@ -13,12 +13,12 @@ get_tongfen_census_ct(regions, vectors, geo_format = NA)
 \item{vectors}{List of cancensus vectors, can come from different census years}
 
 \item{geo_format}{geographic format for returned data, 'sf' for sf format and `NA``
-for no gegraphic data, (default `NA`)}
+for no geographic data, (default `NA`)}
 }
 \value{
 dataframe with census variables on common geography
 }
 \description{
-Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data
 }

@@ -151,4 +151,4 @@ old_toronto <- aggregate_data_with_meta(old_toronto,bind_rows(meta,tibble(variab
 
 ```
 
-`r scales::percent(old_toronto$rent_share)` of Old Toronot households rent, `r scales::percent(old_toronto$rent_poor)` of which are shelter cost burdened.
+`r scales::percent(old_toronto$rent_share)` of Old Toronto households rent, `r scales::percent(old_toronto$rent_poor)` of which are shelter cost burdened.

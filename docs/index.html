@@ -90,11 +90,40 @@
 <a href="#tongfen" class="anchor"></a>tongfen</h1></div>
 
 <p>TongFen (通分) means to convert two fractions to the least common denominator, typically in preparation for further manipulation like addition or subtraction. In English, that’s a mouthful and sounds complicated. But in Chinese there is a word for this, TongFen, which makes this process appear very simple.</p>
-<p>When working with geospatial datasets we often want to compare data that is given on differnt regions. For example census data and election data. Or data from two different censuses. To properly compare this data we first need to convert it to a common geography. The process to do this is quite analogous to the process of TongFen for fractions, so we appropriate this term to give it a simple name. Using the <strong>tongfen</strong> package, preparing data on disparate geographies for comparison by converting them to a common geography is as easy as typing <code>tongfen</code>.</p>
-<p>The package offers three basic functions</p>
-<p>1) <code>tongfen_estimate</code> makes no assumption on the undrelying geographies and returns estimates of the data on the geography of the first dataset. 2) <code>tongfen_ct</code> works on Canadian census tracts from different censuses and returns the data on a common geography. 3) <code>tongfen_cancensus</code> works on any census geography obtained through the <strong>cancensus</strong> package. It utilizes the Statisitcs Canada correspondence files and gives the most accurate estimate of data across censues.</p>
+<p>When working with geospatial datasets we often want to compare data that is given on different regions. For example census data and election data. Or data from two different censuses. To properly compare this data we first need to convert it to a common geography. The process to do this is quite analogous to the process of TongFen for fractions, so we appropriate this term to give it a simple name. Using the <strong>tongfen</strong> package, preparing data on disparate geographies for comparison by converting them to a common geography is as easy as typing <code>tongfen</code>.</p>
+<div id="reference" class="section level3">
+<h3 class="hasAnchor">
+<a href="#reference" class="anchor"></a>Reference</h3>
+<p><a href="https://mountainmath.github.io/tongfen/index.html"><strong>TongFen home page and reference guide</strong></a></p>
+</div>
+<div id="installing-the-package" class="section level3">
+<h3 class="hasAnchor">
+<a href="#installing-the-package" class="anchor"></a>Installing the package</h3>
+<p>The package can be installed from GitHub.</p>
+<pre><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("mountainmath/tongfen")
+library(cancensus)</a></code></pre>
+</div>
+<div id="introduction" class="section level3">
+<h3 class="hasAnchor">
+<a href="#introduction" class="anchor"></a>Introduction</h3>
+<p>The package offers several functions</p>
+<ol>
+<li>
+<code>tongfen_estimate</code> makes no assumption on the underlying geographies and returns estimates of the data on the geography of the first dataset.</li>
+<li>
+<code>tongfen_ct</code> works on Canadian census tracts from different censuses and returns the data on a common geography.</li>
+<li>
+<code>tongfen_cancensus</code> works on any census geography obtained through the <strong>cancensus</strong> package. It utilizes the Statistics Canada correspondence files and gives the most accurate estimate of data across censuses.</li>
+<li>
+<code>get_tongfen_census_ct</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs</li>
+<li>
+<code>get_tongfen_census_ct_from_a=da</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using <code>get_tongfen_census_ct</code> and will use the official DA correspondence files.</li>
+<li>
+<code>get_tongfen_census_ct</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on DAs using the official DA correspondence files.</li>
+</ol>
 <p>Not all data can be aggregated in this form, and some data requires different aggregation functions than others. For example, in census data we encounter variables representing simple counts, for example population, that must be added up when joining geographic regions. Averages or percentages require a weighted sum, medians cannot be aggregated but may be approximated.</p>
 <p>In the case of the data originating from the <strong>cancensus</strong> package the aggregation will be done automatically whenever possible, in other cases the user needs to specify how data should be aggregated.</p>
+</div>
 </div>
   </div>
 
@@ -118,7 +147,8 @@
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Jens von Bergmann <br><small class="roles"> Author, maintainer </small>  <br><small>(creator and maintainer)</small>
+<li>
+<a href="https://mountainmath.ca">Jens von Bergmann</a> <br><small class="roles"> Author, maintainer </small>  <br><small>(creator and maintainer)</small>
 </li>
 </ul>
 </div>
@@ -134,7 +164,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Jens von Bergmann.</p>
+  <p>Developed by <a href="https://mountainmath.ca">Jens von Bergmann</a>.</p>
 </div>
 
 <div class="pkgdown">

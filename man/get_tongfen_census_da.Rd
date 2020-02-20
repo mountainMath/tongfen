@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen_statcan_correspondence.R
 \name{get_tongfen_census_da}
 \alias{get_tongfen_census_da}
-\title{Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+\title{Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data}
 \usage{
 get_tongfen_census_da(
@@ -25,12 +25,12 @@ get_tongfen_census_da(
 
 \item{na.rm}{logical, determines how NA values should be treated when aggregating variables}
 
-\item{census_data_transform}{optional transofrm function to be abllied to census data after being returned from cancensus}
+\item{census_data_transform}{optional transform function to be applied to census data after being returned from cancensus}
 }
 \value{
 dataframe with variables on common geography
 }
 \description{
-Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data
 }

@@ -1,6 +1,6 @@
-#' Aggregate variables to common cts, returns data2 on new tiling matching data1 geography
-#' @param data1 Cancensus CT level datatset for year1 < year2 to serve as base for common geography
-#' @param data2 Cancensus CT level datatset for year2 to be aggregated to common geography
+#' Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography
+#' @param data1 cancensus CT level datatset for year1 < year2 to serve as base for common geography
+#' @param data2 cancensus CT level datatset for year2 to be aggregated to common geography
 #' @param data2_sum_vars vector of variable names to by summed up when aggregating geographies
 #' @param data2_group_vars optional vector of grouping variables
 #' @param na.rm optional parameter to remove NA values when summing, default = `TRUE`
@@ -137,10 +137,10 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
 #' Aggregate census data up, assumes data is grouped for aggregation
 #' Uses data from meta to determine how to aggregate up
 #' @param data census data as obtained from get_census call, grouped by TongfenID
-#' @param meta list with variables and aggregation infromation as obtained from meta_for_vectors
+#' @param meta list with variables and aggregation information as obtained from meta_for_vectors
 #' @param geo logical, should also aggregate geographic data
 #' @param na.rm logical, should NA values be ignored or carried through.
-#' @return datafreame with variables aggregated to new commen geography
+#' @return data frame with variables aggregated to new common geography
 #' @export
 aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
   grouping_var=groups(data) %>% as.character
@@ -190,19 +190,19 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
     data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(parent_lookup[x]))
   }
   for (x in to_scale_from) {
-    scale_type <- meta %>% filter(variable==x) %>% pull(units) %>% as.character()
+    scale_type <- meta %>% filter(.data$variable==x) %>% pull(units) %>% as.character()
     base_vector <- paste0("base_",parent_lookup[x])
     data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(base_vector))
   }
   data
 }
 
-#' Grab variables from several censuses on a common geography. Requires sf package to be avaialbe
+#' Grab variables from several censuses on a common geography. Requires sf package to be available
 #' Will return CT level data
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format geographic format for returned data, 'sf' for sf format and `NA``
-#' for no gegraphic data, (default `NA`)
+#' for no geographic data, (default `NA`)
 #' @return dataframe with census variables on common geography
 #' @export
 get_tongfen_census_ct <- function(regions,vectors,geo_format=NA) {
@@ -289,17 +289,17 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA) {
 
 
 
-#' Proportionally re-aggregate hierarchichal data to lower-level w.r.t. values of the *base* variable
+#' Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
 #' Also handles cases where lower level data may be available but blinded at times by filling in data from higher level
 #'
 #' Data at lower aggregation levels may not add up to the more accurate aggregate counts.
-#' This function distributes the aggregate level counts proprtionally (by population) to the containing lower
-#' leve geographic regions.
+#' This function distributes the aggregate level counts proportionally (by population) to the containing lower
+#' level geographic regions.
 #'
 #' @param data The base geographic data
 #' @param parent_data Higher level geographic data
 #' @param geo_match A named string informing on what column names to match data and parent_data
-#' @param categories Vector of column names to re-aggreagte
+#' @param categories Vector of column names to re-aggregate
 #' @param base Column name to use for proportional weighting when re-aggregating
 #' @return dataframe with downsampled variables from parent_data
 #' @keywords reaggregate proportionally wrt base variable
