@@ -140,7 +140,7 @@ Will return CT level data</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>get_tongfen_census_ct</span>(<span class='no'>regions</span>, <span class='no'>vectors</span>, <span class='kw'>geo_format</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
+    <pre class="usage"><span class='fu'>get_tongfen_census_ct</span>(<span class='no'>regions</span>, <span class='no'>vectors</span>, <span class='kw'>geo_format</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,7 +155,11 @@ Will return CT level data</p>
     </tr>
     <tr>
       <th>geo_format</th>
-      <td><p>geographic format for returned data, 'sf' for sf format and `NA``
+      <td><p>geographic format for returned data, 'sf' for sf format and `NA``</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>suppress download progress output, default is `TRUE`
 for no geographic data, (default `NA`)</p></td>
     </tr>
     </table>

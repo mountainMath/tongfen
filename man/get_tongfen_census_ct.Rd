@@ -5,14 +5,16 @@
 \title{Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data}
 \usage{
-get_tongfen_census_ct(regions, vectors, geo_format = NA)
+get_tongfen_census_ct(regions, vectors, geo_format = NA, quiet = TRUE)
 }
 \arguments{
 \item{regions}{census region list, should be inclusive list of GeoUIDs across censuses}
 
 \item{vectors}{List of cancensus vectors, can come from different census years}
 
-\item{geo_format}{geographic format for returned data, 'sf' for sf format and `NA``
+\item{geo_format}{geographic format for returned data, 'sf' for sf format and `NA``}
+
+\item{quiet}{suppress download progress output, default is `TRUE`
 for no geographic data, (default `NA`)}
 }
 \value{

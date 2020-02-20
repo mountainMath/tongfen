@@ -146,7 +146,8 @@ Will return CT level data</p>
   <span class='kw'>geo_format</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>use_cache</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>census_data_transform</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>id</span>) {     <span class='no'>id</span> }
+  <span class='kw'>census_data_transform</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>id</span>) {     <span class='no'>id</span> },
+  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -175,6 +176,10 @@ Will return CT level data</p>
     <tr>
       <th>census_data_transform</th>
       <td><p>optional transform function to be applied to census data after being returned from cancensus</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>suppress download progress output, default is `TRUE`</p></td>
     </tr>
     </table>
     

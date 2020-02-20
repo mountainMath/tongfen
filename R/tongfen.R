@@ -202,10 +202,11 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format geographic format for returned data, 'sf' for sf format and `NA``
+#' @param quiet suppress download progress output, default is `TRUE`
 #' for no geographic data, (default `NA`)
 #' @return dataframe with census variables on common geography
 #' @export
-get_tongfen_census_ct <- function(regions,vectors,geo_format=NA) {
+get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,quiet=TRUE) {
   labels="short"
   meta <- meta_for_vectors(vectors)
   geo_datasets <- meta$geo_dataset %>% unique %>% sort
@@ -213,7 +214,7 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA) {
   data <- lapply(geo_datasets,function(g_ds){
     cancensus::get_census(dataset=g_ds,regions=regions,
                           vectors=filter(meta,.data$geo_dataset==g_ds)$variable,
-                          level="CT",geo_format='sf',labels="short")
+                          level="CT",geo_format='sf',labels="short",quiet=quiet)
   })
 
   base <- c("Population","Dwellings","Households")

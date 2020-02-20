@@ -26,7 +26,8 @@ library(tongfen)
 ```{r}
 data <- do.call(rbind,lapply(c("2006","2011","2016"),function(year){
   var <- paste0("Population ",year)
-  get_census(paste0("CA",substr(year,3,4)),regions=list(CMA="59933"),geo_format = 'sf',level="CT") %>%
+  get_census(paste0("CA",substr(year,3,4)),regions=list(CMA="59933"),
+             geo_format = 'sf',level="CT",quiet=TRUE) %>%
     select(GeoUID,Population,Households,Dwellings, geometry) %>%
     mutate(Year=year)
 })) 

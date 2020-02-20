@@ -3,7 +3,7 @@ pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   - title : "TongFen Demo"
-    contents: demo.html
+    contents: demo
 authors:
   Jens von Bergmann:
     href: https://mountainmath.ca

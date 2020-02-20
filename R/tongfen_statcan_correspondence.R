@@ -49,10 +49,11 @@ get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE)
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
 #' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
+#' @param quiet suppress download progress output, default is `TRUE`
 #' @param census_data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
-get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
+get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id},quiet=TRUE) {
   meta <- meta_for_vectors(vectors,also_for_first=TRUE)
   datasets <- meta$geo_dataset %>% unique() %>% sort()
   years <- meta$year %>% unique() %>% sort()
@@ -65,7 +66,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
     match_column <- ds %>%  years_from_datasets() %>% paste0("DAUID",.)
     cancensus::get_census(dataset=ds,regions=regions,
                vectors=meta %>% filter(.data$geo_dataset==ds) %>% pull(.data$variable),
-               level="DA",geo_format=gf,labels="short",use_cache = use_cache) %>%
+               level="DA",geo_format=gf,labels="short",use_cache = use_cache, quiet=quiet) %>%
       census_data_transform %>%
       left_join(correspondence %>%
                          select(c(match_column,"TongfenID","TongfenUID")) %>%
@@ -96,11 +97,12 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 #' @param vectors List of cancensus vectors, can come from different census years
 #' @param geo_format `NA` to only get the variables or 'sf' to also get geographic data
 #' @param use_cache logical, passed to `cancensus::get_census` to regulate caching
+#' @param quiet suppress download progress output, default is `TRUE`
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables
 #' @param census_data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
-get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id}) {
+get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,census_data_transform=function(id){id},quiet=TRUE) {
   meta <- meta_for_vectors(vectors,also_for_first=TRUE)
   datasets <- meta$dataset %>% unique %>% sort
   geo_datasets <- meta$geo_dataset %>% unique %>% sort
@@ -110,7 +112,7 @@ get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cach
   for (ds in geo_datasets) {
     da_column <- ds %>% years_from_datasets() %>% paste0("DAUID",.)
     match_column <- ds %>% years_from_datasets() %>% paste0("CTUID",.)
-    ct_link <-cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache) %>%
+    ct_link <-cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache,quiet=quiet) %>%
       select(.data$GeoUID,.data$CT_UID) %>%
       rename(!!match_column:=.data$CT_UID,
                     !!da_column:=.data$GeoUID)
@@ -130,7 +132,7 @@ get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cach
     match_column=ds %>% years_from_datasets() %>% paste0("CTUID",.)
     cancensus::get_census(dataset=ds,regions=regions,
                vectors=filter(meta,.data$geo_dataset==ds)$variable,
-               level="CT",geo_format=gf,labels="short",use_cache = use_cache) %>%
+               level="CT",geo_format=gf,labels="short",use_cache = use_cache,quiet=quiet) %>%
       census_data_transform %>%
       left_join(correspondence %>%
                          select(c(match_column,"TongfenID","TongfenUID")) %>%

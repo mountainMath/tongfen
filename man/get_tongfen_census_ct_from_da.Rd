@@ -11,7 +11,8 @@ get_tongfen_census_ct_from_da(
   geo_format = NA,
   use_cache = TRUE,
   na.rm = TRUE,
-  census_data_transform = function(id) {     id }
+  census_data_transform = function(id) {     id },
+  quiet = TRUE
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ get_tongfen_census_ct_from_da(
 \item{na.rm}{logical, determines how NA values should be treated when aggregating variables}
 
 \item{census_data_transform}{optional transform function to be applied to census data after being returned from cancensus}
+
+\item{quiet}{suppress download progress output, default is `TRUE`}
 }
 \value{
 dataframe with variables on common geography
