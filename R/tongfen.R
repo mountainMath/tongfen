@@ -209,7 +209,7 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
 #' @export
 get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,quiet=TRUE,refresh=FALSE) {
   labels="short"
-  meta <- meta_for_vectors(vectors)
+  meta <- meta_for_vectors(vectors %>% as.character())
   geo_datasets <- meta$geo_dataset %>% unique %>% sort
 
   data <- lapply(geo_datasets,function(g_ds){
@@ -286,6 +286,7 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,quiet=TRUE,refre
   if (!is.null(names(vectors))){
     data1 <- data1 %>% rename(!!!vectors)
   }
+
   data1
 }
 
