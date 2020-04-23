@@ -9,6 +9,7 @@ get_tongfen_census_ct(
   regions,
   vectors,
   geo_format = NA,
+  na.rm = TRUE,
   quiet = TRUE,
   refresh = FALSE
 )
@@ -19,6 +20,8 @@ get_tongfen_census_ct(
 \item{vectors}{List of cancensus vectors, can come from different census years}
 
 \item{geo_format}{geographic format for returned data, 'sf' for sf format and `NA``}
+
+\item{na.rm}{remove NA values when aggregating up values, default is `TRUE`}
 
 \item{quiet}{suppress download progress output, default is `TRUE`}
 

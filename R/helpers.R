@@ -14,28 +14,12 @@ datasets_from_vectors <- function(vs){
 }
 
 GEO_DATASET_LOOKUP <- c(
-  "TX2000"="CA1996",
-  "TX2001"="CA01",
-  "TX2002"="CA01",
-  "TX2003"="CA01",
-  "TX2004"="CA01",
-  "TX2005"="CA01",
-  "TX2006"="CA06",
-  "TX2006"="CA06",
-  "TX2007"="CA06",
-  "TX2008"="CA06",
-  "TX2009"="CA06",
-  "TX2010"="CA06",
-  "TX2011"="CA06",
-  "TX2012"="CA11",
-  "TX2013"="CA11",
-  "TX2014"="CA11",
-  "TX2015"="CA11",
-  "TX2016"="CA16",
-  "TX2017"="CA16",
-  "TX2018"="CA16",
-  "TX2019"="CA16",
-  "TX2020"="CA16"
+  setNames(rep("CA1996",1),paste0("TX",seq(2000,2000))),
+  setNames(rep("CA01",5),paste0("TX",seq(2001,2005))),
+  setNames(rep("CA06",6),paste0("TX",seq(2006,2011))),
+  setNames(rep("CA11",4),paste0("TX",seq(2012,2015))),
+  setNames(rep("CA16",5),paste0("TX",seq(2016,2020))),
+  setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
 )
 
 geo_dataset_from_dataset <- function(ds){
