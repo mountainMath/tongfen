@@ -87,6 +87,10 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
     new_data <- new_data %>% left_join(data[[ds]],by = c("TongfenID","TongfenUID"))
   }
 
+  if (length(names(vectors))==length(vectors)) {
+    new_data <- new_data %>% rename(!!!vectors)
+  }
+
   new_data
 }
 
