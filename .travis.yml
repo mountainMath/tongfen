@@ -19,8 +19,7 @@ before_install:
 
 r_binary_packages:
   - lwgeom
-
-r_packages:
+  - units
   - sp
   - rgdal
   - rgeos
