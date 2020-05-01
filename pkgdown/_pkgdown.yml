@@ -11,7 +11,7 @@ template:
   opengraph:
     image:
       src: 'https://mountainmath.github.io/tongfen/logo.png'
-      alt: "cancensus"
+      alt: "tongfen"
     twitter:
       creator: "@vb_jens"
       card: summary_large_image

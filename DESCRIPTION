@@ -25,8 +25,7 @@ Suggests: knitr,
     rmarkdown,
     tidyverse,
     RColorBrewer,
-    ggplot2,
-    cancensusHelpers
+    ggplot2
 VignetteBuilder: knitr
 URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
 BugReports: https://github.com/mountainMath/tongfen/issues
