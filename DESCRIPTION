@@ -19,8 +19,7 @@ Imports: dplyr (>= 0.7.2),
     purrr,
     stringr,
     readr,
-    utils,
-    lwgeom
+    utils
 RoxygenNote: 7.1.0
 Suggests: knitr,
     rmarkdown,

@@ -1,12 +1,15 @@
 language: R
-cache: packages
+cache:
+  - packages
+  - ccache
 latex: false
 sudo: required
 os: linux
 dist: xenial
 
 r:
-  - release
+#  - release
+  - oldrel
 
 before_install:
 #  Add GDAL, GEOS, proj, and units2 dependencies
@@ -20,7 +23,6 @@ r_packages:
   - rgdal
   - rgeos
   - sf
-  - lwgeom
   - markdown
   - rmarkdown
   - httr
