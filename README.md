@@ -16,7 +16,7 @@ When working with geospatial datasets we often want to compare data that is give
 The package can be installed from GitHub.
 ```
 devtools::install_github("mountainmath/tongfen")
-library(cancensus)
+library(tongfen)
 ```
 
 ### Caching correspondence files
