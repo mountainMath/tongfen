@@ -16,7 +16,10 @@ knitr::opts_chunk$set(
 	collapse = TRUE,
 	comment = "#>"
 )
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(purrr)
 library(cancensus)
 library(sf)
 library(tongfen)
@@ -118,8 +121,6 @@ rent_data <- get_tongfen_census_ct(regions=regions,vectors=rent_variables,geo_fo
 
 
 ```{r}
-library(tidyverse)
-library(sf)
 plot_data <- rent_data %>%
   mutate(`2006-2011`=v_CA11N_2292/v_CA06_2050,
          `2011-2016`=v_CA16_4901/v_CA11N_2292,

@@ -162,9 +162,7 @@
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">rent_variables</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"v_CA16_4901"</span>,  <span class="st">"v_CA11N_2292"</span>,<span class="st">"v_CA06_2050"</span>)
 <span class="no">regions</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CMA</span><span class="kw">=</span><span class="st">"59933"</span>)
 <span class="no">rent_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_census_ct.html">get_tongfen_census_ct</a></span>(<span class="kw">regions</span><span class="kw">=</span><span class="no">regions</span>,<span class="kw">vectors</span><span class="kw">=</span><span class="no">rent_variables</span>,<span class="kw">geo_format</span> <span class="kw">=</span> <span class="st">'sf'</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyverse</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">sf</span>)
-<span class="no">plot_data</span> <span class="kw">&lt;-</span> <span class="no">rent_data</span> <span class="kw">%&gt;%</span>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">plot_data</span> <span class="kw">&lt;-</span> <span class="no">rent_data</span> <span class="kw">%&gt;%</span>
   <span class="fu">mutate</span>(<span class="kw">`2006-2011`</span><span class="kw">=</span><span class="no">v_CA11N_2292</span>/<span class="no">v_CA06_2050</span>,
          <span class="kw">`2011-2016`</span><span class="kw">=</span><span class="no">v_CA16_4901</span>/<span class="no">v_CA11N_2292</span>,
          <span class="kw">`2006-2016`</span><span class="kw">=</span><span class="no">v_CA16_4901</span>/<span class="no">v_CA06_2050</span>) <span class="kw">%&gt;%</span>

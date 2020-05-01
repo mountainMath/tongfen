@@ -19,11 +19,11 @@ Imports: dplyr (>= 0.7.2),
     purrr,
     stringr,
     readr,
-    utils
+    utils,
+    lwgeom
 RoxygenNote: 7.1.0
 Suggests: knitr,
     rmarkdown,
-    tidyverse,
     RColorBrewer,
     ggplot2
 VignetteBuilder: knitr
