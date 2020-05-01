@@ -4,7 +4,7 @@ author: "Jens von Bergmann"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{TongFen Demo}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -141,6 +141,7 @@ Another application is simply aggregating up variables for a selection of region
 (This functionality should get integrated into `get_old_toronto_data`)
 
 ```{r}
+#remotes::install_github("mountainmath/cancensusHelpers")
 library(cancensusHelpers)
 vectors <- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
 meta=meta_for_vectors(vectors,also_for_first = TRUE)

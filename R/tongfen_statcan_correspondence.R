@@ -7,6 +7,12 @@ correspondence_urls <- list(
               "DA"="http://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DA_AD_csv.zip")
 )
 
+tongfen_cache_dir <- function(){
+  getOption("tongfen.cache_path") %||%
+    Sys.getenv("tongfen.cache_path") %||%
+    getOption("custom_data_path") %||%
+    tempdir()
+}
 
 #' Get StatCan DA or DB level correspondence file
 #' @param year census year
@@ -14,12 +20,13 @@ correspondence_urls <- list(
 #' @param refresh reload the correspondence files, default is `FALSE`
 #' @return tibble with correspondence table`
 get_single_correspondence_for <- function(year,level=c("DA","DB"),refresh=FALSE) {
-  year=as.character(year)
+  level=level[1]
+  year=as.character(year)[1]
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
   if (!(year %in% c("2006","2011","2016"))) stop("Year needds to be 2006, 2011 or 2016")
   new_field=paste0(level,"UID",year)
   old_field=paste0(level,"UID",as.integer(year)-5)
-  path=file.path(getOption("custom_data_path"),paste0("statcan_correspondence_",year,"_",level,".csv"))
+  path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".csv"))
   if (refresh || !file.exists(path)) {
     url=correspondence_urls[[year]][[level]]
     tmp=tempfile()

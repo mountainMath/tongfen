@@ -18,6 +18,16 @@ devtools::install_github("mountainmath/tongfen")
 library(cancensus)
 ```
 
+### Caching correspondence files
+The `get_tongfen_census_ct` and `get_tongfen_census_ct_from_da` methods make use of the StatCan correspondence
+files. To speed up this process it is useful to permanently cache these files instead of having to download them repeatedly. If caching is desired, set either 
+
+* `options("tongfen.cache_path"="<your local cache path>")` 
+* `Sys.setenv("tongfen.cache_path"="<your local cache path>")`
+* `options("custom_data_path"="<your local cache path>")` 
+
+in your `.Rprofile` or `.Renviron` file. 
+
 ### Introduction
 
 The package offers several functions
@@ -26,7 +36,7 @@ The package offers several functions
 2. `tongfen_ct` works on Canadian census tracts from different censuses and returns the data on a common geography.
 3. `tongfen_cancensus` works on any census geography obtained through the **cancensus** package. It utilizes the Statistics Canada correspondence files and gives the most accurate estimate of data across censuses.
 4. `get_tongfen_census_ct` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs
-5. `get_tongfen_census_ct_from_a=da` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using `get_tongfen_census_ct` and will use the official DA correspondence files.
+5. `get_tongfen_census_ct_from_da` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using `get_tongfen_census_ct` and will use the official DA correspondence files.
 6. `get_tongfen_census_ct` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on DAs using the official DA correspondence files.
 
 Not all data can be aggregated in this form, and some data requires different aggregation functions than others. For example, in census data we encounter variables representing simple counts, for example population, that must be added up when joining geographic regions. Averages or percentages require a weighted sum, medians cannot be aggregated but may be approximated. 
