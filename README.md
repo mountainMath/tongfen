@@ -1,5 +1,7 @@
 # tongfen
 
+[![Build Status](https://travis-ci.org/mountainMath/tongfen.svg?branch=master)](https://travis-ci.org/mountainMath/tongfen)
+
 <a href="https://mountainmath.github.io/tongfen/index.html"><img src="https://raw.githubusercontent.com/mountainMath/tongfen/master/images/tongfen-sticker.png" alt="tongfen logo" align="right" width = "25%" height = "25%"/></a>
 TongFen (通分) means to convert two fractions to the least common denominator, typically in preparation for further manipulation like addition or subtraction. In English, that's a mouthful and sounds complicated. But in Chinese there is a word for this, TongFen, which makes this process appear very simple.
 
