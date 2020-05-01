@@ -23,12 +23,12 @@ r_binary_packages:
   - lwgeom
 #  - dplyr
   - markdown
-  - readr
+#  - readr
   - rmarkdown
-  - stringi
-  - tidyr
-  - ggplot2
-  - geojsonsf
+#  - stringi
+#  - tidyr
+#  - ggplot2
+#  - geojsonsf
   - httr
   - rlang
   - jsonlite
