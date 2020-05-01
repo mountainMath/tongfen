@@ -14,23 +14,23 @@ before_install:
   - sudo apt-get --yes --force-yes update -qq
   - sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev libv8-dev libprotobuf-dev protobuf-compiler libjq-dev
 
-r_binary_packages:
-#r_packages:
+#r_binary_packages:
+r_packages:
   - sp
   - rgdal
   - rgeos
   - sf
   - lwgeom
-#  - dplyr
   - markdown
-#  - readr
   - rmarkdown
-#  - stringi
-#  - tidyr
-#  - ggplot2
-#  - geojsonsf
   - httr
-  - rlang
   - jsonlite
   - digest
+  - dplyr
+  - readr
+  - stringi
+  - tidyr
+  - ggplot2
+  - geojsonsf
+  - rlang
 
