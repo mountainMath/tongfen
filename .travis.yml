@@ -8,8 +8,8 @@ os: linux
 dist: trusty
 
 r:
-  - release
-#  - oldrel
+#  - release
+  - oldrel
 
 before_install:
 #  Add GDAL, GEOS, proj, and units2 dependencies
