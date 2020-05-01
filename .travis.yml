@@ -14,9 +14,6 @@ before_install:
   - sudo apt-get --yes --force-yes update -qq
   - sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev libv8-dev libprotobuf-dev protobuf-compiler libjq-dev
 
-r_github_packages:
-  - "mountainmath/cancensusHelpers"
-
 r_binary_packages:
   - sp
   - rgdal

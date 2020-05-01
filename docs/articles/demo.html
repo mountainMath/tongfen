@@ -180,24 +180,23 @@
 <div id="aggregating-up-data-across-regions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#aggregating-up-data-across-regions" class="anchor"></a>Aggregating up data across regions</h1>
-<p>Another application is simply aggregating up variables for a selection of regions from a single census. Suppose we want to understand the share of renters in Old Toronto, as well as the share of renter households spending more than 30% of income on housing.</p>
-<p>(This functionality should get integrated into <code>get_old_toronto_data</code>)</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r">#remotes::install_github("mountainmath/cancensusHelpers")
-library(cancensusHelpers)
-vectors &lt;- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+<p>Another application is simply aggregating up variables for a selection of regions from a single census. Suppose we want to understand the share of renters in the Vancouver School District, as well as the share of renter households spending more than 30% of income on housing.</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r">vectors &lt;- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
 meta=meta_for_vectors(vectors,also_for_first = TRUE)
-old_toronto &lt;- get_old_toronto_data("CA16",vectors=meta$variable,also_new_toronto = FALSE)
+vsb_regions &lt;- list(CSD=c("5915022","5915803"),
+                    CT=c("9330069.01","9330069.02","9330069.00"))
+vsb &lt;- get_census("CA16",regions=vsb_regions,vectors=meta$variable,labels="short")
 #&gt; 
-Downloading: 14 kB     
-Downloading: 14 kB     
-Downloading: 14 kB     
-Downloading: 14 kB     
-Downloading: 14 kB     
-Downloading: 14 kB
-old_toronto &lt;- aggregate_data_with_meta(old_toronto,bind_rows(meta,tibble(variable=c("Population","Dwellings","Households")))) %&gt;%
+Downloading: 440 B     
+Downloading: 440 B     
+Downloading: 440 B     
+Downloading: 440 B     
+Downloading: 440 B     
+Downloading: 440 B
+vsb &lt;- aggregate_data_with_meta(vsb,bind_rows(meta,tibble(variable=c("Population","Dwellings","Households")))) %&gt;%
   mutate(Total=v_CA16_4836,Renters=v_CA16_4838,rent_poor=v_CA16_4899/100) %&gt;%
   mutate(rent_share=Renters/Total)</pre></body></html></div>
-<p>56% of Old Toronto households rent, 47% of which are shelter cost burdened.</p>
+<p>53% of Vancouver School District households rent, 45% of which are shelter cost burdened.</p>
 </div>
   </div>
 
