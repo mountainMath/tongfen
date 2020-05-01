@@ -32,5 +32,4 @@ r_binary_packages:
   - rlang
   - jsonlite
   - digest
-  - cancensus
 
