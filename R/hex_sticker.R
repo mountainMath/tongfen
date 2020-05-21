@@ -22,8 +22,8 @@ generate_cancensus_sticker <- function() {
     grepl(paste0(tongfen_core,collapse = "|"),TongfenUID)
   }
 
-  map_data <- tongfen_data %>% filter(in_core(TongfenUID)) %>%
-    mutate(lico_2006=v_CA06_1981,lico_2016=v_CA16_2555) %>%
+  map_data <- tongfen_data %>%
+    filter(in_core(TongfenUID)) %>%
     mutate(lico_change=lico_2016/lico_2006)
 
   id06 <- map_data$TongfenUID %>% strsplit(" ") %>% map(first) %>% unlist  %>% strsplit(":") %>% map(last) %>% unlist %>% strsplit(",") %>% unlist

@@ -8,9 +8,9 @@ correspondence_urls <- list(
 )
 
 tongfen_cache_dir <- function(){
-  getOption("tongfen.cache_path") %||%
-    Sys.getenv("tongfen.cache_path") %||%
-    getOption("custom_data_path") %||%
+  nullify_blank(getOption("tongfen.cache_path")) %||%
+    nullify_blank(Sys.getenv("tongfen.cache_path")) %||%
+    nullify_blank(getOption("custom_data_path")) %||%
     tempdir()
 }
 
@@ -72,7 +72,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
     if (ds==datasets[1]) gf=geo_format else gf=NA
     match_column <- ds %>%  years_from_datasets() %>% paste0("DAUID",.)
     cancensus::get_census(dataset=ds,regions=regions,
-               vectors=meta %>% filter(.data$geo_dataset==ds) %>% pull(.data$variable),
+               vectors=meta %>% filter(.data$geo_dataset==ds) %>% pull(.data$variable) %>% as.character(),
                level="DA",geo_format=gf,labels="short",use_cache = use_cache, quiet=quiet) %>%
       census_data_transform %>%
       left_join(correspondence %>%
@@ -142,7 +142,7 @@ get_tongfen_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cach
     if (ds==geo_datasets[1]) gf=geo_format else gf=NA
     match_column=ds %>% years_from_datasets() %>% paste0("CTUID",.)
     cancensus::get_census(dataset=ds,regions=regions,
-               vectors=filter(meta,.data$geo_dataset==ds)$variable,
+               vectors=filter(meta,.data$geo_dataset==ds)$variable %>% as.character(),
                level="CT",geo_format=gf,labels="short",use_cache = use_cache,quiet=quiet) %>%
       census_data_transform %>%
       left_join(correspondence %>%

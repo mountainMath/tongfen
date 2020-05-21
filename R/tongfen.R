@@ -91,6 +91,7 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
 #' needed for tongfen operations
 #' @export
 meta_for_vectors <- function(vectors,also_for_first=FALSE){
+  vectors <- as.character(vectors) ## strip names just in case
   meta <- tibble::tibble(variable=vectors,dataset=datasets_from_vectors(vectors)) %>%
     mutate(type="Original", aggregation="0",units=NA)
   datasets <- meta$dataset %>%
@@ -123,12 +124,14 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
     filter(!is.na(.data$variable),!.data$variable %in% meta$variable)
 
-  if (!also_for_first) {
-    extras <- extras %>% filter(.data$dataset != datasets[1] | .data$type=="Original")
+  if (nrow(extras)>0) {
+    if (!also_for_first) {
+      extras <- extras %>% filter(.data$dataset != datasets[1] | .data$type=="Original")
+    }
+    meta <- meta %>% bind_rows(extras)
   }
 
   meta <- meta %>%
-    bind_rows(extras) %>%
     mutate(geo_dataset=geo_dataset_from_dataset(.data$dataset),
                   year=years_from_datasets(.data$dataset))
   meta
@@ -215,7 +218,7 @@ get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,na.rm=TRUE,quiet
 
   data <- lapply(geo_datasets,function(g_ds){
     cancensus::get_census(dataset=g_ds,regions=regions,
-                          vectors=filter(meta,.data$geo_dataset==g_ds)$variable,
+                          vectors=filter(meta,.data$geo_dataset==g_ds)$variable %>% as.character(),
                           level="CT",geo_format='sf',labels="short",quiet=quiet,use_cache = !refresh)
 
   })
@@ -343,6 +346,109 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
   d1 %>%
     select(-one_of(c(paste0(categories,".s"),paste0(categories,".x"),paste0(categories,".y"))))
 }
+
+
+#' Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+#' tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+#' only common tiling is given by unioning all sub-geometries and there is no finer common tiling.
+#' @param geo1 input geometry 1 of class sf
+#' @param geo2 input geometry 2 of class sf
+#' @param geo1_uid (unique) identifier column for geo1
+#' @param geo2_uid (unique) identifier column for geo2
+#' @param tolerance tolerance (in projected coordinate units) for feature matching
+#' @param computation_crs optional crs in which the computation should be carried out,
+#' defaults to crs of geo1
+#' @param robust boolean parameter, will ensure geometries are valid if set to TRUE
+#' @return A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
+#' that enumerate the common geometry
+#' @export
+estimate_tongfen_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
+                                            tolerance=1,
+                                            computation_crs=NULL,
+                                            robust=FALSE){
+  if (geo1_uid==geo2_uid) stop("geo1_uid and geo2_uid can't be the same! Please rename one of the identifier columns.")
+
+  if (geo1 %>% filter(is.na(!!as.name(geo1_uid))) %>% nrow() > 0) stop("Found NA values for some geo1_uid, please make sure that there are no NA values.")
+  if (geo2 %>% filter(is.na(!!as.name(geo2_uid))) %>% nrow() > 0) stop("Found NA values for some geo2_uid, please make sure that there are no NA values.")
+
+  if (!is.null(computation_crs)) {
+    geo1 <- geo1 %>% st_transform(computation_crs)
+    geo2 <- geo2 %>% st_transform(computation_crs)
+  } else if (st_crs(geo1)!=st_crs(geo2)) { # make sure same crs
+    geo2 <- geo2 %>% st_transform(st_crs(geo1))
+  }
+
+  geo1 <- geo1 %>% ungroup()
+  geo2 <- geo2 %>% ungroup()
+
+  id1 <- geo1 %>% st_set_geometry(NULL) %>% select(!!geo1_uid) %>% mutate(id1=row_number())
+  id2 <- geo2 %>% st_set_geometry(NULL) %>% select(!!geo2_uid) %>% mutate(id2=row_number())
+
+
+  if (robust) {
+    if (!st_is_valid(geo1)) geo1 <- geo1 %>% st_make_valid()
+    if (!st_is_valid(geo2)) geo2 <- geo2 %>% st_make_valid()
+  }
+
+
+  robust_tolerance_buffer <- function(geo,geo_uid,tolerance,max_tries=20) {
+    t <- tolerance
+    d <- geo
+    d$geometry=st_buffer(geo$geometry,-t)
+    count=0
+    empties <- st_is_empty(d)
+    while (sum(empties) > 0 & count<max_tries) {
+      t <- t/2
+      d[empties,]$geometry=st_buffer(geo$geometry[empties],-t)
+      empties <- st_is_empty(d)
+      count <- count + 1
+    }
+    if (sum(empties) > 0) {
+      stop("Unable to match within given tolerance, some geographies are too fine.")
+    }
+    d
+  }
+
+  cgeo1 <- geo1 %>% robust_tolerance_buffer(geo_uid = geo1_uid,tolerance = tolerance)
+  cgeo2 <- geo2 %>% robust_tolerance_buffer(geo_uid = geo2_uid,tolerance = tolerance)
+
+  i1 <- cgeo1 %>%
+    st_intersects(geo2,sparse = TRUE) %>%
+    as_tibble() %>%
+    rename(id1=.data$row.id,id2=.data$col.id) %>%
+    left_join(id1,by="id1") %>%
+    left_join(id2,by="id2") %>%
+    select(-id1,-id2)
+  i2 <- cgeo2 %>%
+    st_intersects(geo1,sparse = TRUE) %>%
+    as_tibble() %>%
+    rename(id2=.data$row.id,id1=.data$col.id) %>%
+    left_join(id1,by="id1") %>%
+    left_join(id2,by="id2") %>%
+    select(-id1,-id2)
+
+  correspondence <- bind_rows(i1,i2) %>%
+    unique() %>%
+    get_tongfen_correspondence()
+
+  if (FALSE) {
+    check <- geo1 %>%
+      mutate(area=st_area(.)) %>%
+      st_set_geometry(NULL) %>%
+      left_join(correspondence,by=geo1_uid) %>%
+      group_by(TongfenID) %>%
+      summarize(area1=sum(area)) %>%
+      left_join(geo2 %>%
+                  mutate(area=st_area(.)) %>%
+                  st_set_geometry(NULL) %>%
+                  left_join(correspondence,by=geo2_uid) %>%
+                  group_by(TongfenID) %>%
+                  summarize(area2=sum(area)),by="TongfenID")
+  }
+
+  correspondence
+}
+
 
 
 #' @import dplyr

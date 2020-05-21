@@ -6,8 +6,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level — proportional_reaggregate • tongfen</title>
+<title>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+only common tiling is given by unioning all sub-geometries and there is no finer common tiling. — estimate_tongfen_correspondence • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,11 +48,12 @@ Also handles cases where lower level data may be available but blinded at times 
 
 
 
-<meta property="og:title" content="Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level — proportional_reaggregate" />
-<meta property="og:description" content="Data at lower aggregation levels may not add up to the more accurate aggregate counts.
-This function distributes the aggregate level counts proportionally (by population) to the containing lower
-level geographic regions." />
+<meta property="og:title" content="Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+only common tiling is given by unioning all sub-geometries and there is no finer common tiling. — estimate_tongfen_correspondence" />
+<meta property="og:description" content="Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+only common tiling is given by unioning all sub-geometries and there is no finer common tiling." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -127,54 +129,67 @@ level geographic regions." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level</h1>
+    <h1>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+only common tiling is given by unioning all sub-geometries and there is no finer common tiling.</h1>
     <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
-    <div class="hidden name"><code>proportional_reaggregate.Rd</code></div>
+    <div class="hidden name"><code>estimate_tongfen_correspondence.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Data at lower aggregation levels may not add up to the more accurate aggregate counts.
-This function distributes the aggregate level counts proportionally (by population) to the containing lower
-level geographic regions.</p>
+    <p>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+only common tiling is given by unioning all sub-geometries and there is no finer common tiling.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>proportional_reaggregate</span>(
-  <span class='no'>data</span>,
-  <span class='no'>parent_data</span>,
-  <span class='no'>geo_match</span>,
-  <span class='no'>categories</span>,
-  <span class='kw'>base</span> <span class='kw'>=</span> <span class='st'>"Population"</span>
+    <pre class="usage"><span class='fu'>estimate_tongfen_correspondence</span>(
+  <span class='no'>geo1</span>,
+  <span class='no'>geo2</span>,
+  <span class='no'>geo1_uid</span>,
+  <span class='no'>geo2_uid</span>,
+  <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>computation_crs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>robust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data</th>
-      <td><p>The base geographic data</p></td>
+      <th>geo1</th>
+      <td><p>input geometry 1 of class sf</p></td>
     </tr>
     <tr>
-      <th>parent_data</th>
-      <td><p>Higher level geographic data</p></td>
+      <th>geo2</th>
+      <td><p>input geometry 2 of class sf</p></td>
     </tr>
     <tr>
-      <th>geo_match</th>
-      <td><p>A named string informing on what column names to match data and parent_data</p></td>
+      <th>geo1_uid</th>
+      <td><p>(unique) identifier column for geo1</p></td>
     </tr>
     <tr>
-      <th>categories</th>
-      <td><p>Vector of column names to re-aggregate</p></td>
+      <th>geo2_uid</th>
+      <td><p>(unique) identifier column for geo2</p></td>
     </tr>
     <tr>
-      <th>base</th>
-      <td><p>Column name to use for proportional weighting when re-aggregating</p></td>
+      <th>tolerance</th>
+      <td><p>tolerance (in projected coordinate units) for feature matching</p></td>
+    </tr>
+    <tr>
+      <th>computation_crs</th>
+      <td><p>optional crs in which the computation should be carried out,
+defaults to crs of geo1</p></td>
+    </tr>
+    <tr>
+      <th>robust</th>
+      <td><p>boolean parameter, will ensure geometries are valid if set to TRUE</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>dataframe with downsampled variables from parent_data</p>
+    <p>A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
+that enumerate the common geometry</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

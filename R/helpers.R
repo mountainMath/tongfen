@@ -1,3 +1,12 @@
+nullify_blank <- function(x){
+  if (!is.null(x)) {
+    if (is.na(x)) x=NULL else {
+      if (x=="") x=NULL
+      }
+  }
+  x
+}
+
 years_from_datasets <- function(ds) {
   ds %>%
     stringr::str_extract("\\d+") %>%
