@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct • tongfen</title>
+<title>Grab variables from several censuses on a common geography. Requires sf package to be available
+Will return CT level data — get_tongfen_ca_ct • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +47,10 @@
 
 
 
-<meta property="og:title" content="Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct" />
-<meta property="og:description" content="Get US census data for 2000 and 2010 census on common census tract based geography" />
+<meta property="og:title" content="Grab variables from several censuses on a common geography. Requires sf package to be available
+Will return CT level data — get_tongfen_ca_ct" />
+<meta property="og:description" content="Grab variables from several censuses on a common geography. Requires sf package to be available
+Will return CT level data" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -123,33 +126,75 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get US census data for 2000 and 2010 census on common census tract based geography</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_us.R'><code>R/tongfen_us.R</code></a></small>
-    <div class="hidden name"><code>get_tongfen_us_census_ct.Rd</code></div>
+    <h1>Grab variables from several censuses on a common geography. Requires sf package to be available
+Will return CT level data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a></small>
+    <div class="hidden name"><code>get_tongfen_ca_ct.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get US census data for 2000 and 2010 census on common census tract based geography</p>
+    <p>Grab variables from several censuses on a common geography. Requires sf package to be available
+Will return CT level data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_tongfen_us_census_ct</span>(<span class='no'>state</span>, <span class='no'>variables</span>)</pre>
+    <pre class="usage"><span class='fu'>get_tongfen_ca_ct</span>(
+  <span class='no'>regions</span>,
+  <span class='no'>vectors</span>,
+  <span class='kw'>geo_base</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>match_common_GeoUID</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>area_mismatch_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>500</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>refresh</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>state</th>
-      <td><p>US state to get the data for</p></td>
+      <th>regions</th>
+      <td><p>census region list, should be inclusive list of GeoUIDs across censuses</p></td>
     </tr>
     <tr>
-      <th>variables</th>
-      <td><p>vector with census variable names, possibly named</p></td>
+      <th>vectors</th>
+      <td><p>List of cancensus vectors, can come from different census years</p></td>
+    </tr>
+    <tr>
+      <th>geo_base</th>
+      <td><p>optional parameter with allowed values one of the geo_datasets to base the geographic data on,</p></td>
+    </tr>
+    <tr>
+      <th>match_common_GeoUID</th>
+      <td><p>logical, if `TRUE` (default) assumes CTs with same GeoUID are identical</p></td>
+    </tr>
+    <tr>
+      <th>area_mismatch_cutoff</th>
+      <td><p>cutoff to disregard tracts that can't be matched within threshold</p></td>
+    </tr>
+    <tr>
+      <th>tolerance</th>
+      <td><p>tolerance in metres when matching changing CT geographies.</p></td>
+    </tr>
+    <tr>
+      <th>na.rm</th>
+      <td><p>remove NA values when aggregating up values, default is `TRUE`</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>suppress download progress output, default is `FALSE`</p></td>
+    </tr>
+    <tr>
+      <th>refresh</th>
+      <td><p>optional character, refresh data cache for this call
+for no geographic data, (default `NA`)
+or `NULL` (the default) for not returning geographic data`</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").</p>
+    <p>dataframe with census variables on common geography</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

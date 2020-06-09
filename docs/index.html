@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -117,18 +117,30 @@ library(tongfen)</a></code></pre>
 <li>
 <code>tongfen_estimate</code> makes no assumption on the underlying geographies and returns estimates of the data on the geography of the first dataset.</li>
 <li>
-<code>tongfen_ct</code> works on Canadian census tracts from different censuses and returns the data on a common geography.</li>
-<li>
-<code>tongfen_cancensus</code> works on any census geography obtained through the <strong>cancensus</strong> package. It utilizes the Statistics Canada correspondence files and gives the most accurate estimate of data across censuses.</li>
-<li>
-<code>get_tongfen_census_ct</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs</li>
-<li>
-<code>get_tongfen_census_ct_from_da</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using <code>get_tongfen_census_ct</code> and will use the official DA correspondence files.</li>
-<li>
-<code>get_tongfen_census_ct</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on DAs using the official DA correspondence files.</li>
+<code>estimate_tongfen_correspondence</code> creates a correspondence table for least common denomicator geography given two different but congruent input geograpies.</li>
 </ol>
+<div id="canadian-census-data" class="section level4">
+<h4 class="hasAnchor">
+<a href="#canadian-census-data" class="anchor"></a>Canadian census data</h4>
+<p>The package is well-integrated to work with Canadian census data.</p>
+<ul>
+<li>
+<code>tongfen_ca_censusct</code> works on Canadian census tracts from different censuses and returns the data on a common geography. This takes a loose approach to tongfen by generating the correspondence from geographic data and optionally assuming regions with the same GeoUIDs are the same and boundary changes of these only affect greenfield sites.</li>
+<li>
+<code>get_tongfen_ca_censusct</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs</li>
+<li>
+<code>get_tongfen_ca_censusct_from_da</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using <code>get_tongfen_ca_censusct</code> and will use the official DA correspondence files.</li>
+</ul>
+</div>
+<div id="us-census-data" class="section level4">
+<h4 class="hasAnchor">
+<a href="#us-census-data" class="anchor"></a>US census data</h4>
+<ul>
+<li><code>get_tongfen_us_census_ct</code></li>
+</ul>
 <p>Not all data can be aggregated in this form, and some data requires different aggregation functions than others. For example, in census data we encounter variables representing simple counts, for example population, that must be added up when joining geographic regions. Averages or percentages require a weighted sum, medians cannot be aggregated but may be approximated.</p>
 <p>In the case of the data originating from the <strong>cancensus</strong> package the aggregation will be done automatically whenever possible, in other cases the user needs to specify how data should be aggregated.</p>
+</div>
 </div>
 </div>
   </div>

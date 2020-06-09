@@ -74,5 +74,5 @@ get_tongfen_us_census_ct <- function(state,variables){
                 mutate(variable=paste0(.data$variable,"_","2000")) %>%
                 tidyr::pivot_wider(names_from = "variable",values_from = "value"),by="TongfenID")
 
-  d %>% left_join(ddd, by="TongfenID")
+  d %>% left_join(ddd, by="TongfenID") %>% ungroup()
 }

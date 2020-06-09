@@ -34,7 +34,7 @@ defaults to crs of geo1}
 }
 \value{
 A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
-that enumerate the common geometry
+that enumerate the common geometry.
 }
 \description{
 Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common

@@ -38,8 +38,8 @@ data <- do.call(rbind,lapply(c("2006","2011","2016"),function(year){
 
 ```{r}
 data_2006 <- data %>% filter(Year=="2006")
-data_2011 <- tongfen_ct(data_2006,data %>% filter(Year=="2011"),"Population")
-data_2016 <- tongfen_ct(data_2006,data %>% filter(Year=="2016"),"Population")
+data_2011 <- tongfen_ca_census_ct(data_2006,data %>% filter(Year=="2011"),"Population")
+data_2016 <- tongfen_ca_census_ct(data_2006,data %>% filter(Year=="2016"),"Population")
 
 geometric_average <- function(x,n){sign(x) * (exp(log(1+abs(x))/n)-1)}
 
@@ -116,7 +116,7 @@ ggplot(plot_data %>% mutate(c=cut(`Population Change`,breaks=breaks, labels=labe
 ```{r}
 rent_variables <- c("v_CA16_4901",  "v_CA11N_2292","v_CA06_2050")
 regions=list(CMA="59933")
-rent_data <- get_tongfen_census_ct(regions=regions,vectors=rent_variables,geo_format = 'sf')
+rent_data <- get_tongfen_ca_census_ct(regions=regions,vectors=rent_variables,geo_base = 'CA16')
 ```
 
 
@@ -142,7 +142,7 @@ Another application is simply aggregating up variables for a selection of region
 
 ```{r}
 vectors <- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
-meta=meta_for_vectors(vectors,also_for_first = TRUE)
+meta=meta_for_ca_census_vectors(vectors)
 vsb_regions <- list(CSD=c("5915022","5915803"),
                     CT=c("9330069.01","9330069.02","9330069.00"))
 vsb <- get_census("CA16",regions=vsb_regions,vectors=meta$variable,labels="short")

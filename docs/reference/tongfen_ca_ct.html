@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct • tongfen</title>
+<title>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography — tongfen_ca_ct • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct" />
-<meta property="og:description" content="Get US census data for 2000 and 2010 census on common census tract based geography" />
+<meta property="og:title" content="Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography — tongfen_ca_ct" />
+<meta property="og:description" content="Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -123,33 +123,48 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get US census data for 2000 and 2010 census on common census tract based geography</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_us.R'><code>R/tongfen_us.R</code></a></small>
-    <div class="hidden name"><code>get_tongfen_us_census_ct.Rd</code></div>
+    <h1>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a></small>
+    <div class="hidden name"><code>tongfen_ca_ct.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get US census data for 2000 and 2010 census on common census tract based geography</p>
+    <p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_tongfen_us_census_ct</span>(<span class='no'>state</span>, <span class='no'>variables</span>)</pre>
+    <pre class="usage"><span class='fu'>tongfen_ca_ct</span>(
+  <span class='no'>data1</span>,
+  <span class='no'>data2</span>,
+  <span class='no'>data2_sum_vars</span>,
+  <span class='kw'>data2_group_vars</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(),
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>state</th>
-      <td><p>US state to get the data for</p></td>
+      <th>data1</th>
+      <td><p>cancensus CT level datatset for year1 &lt; year2 to serve as base for common geography</p></td>
     </tr>
     <tr>
-      <th>variables</th>
-      <td><p>vector with census variable names, possibly named</p></td>
+      <th>data2</th>
+      <td><p>cancensus CT level datatset for year2 to be aggregated to common geography</p></td>
+    </tr>
+    <tr>
+      <th>data2_sum_vars</th>
+      <td><p>vector of variable names to by summed up when aggregating geographies</p></td>
+    </tr>
+    <tr>
+      <th>data2_group_vars</th>
+      <td><p>optional vector of grouping variables</p></td>
+    </tr>
+    <tr>
+      <th>na.rm</th>
+      <td><p>optional parameter to remove NA values when summing, default = `TRUE`</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

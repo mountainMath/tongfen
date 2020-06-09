@@ -5,7 +5,7 @@
 \title{Aggregate census data up, assumes data is grouped for aggregation
 Uses data from meta to determine how to aggregate up}
 \usage{
-aggregate_data_with_meta(data, meta, geo = FALSE, na.rm = TRUE)
+aggregate_data_with_meta(data, meta, geo = FALSE, na.rm = TRUE, quiet = FALSE)
 }
 \arguments{
 \item{data}{census data as obtained from get_census call, grouped by TongfenID}
@@ -15,6 +15,8 @@ aggregate_data_with_meta(data, meta, geo = FALSE, na.rm = TRUE)
 \item{geo}{logical, should also aggregate geographic data}
 
 \item{na.rm}{logical, should NA values be ignored or carried through.}
+
+\item{quiet}{logical, don't emit messages if set to `TRUE`}
 }
 \value{
 data frame with variables aggregated to new common geography

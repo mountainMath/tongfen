@@ -2,8 +2,8 @@ pandoc: 2.2.1
 pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
-  - title : "TongFen Demo"
-    contents: demo
+  - title : "TongFen Canada Demo"
+    contents: tongfen_ca
   - title : "TongFen for US census data"
     contents: tongfen_us
 authors:

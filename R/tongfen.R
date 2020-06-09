@@ -1,52 +1,3 @@
-#' Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography
-#' @param data1 cancensus CT level datatset for year1 < year2 to serve as base for common geography
-#' @param data2 cancensus CT level datatset for year2 to be aggregated to common geography
-#' @param data2_sum_vars vector of variable names to by summed up when aggregating geographies
-#' @param data2_group_vars optional vector of grouping variables
-#' @param na.rm optional parameter to remove NA values when summing, default = `TRUE`
-#' @export
-tongfen_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c(),na.rm=TRUE) {
-  cts_1 <- data1$GeoUID
-  cts_2 <- data2$GeoUID
-  cts_diff_1 <- setdiff(cts_1,cts_2) %>% sort
-  cts_diff_2 <- setdiff(cts_2,cts_1) %>% sort
-
-  d<-st_intersection(
-    data2 %>% filter(.data$GeoUID %in% cts_diff_2) %>%
-      rename(GeoUID2=.data$GeoUID) %>%
-      select(.data$GeoUID2) %>% mutate(area2=st_area(.data$geometry)),
-    data1 %>% filter(.data$GeoUID %in% cts_diff_1) %>%
-      select(.data$GeoUID) %>% mutate(area=st_area(.data$geometry))
-  )
-
-  d <- d %>% mutate(area3=st_area(.data$geometry)) %>%
-    mutate(ratio=as.numeric(.data$area3/.data$area2)) %>%
-    filter(.data$ratio>0.1) %>%
-    arrange(.data$ratio)
-
-  dd<- d %>%
-    sf::st_set_geometry(NULL) %>%
-    group_by(.data$GeoUID) %>%
-    summarize(ratio=sum(.data$ratio)/n(),n=n())
-
-  if(dd %>% filter(.data$n<=1) %>% nrow >0) {base::stop("problem with computing common ct data")}
-
-  ct_translation <- lapply(split(d, d$GeoUID), function(x) x$GeoUID2 %>% unique)
-  ct_translation2 <- lapply(split(d, d$GeoUID2), function(x) x$GeoUID %>% unique)
-
-  new2 <- data2 %>%
-    filter(.data$GeoUID %in% cts_diff_2) %>%
-    mutate(GeoUID2=.data$GeoUID) %>%
-    mutate(GeoUID=as.character(ct_translation2[.data$GeoUID2])) %>%
-    group_by(!!!c("GeoUID",data2_group_vars) %>% purrr::map(as.name) %>% unlist)
-
-  nnew <- new2 %>% summarize_at(data2_sum_vars,function(x)sum(x,na.rm=na.rm))
-
-  data_2 <- rbind(data2 %>% filter(!(.data$GeoUID %in% cts_diff_2)) %>%
-                    select("GeoUID",data2_group_vars,data2_sum_vars), nnew)
-  return(data_2)
-}
-
 #' Estimate variable values for custom geography
 #' @param data1 custom geography to estimate values for
 #' @param data2 input geography with values
@@ -83,59 +34,6 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
 
 
 
-#' Build tibble with information on how to aggregate variables given vectors
-#' Queries list_census_variables to obtain needed information and add in vectors needed for aggregation
-#' @param vectors list of variables to query
-#' @param also_for_first also get extra variables for first dataset
-#' @return tidy dataframe with metadata information for requested variables and additional variables
-#' needed for tongfen operations
-#' @export
-meta_for_vectors <- function(vectors,also_for_first=FALSE){
-  vectors <- as.character(vectors) ## strip names just in case
-  meta <- tibble::tibble(variable=vectors,dataset=datasets_from_vectors(vectors)) %>%
-    mutate(type="Original", aggregation="0",units=NA)
-  datasets <- meta$dataset %>%
-    unique %>%
-    sort
-  for (dataset in datasets){
-    d <- cancensus::list_census_vectors(dataset) %>%
-      filter(.data$vector %in% (filter(meta,.data$dataset==dataset)$variable)) %>%
-      select(.data$vector,.data$aggregation,.data$units)
-    aggregation_lookup <- setNames(d$aggregation,d$vector)
-    units_lookup <- setNames(d$units %>% as.character,d$vector)
-    meta <- meta %>%
-      mutate(aggregation=ifelse(.data$variable %in% names(aggregation_lookup),aggregation_lookup[.data$variable],.data$aggregation),
-             units=ifelse(.data$variable %in% names(units_lookup),units_lookup[.data$variable],.data$units))
-  }
-  get_vector <- function(g){
-    g %>% strsplit(" ") %>% purrr::map(function(a){ifelse(length(a)==3,a[3],NA)}) %>% unlist
-  }
-  meta <- meta %>%
-    mutate(rule=case_when(grepl("Average of",.data$aggregation) ~ "Average",
-                          grepl("Median of",.data$aggregation) ~ "Median",
-                          .data$aggregation=="Not additive" ~ "Not additive",
-                          .data$aggregation=="Additive" ~ "Additive",
-                          grepl("Average to",.data$aggregation) ~ "AverageTo",
-                          TRUE ~ sub(" .+$","",.data$aggregation)),
-           parent=get_vector(.data$aggregation))
-
-  extras <- meta %>%
-    select(variable=.data$parent,.data$dataset) %>%
-    mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
-    filter(!is.na(.data$variable),!.data$variable %in% meta$variable)
-
-  if (nrow(extras)>0) {
-    if (!also_for_first) {
-      extras <- extras %>% filter(.data$dataset != datasets[1] | .data$type=="Original")
-    }
-    meta <- meta %>% bind_rows(extras)
-  }
-
-  meta <- meta %>%
-    mutate(geo_dataset=geo_dataset_from_dataset(.data$dataset),
-                  year=years_from_datasets(.data$dataset))
-  meta
-}
 
 #' Aggregate census data up, assumes data is grouped for aggregation
 #' Uses data from meta to determine how to aggregate up
@@ -143,9 +41,11 @@ meta_for_vectors <- function(vectors,also_for_first=FALSE){
 #' @param meta list with variables and aggregation information as obtained from meta_for_vectors
 #' @param geo logical, should also aggregate geographic data
 #' @param na.rm logical, should NA values be ignored or carried through.
+#' @param quiet logical, don't emit messages if set to `TRUE`
 #' @return data frame with variables aggregated to new common geography
 #' @export
-aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
+aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE){
+  meta <- meta %>% filter(.data$variable %in% names(data))
   grouping_var=groups(data) %>% as.character
   parent_lookup <- setNames(meta$parent,meta$variable)
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average"))$variable
@@ -153,14 +53,17 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
   not_additive <- filter(meta,.data$rule == "Not additive")$variable
   median_vars <- filter(meta,.data$rule %in% c("Median"))$variable
 
-  if (length(not_additive)>0)
-    warning(paste0("Don't know how to TongFen: ",paste0(not_additive,collapse = ", ")))
-  if (length(median_vars)>0)
-    message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
+  if(!quiet) {
+    if (length(not_additive)>0)
+      warning(paste0("Don't know how to TongFen: ",paste0(not_additive,collapse = ", ")))
+    if (length(median_vars)>0)
+      message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
+  }
 
   for (x in to_scale) {
     data <- data %>% mutate(!!x := !!as.name(x)*!!as.name(parent_lookup[x]))
   }
+
   base_variables <- c()
   for (x in to_scale_from) {
     scale_type <- meta %>% filter(.data$variable==x) %>% pull(units) %>% as.character()
@@ -183,8 +86,12 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
     geo_column=attr(data,"sf_column")
     data <- left_join(data %>%
                         select(c(geo_column,grouping_var)) %>%
-                        summarize(!!geo_column:=sf::st_union(!!as.name(geo_column))),
-                      data %>% sf::st_set_geometry(NULL) %>% summarize_at(meta$variable,sum,na.rm=na.rm),
+                        #sf::st_cast("MULTIPOLYGON") %>%
+                        summarize(!!geo_column:=sf::st_union(!!as.name(geo_column)) %>%
+                                    sf::st_cast("MULTIPOLYGON")),
+                      data %>%
+                        sf::st_set_geometry(NULL) %>%
+                        summarize_at(meta$variable,sum,na.rm=na.rm),
                       by=grouping_var)
   } else {
     data <- data %>% summarize_at(meta$variable,sum,na.rm=na.rm)
@@ -198,102 +105,6 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE){
     data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(base_vector))
   }
   data
-}
-
-#' Grab variables from several censuses on a common geography. Requires sf package to be available
-#' Will return CT level data
-#' @param regions census region list, should be inclusive list of GeoUIDs across censuses
-#' @param vectors List of cancensus vectors, can come from different census years
-#' @param geo_format geographic format for returned data, 'sf' for sf format and `NA``
-#' @param na.rm remove NA values when aggregating up values, default is `TRUE`
-#' @param quiet suppress download progress output, default is `TRUE`
-#' @param refresh optional character, refresh data cache for this call
-#' for no geographic data, (default `NA`)
-#' @return dataframe with census variables on common geography
-#' @export
-get_tongfen_census_ct <- function(regions,vectors,geo_format=NA,na.rm=TRUE,quiet=TRUE,refresh=FALSE) {
-  labels="short"
-  meta <- meta_for_vectors(vectors %>% as.character())
-  geo_datasets <- meta$geo_dataset %>% unique %>% sort
-
-  data <- lapply(geo_datasets,function(g_ds){
-    cancensus::get_census(dataset=g_ds,regions=regions,
-                          vectors=filter(meta,.data$geo_dataset==g_ds)$variable %>% as.character(),
-                          level="CT",geo_format='sf',labels="short",quiet=quiet,use_cache = !refresh)
-
-  })
-
-  base <- c("Population","Dwellings","Households")
-
-  geo_dataset=geo_datasets[1]
-  data1=data[[1]] %>% rename_at(base,function(x){paste0(x,"_",geo_dataset)}) %>% sf::st_as_sf()
-
-  number_of_datasets=length(geo_datasets)
-  if (number_of_datasets>1) { # only do this if we actually need to tongfen!
-    for (index in seq(2,number_of_datasets)) {
-      dataset = geo_datasets[index]
-      data2=data[[index]] %>% sf::st_as_sf()
-      cts_1 <- data1$GeoUID
-      cts_2 <- data2$GeoUID
-      cts_diff_1 <- setdiff(cts_1,cts_2) %>% sort
-      cts_diff_2 <- setdiff(cts_2,cts_1) %>% sort
-
-      # Some CTs change boundaries even through they don't change GeoUID
-      # <sticking finger in ears and singing ...lalalala.../>
-      d<-sf::st_intersection(
-        data2 %>% filter(.data$GeoUID %in% cts_diff_2) %>%
-          rename(GeoUID2=.data$GeoUID) %>%
-          select(.data$GeoUID2,.data$geometry) %>% mutate(area2=sf::st_area(.data$geometry)),
-        data1 %>% filter(.data$GeoUID %in% cts_diff_1) %>%
-          select(.data$GeoUID,.data$geometry) %>% mutate(area=sf::st_area(.data$geometry))
-      )
-
-      d <- d %>% mutate(area3=sf::st_area(.data$geometry)) %>%
-        mutate(ratio=as.numeric(.data$area3/.data$area2)) %>%
-        filter(.data$ratio>0.1) %>%
-        arrange(.data$ratio)
-
-      dd<- d %>% as.data.frame %>%
-        group_by(.data$GeoUID) %>%
-        summarize(ratio=sum(.data$ratio)/n(),n=n())
-
-      if(dd %>% filter(.data$n<=1) %>% nrow >0) {base::stop("problem with computing common ct data")}
-
-      ct_translation <- lapply(split(d, d$GeoUID), function(x) x$GeoUID2)
-      ct_translation2 <- lapply(split(d, d$GeoUID2), function(x) x$GeoUID)
-
-      new2 <- data2 %>% as.data.frame %>%
-        select(-.data$geometry) %>%
-        mutate(GeoUID2=.data$GeoUID) %>%
-        mutate(GeoUID=ifelse(.data$GeoUID %in% names(ct_translation2),
-                                    as.character(ct_translation2[.data$GeoUID2]),.data$GeoUID)) %>%
-        group_by(.data$GeoUID)
-
-      nnew <- aggregate_data_with_meta(new2,
-                                       bind_rows(meta %>% filter(.data$geo_dataset==!!dataset),
-                                                        tibble(variable=base)),
-                                       na.rm = na.rm)
-
-      nnew <- nnew %>% rename_at(base,function(x){paste0(x,"_",dataset)})
-
-      data1 <- data1 %>% left_join(nnew,by="GeoUID")
-    }
-  }
-  data1 <- data1 %>%
-    select_at(names(data1) %>% setdiff(filter(meta,.data$type=="Extra")$variable))
-  if (is.na(geo_format)) {
-    data1 <- data1 %>% sf::st_set_geometry(NULL)
-  } else if (geo_format=="sp") {
-    data1 <- data1 %>% sf::as_Spatial()
-  }
-  if (labels=="detailed") {
-    stop("NOT IMPLEMENTED YET")
-  }
-  if (!is.null(names(vectors))){
-    data1 <- data1 %>% rename(!!!vectors)
-  }
-
-  data1
 }
 
 
@@ -360,7 +171,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
 #' defaults to crs of geo1
 #' @param robust boolean parameter, will ensure geometries are valid if set to TRUE
 #' @return A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
-#' that enumerate the common geometry
+#' that enumerate the common geometry.
 #' @export
 estimate_tongfen_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
                                             tolerance=1,
@@ -431,24 +242,50 @@ estimate_tongfen_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
     unique() %>%
     get_tongfen_correspondence()
 
-  if (FALSE) {
-    check <- geo1 %>%
-      mutate(area=st_area(.)) %>%
-      st_set_geometry(NULL) %>%
-      left_join(correspondence,by=geo1_uid) %>%
-      group_by(TongfenID) %>%
-      summarize(area1=sum(area)) %>%
-      left_join(geo2 %>%
-                  mutate(area=st_area(.)) %>%
-                  st_set_geometry(NULL) %>%
-                  left_join(correspondence,by=geo2_uid) %>%
-                  group_by(TongfenID) %>%
-                  summarize(area2=sum(area)),by="TongfenID")
-  }
-
   correspondence
 }
 
+
+#' Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+#' of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.
+#' @param geo1 input geometry 1 of class sf
+#' @param geo2 input geometry 2 of class sf
+#' @param correspondence Correspondence table between `geo1` and `geo2` as e.g.
+#' returned by `estimate_tongfen_correspondence`.
+#' @return A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
+#' `TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
+#' aggregated from `geo1` and `geo2`.`
+#' @export
+check_tongfen_areas <- function(geo1,geo2,correspondence) {
+  geo1_uid <- names(correspondence)[1]
+  geo2_uid <- names(correspondence)[2]
+  if (!(geo1_uid %in% names(geo1))) {
+    g <- geo1_uid
+    geo1_uid <- geo2_uid
+    geo2_uid <- g
+  }
+  if (!(geo1_uid %in% names(geo1))) {
+    stop("Can't match correspondence to geo1.")
+  }
+  if (!(geo2_uid %in% names(geo2))) {
+    stop("Can't match correspondence to geo2.")
+  }
+  d1<-geo1 %>%
+    mutate(area=st_area(.)) %>%
+    st_set_geometry(NULL) %>%
+    inner_join_tongfen_correspondence(correspondence,geo1_uid) %>%
+    group_by(.data$TongfenID) %>%
+    summarize(area1=sum(.data$area))
+  d2 <- geo2 %>%
+    mutate(area=st_area(.)) %>%
+    st_set_geometry(NULL) %>%
+    inner_join_tongfen_correspondence(correspondence,geo2_uid) %>%
+    group_by(.data$TongfenID) %>%
+    summarize(area2=sum(.data$area))
+
+   inner_join(d1,d2,by="TongfenID") %>%
+     ungroup()
+}
 
 
 #' @import dplyr

@@ -83,7 +83,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -155,6 +155,13 @@ Uses data from meta to determine how to aggregate up</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="check_tongfen_areas.html">check_tongfen_areas()</a></code> </p>
+        </td>
+        <td><p>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="estimate_tongfen_correspondence.html">estimate_tongfen_correspondence()</a></code> </p>
         </td>
         <td><p>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
@@ -163,27 +170,33 @@ only common tiling is given by unioning all sub-geometries and there is no finer
       </tr><tr>
         
         <td>
-          <p><code><a href="get_single_correspondence_for.html">get_single_correspondence_for()</a></code> </p>
+          <p><code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> </p>
         </td>
         <td><p>Get StatCan DA or DB level correspondence file</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_census_ct.html">get_tongfen_census_ct()</a></code> </p>
+          <p><code><a href="get_single_correspondence_ca_census_for.html">get_single_correspondence_ca_census_for()</a></code> </p>
+        </td>
+        <td><p>Get StatCan DA or DB level correspondence file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_tongfen_ca_census_ct.html">get_tongfen_ca_census_ct()</a></code> </p>
         </td>
         <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_census_ct_from_da.html">get_tongfen_census_ct_from_da()</a></code> </p>
+          <p><code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> </p>
         </td>
         <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_census_da.html">get_tongfen_census_da()</a></code> </p>
+          <p><code><a href="get_tongfen_ca_census_da.html">get_tongfen_ca_census_da()</a></code> </p>
         </td>
         <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data</p></td>
@@ -196,7 +209,7 @@ Will return CT level data</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="meta_for_vectors.html">meta_for_vectors()</a></code> </p>
+          <p><code><a href="meta_for_ca_census_vectors.html">meta_for_ca_census_vectors()</a></code> </p>
         </td>
         <td><p>Build tibble with information on how to aggregate variables given vectors
 Queries list_census_variables to obtain needed information and add in vectors needed for aggregation</p></td>
@@ -210,7 +223,7 @@ Also handles cases where lower level data may be available but blinded at times 
       </tr><tr>
         
         <td>
-          <p><code><a href="tongfen_ct.html">tongfen_ct()</a></code> </p>
+          <p><code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> </p>
         </td>
         <td><p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p></td>
       </tr><tr>

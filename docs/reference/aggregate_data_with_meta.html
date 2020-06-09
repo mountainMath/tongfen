@@ -87,7 +87,7 @@ Uses data from meta to determine how to aggregate up" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -137,7 +137,7 @@ Uses data from meta to determine how to aggregate up</h1>
 Uses data from meta to determine how to aggregate up</p>
     </div>
 
-    <pre class="usage"><span class='fu'>aggregate_data_with_meta</span>(<span class='no'>data</span>, <span class='no'>meta</span>, <span class='kw'>geo</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>aggregate_data_with_meta</span>(<span class='no'>data</span>, <span class='no'>meta</span>, <span class='kw'>geo</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,6 +157,10 @@ Uses data from meta to determine how to aggregate up</p>
     <tr>
       <th>na.rm</th>
       <td><p>logical, should NA values be ignored or carried through.</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>logical, don't emit messages if set to `TRUE`</p></td>
     </tr>
     </table>
 

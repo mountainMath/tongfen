@@ -20,25 +20,22 @@ knitr::opts_chunk$set(
 library(tongfen)
 library(dplyr)
 library(ggplot2)
+#library(mountainmathHelpers)
 ```
 
 ```{r include=FALSE, echo=TRUE}
-census_data <- get_tongfen_us_census_ct("CA",variables=c(population="H011001",households="H013001")) %>%
+census_data <- get_tongfen_us_census_ct(state="CA",variables=c(population="H011001",households="H013001")) %>%
   mutate(change=population_2010/households_2010-population_2000/households_2000) %>%
-  mutate(change=ifelse(pmin(population_2010,population_2000)>500,change,NA)) %>%
-  mutate(c=cut(change,c(-Inf,-0.5,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.5,Inf),
-               labels=c("< -0.5","-0.5 to -0.3","-0.3 to -0.2","-0.2 to -0.1","-0.1 to 0",
-                        "0 to 0.1","0.1 to 0.2","0.2 to 0.3","0.3 to 0.5","> 0.5")))
+  #mutate(c=pretty_cut(change,c(-Inf,-0.5,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.5,Inf)))
+  mutate(c=cut(change,c(-Inf,-0.5,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.5,Inf)))
 ```
 
 ```{r}
-ggplot(census_data,aes(fill=c)) +
-  geom_sf(size=0.05) +
+ggplot(census_data) +
+  geom_sf(aes(fill=c), size=0.05) +
   scale_fill_brewer(palette = "RdYlGn") +
-  labs(title="Bay area change in average household size 2010-2000", 
-       fill=NULL) +
-  #mountainmathHelpers::geom_water() +
-  #mountainmathHelpers::geom_roads() +
+  labs(title="Bay area change in average household size 2000-2010", fill=NULL) +
+  #geom_water() + geom_roads() +
   coord_sf(datum=NA,xlim=c(-122.6,-121.7),ylim=c(37.2,37.9))
 ```
 

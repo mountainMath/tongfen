@@ -1,7 +1,7 @@
 Package: tongfen
 Type: Package
 Title: Make data based on different geographies comparable
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: c(
     person("Jens", "von Bergmann", email = "jens@mountainmath.ca", role = c("aut", "cre"), comment = "creator and maintainer"))
 Description: Several functions to allow comparisons of data across different geographies, in particular for Canadian census data from different censuses.
@@ -10,7 +10,7 @@ Encoding: UTF-8
 ByteCompile: yes
 LazyData: true
 NeedsCompilation: no
-Imports: dplyr (>= 0.7.2),
+Imports: dplyr (>= 1.0),
     tidyr,
     sf,
     geojsonsf,

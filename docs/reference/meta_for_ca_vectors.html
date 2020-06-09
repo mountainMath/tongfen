@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct • tongfen</title>
+<title>Build tibble with information on how to aggregate variables given vectors
+Queries list_census_variables to obtain needed information and add in vectors needed for aggregation — meta_for_ca_vectors • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +47,10 @@
 
 
 
-<meta property="og:title" content="Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct" />
-<meta property="og:description" content="Get US census data for 2000 and 2010 census on common census tract based geography" />
+<meta property="og:title" content="Build tibble with information on how to aggregate variables given vectors
+Queries list_census_variables to obtain needed information and add in vectors needed for aggregation — meta_for_ca_vectors" />
+<meta property="og:description" content="Build tibble with information on how to aggregate variables given vectors
+Queries list_census_variables to obtain needed information and add in vectors needed for aggregation" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -123,33 +126,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get US census data for 2000 and 2010 census on common census tract based geography</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_us.R'><code>R/tongfen_us.R</code></a></small>
-    <div class="hidden name"><code>get_tongfen_us_census_ct.Rd</code></div>
+    <h1>Build tibble with information on how to aggregate variables given vectors
+Queries list_census_variables to obtain needed information and add in vectors needed for aggregation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a></small>
+    <div class="hidden name"><code>meta_for_ca_vectors.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get US census data for 2000 and 2010 census on common census tract based geography</p>
+    <p>Build tibble with information on how to aggregate variables given vectors
+Queries list_census_variables to obtain needed information and add in vectors needed for aggregation</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_tongfen_us_census_ct</span>(<span class='no'>state</span>, <span class='no'>variables</span>)</pre>
+    <pre class="usage"><span class='fu'>meta_for_ca_vectors</span>(<span class='no'>vectors</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>state</th>
-      <td><p>US state to get the data for</p></td>
-    </tr>
-    <tr>
-      <th>variables</th>
-      <td><p>vector with census variable names, possibly named</p></td>
+      <th>vectors</th>
+      <td><p>list of variables to query</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").</p>
+    <p>tidy dataframe with metadata information for requested variables and additional variables
+needed for tongfen operations</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -34,11 +34,16 @@ in your `.Rprofile` or `.Renviron` file.
 The package offers several functions
 
 1. `tongfen_estimate` makes no assumption on the underlying geographies and returns estimates of the data on the geography of the first dataset.
-2. `tongfen_ct` works on Canadian census tracts from different censuses and returns the data on a common geography.
-3. `tongfen_cancensus` works on any census geography obtained through the **cancensus** package. It utilizes the Statistics Canada correspondence files and gives the most accurate estimate of data across censuses.
-4. `get_tongfen_census_ct` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs
-5. `get_tongfen_census_ct_from_da` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using `get_tongfen_census_ct` and will use the official DA correspondence files.
-6. `get_tongfen_census_ct` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on DAs using the official DA correspondence files.
+2. `estimate_tongfen_correspondence` creates a correspondence table for least common denomicator geography given two different but congruent input geograpies.
+
+#### Canadian census data
+The package is well-integrated to work with Canadian census data.
+* `tongfen_ca_censusct` works on Canadian census tracts from different censuses and returns the data on a common geography. This takes a loose approach to tongfen by generating the correspondence from geographic data and optionally assuming regions with the same GeoUIDs are the same and boundary changes of these only affect greenfield sites.
+* `get_tongfen_ca_censusct` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs
+* `get_tongfen_ca_censusct_from_da` get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using `get_tongfen_ca_censusct` and will use the official DA correspondence files.
+
+#### US census data
+* `get_tongfen_us_census_ct`
 
 Not all data can be aggregated in this form, and some data requires different aggregation functions than others. For example, in census data we encounter variables representing simple counts, for example population, that must be added up when joining geographic regions. Averages or percentages require a weighted sum, medians cannot be aggregated but may be approximated. 
 

@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct • tongfen</title>
+<title>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap. — check_tongfen_areas • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +47,10 @@
 
 
 
-<meta property="og:title" content="Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census_ct" />
-<meta property="og:description" content="Get US census data for 2000 and 2010 census on common census tract based geography" />
+<meta property="og:title" content="Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap. — check_tongfen_areas" />
+<meta property="og:description" content="Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -123,33 +126,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get US census data for 2000 and 2010 census on common census tract based geography</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_us.R'><code>R/tongfen_us.R</code></a></small>
-    <div class="hidden name"><code>get_tongfen_us_census_ct.Rd</code></div>
+    <h1>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
+    <div class="hidden name"><code>check_tongfen_areas.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get US census data for 2000 and 2010 census on common census tract based geography</p>
+    <p>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_tongfen_us_census_ct</span>(<span class='no'>state</span>, <span class='no'>variables</span>)</pre>
+    <pre class="usage"><span class='fu'>check_tongfen_areas</span>(<span class='no'>geo1</span>, <span class='no'>geo2</span>, <span class='no'>correspondence</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>state</th>
-      <td><p>US state to get the data for</p></td>
+      <th>geo1</th>
+      <td><p>input geometry 1 of class sf</p></td>
     </tr>
     <tr>
-      <th>variables</th>
-      <td><p>vector with census variable names, possibly named</p></td>
+      <th>geo2</th>
+      <td><p>input geometry 2 of class sf</p></td>
+    </tr>
+    <tr>
+      <th>correspondence</th>
+      <td><p>Correspondence table between `geo1` and `geo2` as e.g.
+returned by `estimate_tongfen_correspondence`.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").</p>
+    <p>A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
+`TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
+aggregated from `geo1` and `geo2`.`</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
