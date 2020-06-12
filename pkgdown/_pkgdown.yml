@@ -1,13 +1,23 @@
-pandoc: 2.2.1
-pkgdown: 2.0.3
+pandoc: 2.3.1
+
 pkgdown_sha: ~
 articles:
-  - title : "TongFen Demo"
-    contents: demo
+  - title : "General TongFen"
+    navbar: ~
+    contents: tongfen
+  - title : "TongFen for Canadian census data"
+    navbar: ~
+    contents: tongfen_ca
+  - title : "TongFen for US census data"
+    navbar: ~
+    contents: tongfen_us
+
 authors:
   Jens von Bergmann:
     href: https://mountainmath.ca
 template:
+  params:
+    bootswatch: simplex
   opengraph:
     image:
       src: 'https://mountainmath.github.io/tongfen/logo.png'

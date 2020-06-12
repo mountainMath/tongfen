@@ -1,7 +1,7 @@
 Package: tongfen
 Type: Package
 Title: Make data based on different geographies comparable
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: c(
     person("Jens", "von Bergmann", email = "jens@mountainmath.ca", role = c("aut", "cre"), comment = "creator and maintainer"))
 Description: Several functions to allow comparisons of data across different geographies, in particular for Canadian census data from different censuses.
@@ -10,9 +10,9 @@ Encoding: UTF-8
 ByteCompile: yes
 LazyData: true
 NeedsCompilation: no
-Imports: dplyr (>= 0.7.2),
-    cancensus,
-    tidyr,
+Imports: 
+    dplyr (>= 1.0),
+    tidyr (>= 1.0),
     sf,
     geojsonsf,
     lwgeom,
@@ -21,15 +21,21 @@ Imports: dplyr (>= 0.7.2),
     purrr,
     stringr,
     readr,
-    utils
+    utils,
+    lifecycle
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
     rmarkdown,
     RColorBrewer,
     ggplot2,
-    spelling
+    cancensus,
+    tidycensus,
+    spelling,
+    readxl,
+    scales
 VignetteBuilder: knitr
 URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
 BugReports: https://github.com/mountainMath/tongfen/issues
 Language: en-US
+RdMacros: lifecycle

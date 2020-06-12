@@ -2,8 +2,7 @@
 % Please edit documentation in R/tongfen.R
 \name{proportional_reaggregate}
 \alias{proportional_reaggregate}
-\title{Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level}
+\title{Dasymetric downsampling}
 \usage{
 proportional_reaggregate(
   data,
@@ -28,6 +27,11 @@ proportional_reaggregate(
 dataframe with downsampled variables from parent_data
 }
 \description{
+\lifecycle{maturing}
+
+Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
+Also handles cases where lower level data may be available but blinded at times by filling in data from higher level
+
 Data at lower aggregation levels may not add up to the more accurate aggregate counts.
 This function distributes the aggregate level counts proportionally (by population) to the containing lower
 level geographic regions.

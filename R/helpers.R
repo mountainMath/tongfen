@@ -2,100 +2,101 @@ nullify_blank <- function(x){
   if (!is.null(x)) {
     if (is.na(x)) x=NULL else {
       if (x=="") x=NULL
-      }
+    }
   }
   x
 }
 
-years_from_datasets <- function(ds) {
-  ds %>%
-    stringr::str_extract("\\d+") %>%
-    stringr::str_pad(width=3,side="left",pad="0") %>%
-    stringr::str_pad(width=4,side="left",pad="2") %>%
-    as.integer()
+tongfen_cache_dir <- function(){
+  nullify_blank(getOption("tongfen.cache_path")) %||%
+    nullify_blank(Sys.getenv("tongfen.cache_path")) %||%
+    nullify_blank(getOption("custom_data_path")) %||%
+    tempdir()
 }
 
-datasets_from_vectors <- function(vs){
-  vs %>%
-    stringr::str_split("_") %>%
-    purrr::map(function(v)v[[2]]) %>%
-    unlist()
+inner_join_tongfen_correspondence <- function(data,correspondence,link){
+  data %>%
+    inner_join(correspondence %>%
+                 select("TongfenID","TongfenUID",link) %>%
+                 unique(),
+               by=link)
 }
 
-GEO_DATASET_LOOKUP <- c(
-  setNames(rep("CA1996",1),paste0("TX",seq(2000,2000))),
-  setNames(rep("CA01",5),paste0("TX",seq(2001,2005))),
-  setNames(rep("CA06",6),paste0("TX",seq(2006,2011))),
-  setNames(rep("CA11",4),paste0("TX",seq(2012,2015))),
-  setNames(rep("CA16",5),paste0("TX",seq(2016,2020))),
-  setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
-)
 
-geo_dataset_from_dataset <- function(ds){
-  result <- tibble(dataset=ds,geo_dataset=GEO_DATASET_LOOKUP[ds]) %>%
-    mutate(geo_dataset=ifelse(is.na(.data$geo_dataset),.data$dataset %>%
-                                years_from_datasets() %>%
-                                as.character() %>%
-                                substr(3,4) %>%
-                                paste0("CA",.),
-                              .data$geo_dataset))
-  result$geo_dataset
-}
 
 get_tongfen_correspondence <- function(dd){
-  hs <- names(dd)
+  hs <- names(dd)[!grepl("TongfenMethod",names(dd))]
   ddd<- dd %>%
     mutate(TongfenID=!!as.name(hs[1]))
 
-
-  num_grp_old=ddd$TongfenID %>% unique() %>% length()
+  done_tongfen <- FALSE
   iterations <- 0
-  repeat {
-    for (n in hs) {
+  while (!done_tongfen) {
+    ddd <- ddd %>%
+      mutate(TongfenIDOriginal=.data$TongfenID)
+    for (nn in hs) {
       ddd <- ddd %>%
-        group_by(!!as.name(n)) %>%
+        group_by(!!as.name(nn)) %>%
         mutate(TongfenID=min(.data$TongfenID))
     }
-    num_grp_new=ddd$TongfenID %>% unique() %>% length()
-    if(num_grp_new == num_grp_old) {break}
-    num_grp_old=num_grp_new
-    iterations=iterations+1
+    done_tongfen <- ddd %>% filter(.data$TongfenID!=.data$TongfenIDOriginal) %>% nrow == 0
+    iterations <- iterations+1
   }
 
-  groups <- unique(ddd$TongfenID)
-  grp_lookup <- setNames(seq(1,length(groups)),groups)
+  ddd <- ddd %>% select(-.data$TongfenIDOriginal)
+
+  tongfen_groups <- unique(ddd$TongfenID)
+  grp_lookup <- setNames(seq(1,length(tongfen_groups)),tongfen_groups)
 
   ddd <- ddd %>%
     group_by(.data$TongfenID) %>%
     mutate(TongfenUID=paste0(hs[1],":",paste0(sort(unique(!!as.name(hs[1]))),collapse=",")))
-  for (n in hs[-1]) {
+  for (nn in hs[-1]) {
     ddd <- ddd %>%
-      mutate(TongfenUID=paste0(.data$TongfenUID," ",n,":",paste0(sort(unique(!!as.name(n))),collapse=",")))
+      mutate(TongfenUID=paste0(.data$TongfenUID," ",nn,":",paste0(sort(unique(!!as.name(nn))),collapse=",")))
   }
-  ddd
+  ddd %>%
+    ungroup()
 }
 
-get_correspondence_for <- function(years,level,refresh=FALSE){
-  #if (length(years)!=2) stop("Sorry, right now this only works for two years")
-  years<-as.integer(years)
-  all_years=seq(min(years),max(years),5)[-1]
+assert <- function (expr, error) {
+  if (! expr) stop(error, call. = FALSE)
+}
 
-  d <- get_single_correspondence_for(all_years[1],level,refresh) %>%
-    rename(!!paste0("flag",all_years[1]):=.data$flag)
-  all_years=all_years[-1]
-  while (length(all_years)>0) {
-    d <- left_join(d,get_single_correspondence_for(all_years[1],level,refresh) %>%
-                            rename(!!paste0("flag",all_years[1]):=.data$flag))
-    all_years=all_years[-1]
+
+aggregate_correspondences <- function(correspondences){
+  clean_correspondence_names <- function(correspondence) {
+    correspondence %>%
+      select(!matches("Tongfen") | matches("TongfenMethod")) %>%
+      unique()
   }
-  dd<-d %>% select_if(grepl(years %>% paste0(collapse = "|"),names(.))) %>%
-    select_if(!grepl("flag",names(.))) %>%
-    unique
+  # compute full correspondence
+  correspondence <- correspondences[[1]] %>%
+    clean_correspondence_names()
+  if (length(correspondences)>1) for (index in seq(2,length(correspondences))) {
+    c <- correspondences[[index]] %>%
+      clean_correspondence_names()
+    match_columns <- intersect(names(correspondence),names(c))
+    match_columns <- match_columns[!grepl("TongfenMethod",match_columns)]
+    correspondence <- inner_join(correspondence,c,by=match_columns)
+  }
 
-  ddd <- get_tongfen_correspondence(dd)
+  method_columns <- names(correspondence)[grepl("TongfenMethod",names(correspondence))]
+  correspondence$M  <- apply(correspondence[,method_columns],1,function(d)paste0(unique(d),collapse = ", "))
+  correspondence %>% select(-method_columns) %>%
+    rename(TongfenMethod=.data$M)
+}
 
 
-  ddd
+ensure_names <- function(list,default_names=seq(1,length(list))){
+  nn <- names(list)
+  if (is.null(nn)) {
+    nn=default_names
+  } else {
+    nn[nn==""]=default_names[nn==""]
+  }
+  names(list)=nn
+  list
 }
 
 #' @import dplyr

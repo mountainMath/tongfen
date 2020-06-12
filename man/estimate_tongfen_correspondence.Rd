@@ -2,41 +2,37 @@
 % Please edit documentation in R/tongfen.R
 \name{estimate_tongfen_correspondence}
 \alias{estimate_tongfen_correspondence}
-\title{Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
-tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
-only common tiling is given by unioning all sub-geometries and there is no finer common tiling.}
+\title{Generate togfen correspondence for list of geographies}
 \usage{
 estimate_tongfen_correspondence(
-  geo1,
-  geo2,
-  geo1_uid,
-  geo2_uid,
-  tolerance = 1,
-  computation_crs = NULL,
-  robust = FALSE
+  data,
+  geo_identifiers,
+  method = "estimate",
+  tolerance = 50,
+  computation_crs = NULL
 )
 }
 \arguments{
-\item{geo1}{input geometry 1 of class sf}
+\item{data}{list of geometries of class sf}
 
-\item{geo2}{input geometry 2 of class sf}
+\item{geo_identifiers}{vector of unique geographic identifiers for each list entry in data.}
 
-\item{geo1_uid}{(unique) identifier column for geo1}
+\item{method}{aggregation method. Possible values are "estimate" or "identifier". "estimate" estimates the
+correspondence purely from the geographic data. "identifier" assumes that regions with identical geo_identifiers are the same,
+and uses the "estimate" method for the remaining regions. Default is "estimate".}
 
-\item{geo2_uid}{(unique) identifier column for geo2}
-
-\item{tolerance}{tolerance (in projected coordinate units) for feature matching}
+\item{tolerance}{tolerance (in projected coordinate units of `computation_crs`) for feature matching}
 
 \item{computation_crs}{optional crs in which the computation should be carried out,
-defaults to crs of geo1}
-
-\item{robust}{boolean parameter, will ensure geometries are valid if set to TRUE}
+defaults to crs of the first entry in the data parameter.}
 }
 \value{
 A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
-that enumerate the common geometry
+that enumerate the common geometry.
 }
 \description{
+\lifecycle{maturing}
+
 Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
 tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
 only common tiling is given by unioning all sub-geometries and there is no finer common tiling.
