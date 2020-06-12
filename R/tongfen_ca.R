@@ -18,6 +18,7 @@ years_from_datasets <- function(ds) {
     as.integer()
 }
 
+
 datasets_from_vectors <- function(vs){
   vs %>%
     stringr::str_split("_") %>%
@@ -25,16 +26,17 @@ datasets_from_vectors <- function(vs){
     unlist()
 }
 
-# GEO_DATASET_LOOKUP <- c(
-#   setNames(rep("CA1996",1),paste0("TX",seq(2000,2000))),
-#   setNames(rep("CA01",5),paste0("TX",seq(2001,2005))),
-#   setNames(rep("CA06",6),paste0("TX",seq(2006,2011))),
-#   setNames(rep("CA11",4),paste0("TX",seq(2012,2015))),
-#   setNames(rep("CA16",5),paste0("TX",seq(2016,2020))),
-#   setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
-# )
+GEO_DATASET_LOOKUP <- c(
+  setNames(rep("CA1996",1),paste0("TX",seq(2000,2000))),
+  setNames(rep("CA01",5),paste0("TX",seq(2001,2005))),
+  setNames(rep("CA06",6),paste0("TX",seq(2006,2011))),
+  setNames(rep("CA11",4),paste0("TX",seq(2012,2015))),
+  setNames(rep("CA16",5),paste0("TX",seq(2016,2020))),
+  setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
+)
 
 geo_dataset_from_dataset <- function(datasets){
+  if (FALSE) { # legacy until cansim updates
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.)
   dataset_list <- cancensus::list_census_datasets()
   lapply(datasets, function(ds){
@@ -44,16 +46,16 @@ geo_dataset_from_dataset <- function(datasets){
       unique()
   }) %>%
     unlist()
-
-  #
-  # result <- tibble(dataset=ds,geo_dataset=GEO_DATASET_LOOKUP[ds]) %>%
-  #   mutate(geo_dataset=ifelse(is.na(.data$geo_dataset),.data$dataset %>%
-  #                               years_from_datasets() %>%
-  #                               as.character() %>%
-  #                               substr(3,4) %>%
-  #                               paste0("CA",.),
-  #                             .data$geo_dataset))
-  # result$geo_dataset
+  } else {
+    result <- tibble(dataset=datasets,geo_dataset=GEO_DATASET_LOOKUP[datasets]) %>%
+      mutate(geo_dataset=ifelse(is.na(.data$geo_dataset),.data$dataset %>%
+                                  years_from_datasets() %>%
+                                  as.character() %>%
+                                  substr(3,4) %>%
+                                  paste0("CA",.),
+                                .data$geo_dataset))
+    result$geo_dataset
+  }
 }
 
 #' Generate metadata from Candian census vectors
