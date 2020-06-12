@@ -6,9 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
-tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
-only common tiling is given by unioning all sub-geometries and there is no finer common tiling. — estimate_tongfen_correspondence • tongfen</title>
+<title>Generate togfen correspondence for list of geographies — estimate_tongfen_correspondence • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,10 +46,9 @@ only common tiling is given by unioning all sub-geometries and there is no finer
 
 
 
-<meta property="og:title" content="Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
-tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
-only common tiling is given by unioning all sub-geometries and there is no finer common tiling. — estimate_tongfen_correspondence" />
-<meta property="og:description" content="Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+<meta property="og:title" content="Generate togfen correspondence for list of geographies — estimate_tongfen_correspondence" />
+<meta property="og:description" content="maturing
+Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
 tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
 only common tiling is given by unioning all sub-geometries and there is no finer common tiling." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
@@ -103,6 +100,9 @@ only common tiling is given by unioning all sub-geometries and there is no finer
   </a>
 </li>
 <li>
+  <a href="../articles/tongfen.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -129,60 +129,51 @@ only common tiling is given by unioning all sub-geometries and there is no finer
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
-tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
-only common tiling is given by unioning all sub-geometries and there is no finer common tiling.</h1>
+    <h1>Generate togfen correspondence for list of geographies</h1>
     <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
     <div class="hidden name"><code>estimate_tongfen_correspondence.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+    <p>maturing</p>
+<p>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
 tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
 only common tiling is given by unioning all sub-geometries and there is no finer common tiling.</p>
     </div>
 
     <pre class="usage"><span class='fu'>estimate_tongfen_correspondence</span>(
-  <span class='no'>geo1</span>,
-  <span class='no'>geo2</span>,
-  <span class='no'>geo1_uid</span>,
-  <span class='no'>geo2_uid</span>,
-  <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>computation_crs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>robust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+  <span class='no'>data</span>,
+  <span class='no'>geo_identifiers</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"estimate"</span>,
+  <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>50</span>,
+  <span class='kw'>computation_crs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>geo1</th>
-      <td><p>input geometry 1 of class sf</p></td>
+      <th>data</th>
+      <td><p>list of geometries of class sf</p></td>
     </tr>
     <tr>
-      <th>geo2</th>
-      <td><p>input geometry 2 of class sf</p></td>
+      <th>geo_identifiers</th>
+      <td><p>vector of unique geographic identifiers for each list entry in data.</p></td>
     </tr>
     <tr>
-      <th>geo1_uid</th>
-      <td><p>(unique) identifier column for geo1</p></td>
-    </tr>
-    <tr>
-      <th>geo2_uid</th>
-      <td><p>(unique) identifier column for geo2</p></td>
+      <th>method</th>
+      <td><p>aggregation method. Possible values are "estimate" or "identifier". "estimate" estimates the
+correspondence purely from the geographic data. "identifier" assumes that regions with identical geo_identifiers are the same,
+and uses the "estimate" method for the remaining regions. Default is "estimate".</p></td>
     </tr>
     <tr>
       <th>tolerance</th>
-      <td><p>tolerance (in projected coordinate units) for feature matching</p></td>
+      <td><p>tolerance (in projected coordinate units of `computation_crs`) for feature matching</p></td>
     </tr>
     <tr>
       <th>computation_crs</th>
       <td><p>optional crs in which the computation should be carried out,
-defaults to crs of geo1</p></td>
-    </tr>
-    <tr>
-      <th>robust</th>
-      <td><p>boolean parameter, will ensure geometries are valid if set to TRUE</p></td>
+defaults to crs of the first entry in the data parameter.</p></td>
     </tr>
     </table>
 

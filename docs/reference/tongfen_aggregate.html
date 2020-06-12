@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dasymetric downsampling — proportional_reaggregate • tongfen</title>
+<title>Perform tongfen according to correspondence — tongfen_aggregate • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,13 +46,9 @@
 
 
 
-<meta property="og:title" content="Dasymetric downsampling — proportional_reaggregate" />
-<meta property="og:description" content="maturing
-Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level
-Data at lower aggregation levels may not add up to the more accurate aggregate counts.
-This function distributes the aggregate level counts proportionally (by population) to the containing lower
-level geographic regions." />
+<meta property="og:title" content="Perform tongfen according to correspondence — tongfen_aggregate" />
+<meta property="og:description" content="(maturing)
+Aggregate variables secified in meta for several datasets according to correspondence." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -131,56 +127,44 @@ level geographic regions." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Dasymetric downsampling</h1>
+    <h1>Perform tongfen according to correspondence</h1>
     <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
-    <div class="hidden name"><code>proportional_reaggregate.Rd</code></div>
+    <div class="hidden name"><code>tongfen_aggregate.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>maturing</p>
-<p>Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level</p>
-<p>Data at lower aggregation levels may not add up to the more accurate aggregate counts.
-This function distributes the aggregate level counts proportionally (by population) to the containing lower
-level geographic regions.</p>
+    <p>(maturing)</p>
+<p>Aggregate variables secified in meta for several datasets according to correspondence.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>proportional_reaggregate</span>(
-  <span class='no'>data</span>,
-  <span class='no'>parent_data</span>,
-  <span class='no'>geo_match</span>,
-  <span class='no'>categories</span>,
-  <span class='kw'>base</span> <span class='kw'>=</span> <span class='st'>"Population"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>tongfen_aggregate</span>(<span class='no'>data</span>, <span class='no'>correspondence</span>, <span class='kw'>meta</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>base_geo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>The base geographic data</p></td>
+      <td><p>list of datasets to be aggregated</p></td>
     </tr>
     <tr>
-      <th>parent_data</th>
-      <td><p>Higher level geographic data</p></td>
+      <th>correspondence</th>
+      <td><p>correspondence data for gluing up the datasets</p></td>
     </tr>
     <tr>
-      <th>geo_match</th>
-      <td><p>A named string informing on what column names to match data and parent_data</p></td>
+      <th>meta</th>
+      <td><p>metadata containing aggregation rules as for example returned by `meta_for_ca_census_vectors`</p></td>
     </tr>
     <tr>
-      <th>categories</th>
-      <td><p>Vector of column names to re-aggregate</p></td>
-    </tr>
-    <tr>
-      <th>base</th>
-      <td><p>Column name to use for proportional weighting when re-aggregating</p></td>
+      <th>base_geo</th>
+      <td><p>identifier for which data element to base the final geography on,
+uses the first data element if  `NULL` (default),
+expects that `base_geo` is an element of `names(data)`.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>dataframe with downsampled variables from parent_data</p>
+    <p>aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

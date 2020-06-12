@@ -96,6 +96,9 @@
   </a>
 </li>
 <li>
+  <a href="../articles/tongfen.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -150,27 +153,29 @@
         <td>
           <p><code><a href="aggregate_data_with_meta.html">aggregate_data_with_meta()</a></code> </p>
         </td>
-        <td><p>Aggregate census data up, assumes data is grouped for aggregation
-Uses data from meta to determine how to aggregate up</p></td>
+        <td><p>Aggregate variables in grouped data</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="check_tongfen_areas.html">check_tongfen_areas()</a></code> </p>
         </td>
-        <td><p>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
-of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</p></td>
+        <td><p>Check geographic integrety</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="estimate_tongfen_correspondence.html">estimate_tongfen_correspondence()</a></code> </p>
         </td>
-        <td><p>Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
-tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
-only common tiling is given by unioning all sub-geometries and there is no finer common tiling.</p></td>
+        <td><p>Generate togfen correspondence for list of geographies</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> </p>
+          <p><code><a href="estimate_tongfen_single_correspondence.html">estimate_tongfen_single_correspondence()</a></code> </p>
+        </td>
+        <td><p>Generate togfen correspondence for two geographies</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> <code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> </p>
         </td>
         <td><p>Get StatCan DA or DB level correspondence file</p></td>
       </tr><tr>
@@ -189,7 +194,7 @@ Will return CT level data</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> </p>
+          <p><code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> <code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> </p>
         </td>
         <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data</p></td>
@@ -203,9 +208,27 @@ Will return CT level data</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="get_tongfen_census_ct.html">get_tongfen_census_ct()</a></code> </p>
+        </td>
+        <td><p>Canadian census CT level tongfen</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_tongfen_census_da.html">get_tongfen_census_da()</a></code> </p>
+        </td>
+        <td><p>Canadian Census DA level tongfen</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_tongfen_us_census_ct.html">get_tongfen_us_census_ct()</a></code> </p>
         </td>
         <td><p>Get US census data for 2000 and 2010 census on common census tract based geography</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="meta_for_additive_variables.html">meta_for_additive_variables()</a></code> </p>
+        </td>
+        <td><p>Generate tongfen metadata for additive variables</p></td>
       </tr><tr>
         
         <td>
@@ -218,12 +241,17 @@ Queries list_census_variables to obtain needed information and add in vectors ne
         <td>
           <p><code><a href="proportional_reaggregate.html">proportional_reaggregate()</a></code> </p>
         </td>
-        <td><p>Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
-Also handles cases where lower level data may be available but blinded at times by filling in data from higher level</p></td>
+        <td><p>Dasymetric downsampling</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> </p>
+          <p><code><a href="tongfen_aggregate.html">tongfen_aggregate()</a></code> </p>
+        </td>
+        <td><p>Perform tongfen according to correspondence</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> <code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> </p>
         </td>
         <td><p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p></td>
       </tr><tr>

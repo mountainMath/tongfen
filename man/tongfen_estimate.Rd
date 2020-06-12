@@ -16,5 +16,7 @@ tongfen_estimate(data1, data2, data2_sum_vars, unique_key = NA)
 \item{unique_key}{optional unique key for each geography in data1}
 }
 \description{
-Estimate variable values for custom geography
+\lifecycle{maturing}
+
+Estimates data from source geometry onto target geometry
 }

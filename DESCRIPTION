@@ -10,8 +10,9 @@ Encoding: UTF-8
 ByteCompile: yes
 LazyData: true
 NeedsCompilation: no
-Imports: dplyr (>= 1.0),
-    tidyr,
+Imports: 
+    dplyr (>= 1.0),
+    tidyr (>= 1.0),
     sf,
     geojsonsf,
     lwgeom,
@@ -20,7 +21,8 @@ Imports: dplyr (>= 1.0),
     purrr,
     stringr,
     readr,
-    utils
+    utils,
+    lifecycle
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
@@ -29,8 +31,11 @@ Suggests:
     ggplot2,
     cancensus,
     tidycensus,
-    spelling
+    spelling,
+    readxl,
+    scales
 VignetteBuilder: knitr
 URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
 BugReports: https://github.com/mountainMath/tongfen/issues
 Language: en-US
+RdMacros: lifecycle

@@ -1,4 +1,35 @@
+#' Generate tongfen metadata for additive variables
+#'
+#' @description
+#' \lifecycle(maturing)
+#'
+#' Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.
+#'
+#' @param dataset identifier for the dataset contianing the variable
+#' @param variables (named) vecotor with additive variables
+#' @return a tibble to be used in tongfen_aggregate
+#' @export
+meta_for_additive_variables <- function(dataset,variables){
+  nn <- names(variables)
+  variables <- as.character(variables)
+  if (is.null(nn)) {
+    nn <- paste0(variables,"_",dataset)
+  } else {
+    nn[nn==""]=paste0(variables,"_",dataset)[nn==""]
+  }
+  tibble(variable=variables,dataset=dataset, label=nn,type="Manual",
+         aggregation="Additive",rule="Additive",geo_dataset=dataset,parent=NA)
+}
+
+
+
 #' Estimate variable values for custom geography
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
+#' Estimates data from source geometry onto target geometry
+#'
 #' @param data1 custom geography to estimate values for
 #' @param data2 input geography with values
 #' @param data2_sum_vars columns of data2 to be summed up
@@ -29,14 +60,19 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
     select(-.data$Group.1) %>%
     rename(!!!rename_back)
 
- result
+  result
 }
 
 
 
-
+#' Aggregate variables in grouped data
+#'
+#' @description
+#' \lifecycle(maturing)
+#'
 #' Aggregate census data up, assumes data is grouped for aggregation
 #' Uses data from meta to determine how to aggregate up
+#'
 #' @param data census data as obtained from get_census call, grouped by TongfenID
 #' @param meta list with variables and aggregation information as obtained from meta_for_vectors
 #' @param geo logical, should also aggregate geographic data
@@ -86,7 +122,6 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
     geo_column=attr(data,"sf_column")
     data <- left_join(data %>%
                         select(c(geo_column,grouping_var)) %>%
-                        #sf::st_cast("MULTIPOLYGON") %>%
                         summarize(!!geo_column:=sf::st_union(!!as.name(geo_column)) %>%
                                     sf::st_cast("MULTIPOLYGON")),
                       data %>%
@@ -108,7 +143,88 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
 }
 
 
+rename_with_meta <- function(data,meta,ds=NULL){
+  if (is.null(meta)) return(data)
+  m <- meta %>%
+    filter(.data$variable %in% names(data))
+  if (!is.null(ds)) m <- m %>% filter(.data$geo_dataset == ds)
+  if (duplicated(m$variable) %>% sum > 0) stop("Duplicated variable names in metadata for same dataset.")
+  data %>% rename(!!!setNames(m$variable,m$label))
+}
 
+#' Perform tongfen according to correspondence
+#'
+#' @description
+#' \lifecycle(maturing)
+#'
+#' Aggregate variables secified in meta for several datasets according to correspondence.
+#'
+#' @param data list of datasets to be aggregated
+#' @param correspondence correspondence data for gluing up the datasets
+#' @param meta metadata containing aggregation rules as for example returned by `meta_for_ca_census_vectors`
+#' @param base_geo identifier for which data element to base the final geography on,
+#' uses the first data element if  `NULL` (default),
+#' expects that `base_geo` is an element of `names(data)`.
+#' @return aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.
+#' @export
+tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
+  data <- ensure_names(data)
+  nn <- names(data)
+  if (is.null(base_geo)) base_geo <- nn[1]
+  base_geo <- as.character(base_geo)
+
+  # aggregate up data
+  data_new <- nn %>%
+    lapply(function(ds){
+      d <- data[[ds]]
+      if (base_geo != ds && ("sf" %in% class(d))) {
+        d <- d %>% sf::st_set_geometry(NULL)
+      }
+      match_column <- intersect(names(d),names(correspondence))
+      if (length(match_column)==0) stop("Did not found matching geographic identifiers.")
+      if (length(match_column)>1) warning(paste0("Matching over several geographic identifiers: ",paste0(match_column,collapse=", ")))
+      d<-d %>%
+        inner_join(correspondence %>%
+                     select_at(c(match_column,"TongfenID","TongfenUID")),
+                   by=match_column) %>%
+        group_by(.data$TongfenID,.data$TongfenUID)
+      if (!is.null(meta)) {
+        d <- d %>%  aggregate_data_with_meta(meta)
+      } else {
+        d <- d %>% summarize()
+      }
+    }) %>%
+    setNames(nn)
+
+  aggregated_data <- data_new[[base_geo]] %>%
+    rename_with_meta(meta,base_geo)
+
+  for (ds in nn[nn!=base_geo]) {
+    aggregated_data <- aggregated_data %>%
+      inner_join(data_new[[ds]] %>%
+                   select(-.data$TongfenUID) %>%
+                   rename_with_meta(meta,ds),
+                 by="TongfenID")
+  }
+
+  if (!is.null(meta)) {
+    extras <- meta %>%
+      filter(.data$type=="Extra") %>%
+      filter(.data$label %in% names(aggregated_data))
+    aggregated_data <- aggregated_data %>%
+      select(-one_of(extras$label))
+  }
+  aggregated_data %>%
+    ungroup()
+}
+
+
+
+#' Dasymetric downsampling
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
 #' Proportionally re-aggregate hierarchical data to lower-level w.r.t. values of the *base* variable
 #' Also handles cases where lower level data may be available but blinded at times by filling in data from higher level
 #'
@@ -158,10 +274,15 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
     select(-one_of(c(paste0(categories,".s"),paste0(categories,".x"),paste0(categories,".y"))))
 }
 
-
+#' Generate togfen correspondence for two geographies
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
 #' Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
 #' tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
 #' only common tiling is given by unioning all sub-geometries and there is no finer common tiling.
+#'
 #' @param geo1 input geometry 1 of class sf
 #' @param geo2 input geometry 2 of class sf
 #' @param geo1_uid (unique) identifier column for geo1
@@ -172,11 +293,10 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
 #' @param robust boolean parameter, will ensure geometries are valid if set to TRUE
 #' @return A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
 #' that enumerate the common geometry.
-#' @export
-estimate_tongfen_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
-                                            tolerance=1,
-                                            computation_crs=NULL,
-                                            robust=FALSE){
+estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
+                                                   tolerance=1,
+                                                   computation_crs=NULL,
+                                                   robust=FALSE){
   if (geo1_uid==geo2_uid) stop("geo1_uid and geo2_uid can't be the same! Please rename one of the identifier columns.")
 
   if (geo1 %>% filter(is.na(!!as.name(geo1_uid))) %>% nrow() > 0) stop("Found NA values for some geo1_uid, please make sure that there are no NA values.")
@@ -245,46 +365,137 @@ estimate_tongfen_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
   correspondence
 }
 
+#' Generate togfen correspondence for list of geographies
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
+#' Get correspondence data for arbitrary congruent geometries. Congruent means that one can obtain a common
+#' tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
+#' only common tiling is given by unioning all sub-geometries and there is no finer common tiling.
+#'
+#' @param data list of geometries of class sf
+#' @param geo_identifiers vector of unique geographic identifiers for each list entry in data.
+#' @param method aggregation method. Possible values are "estimate" or "identifier". "estimate" estimates the
+#' correspondence purely from the geographic data. "identifier" assumes that regions with identical geo_identifiers are the same,
+#' and uses the "estimate" method for the remaining regions. Default is "estimate".
+#' @param tolerance tolerance (in projected coordinate units of `computation_crs`) for feature matching
+#' @param computation_crs optional crs in which the computation should be carried out,
+#' defaults to crs of the first entry in the data parameter.
+#' @return A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
+#' that enumerate the common geometry.
+#' @export
+estimate_tongfen_correspondence <- function(data,
+                                            geo_identifiers,
+                                            method = "estimate",
+                                            tolerance = 50,
+                                            computation_crs = NULL){
+  if (is.null(computation_crs)) computation_crs = sf::st_crs(data[[1]])
+  assert(length(geo_identifiers) == length(unique(geo_identifiers)), "geo_identifiers need to be unique.")
+  assert(length(geo_identifiers) == length(data), "data and geo_identifiers need to have the same legnth.")
 
+  # assume regions with identical geo_identifiers are identical
+  if (method=="identifier") {
+    common_ids <- data[[1]] %>% pull(geo_identifiers[1])
+    for (index in seq(2,length(data))) {
+      common_ids <- intersect(common_ids,data[[index]] %>% pull(geo_identifiers[index]))
+      # base correspondence data for common ids
+      base_corresondence <- seq(2,length(data)) %>%
+        lapply(function(index2){
+          gu1 <- geo_identifiers[index2-1]
+          gu2 <- geo_identifiers[index2]
+          tibble(!!as.name(gu1):=common_ids,!!as.name(gu2):=common_ids,TongfenID=common_ids) %>%
+            mutate(TongfenUID=paste0(gu1,":",!!as.name(gu1)," ",gu2,":",!!as.name(gu2)))
+        })
+    }
+  } else {
+    common_ids=c()
+  }
+
+
+  # estimate coorrespondence data from tongfen
+
+  mismatch_correspondences <- seq(2,length(data)) %>%
+    lapply(function(index){
+      gu1 <- geo_identifiers[index-1]
+      g1 <- data[[index-1]] %>% filter(!(!!as.name(gu1) %in% common_ids))
+      gu2 <- geo_identifiers[index]
+      g2 <- data[[index]] %>% filter(!(!!as.name(gu2) %in% common_ids))
+
+      c <- estimate_tongfen_single_correspondence(g1,g2,gu1,gu2,tolerance=tolerance,computation_crs=computation_crs)
+    })
+
+  if (method=="identifier") {
+    # merge base and tongfen correspondence data
+    correspondence_list <- seq(1,length(base_corresondence)) %>%
+      lapply(function(index){
+        bind_rows(base_corresondence[[index]] %>% mutate(TongfenMethod="identifier"),
+                  mismatch_correspondences[[index]] %>% mutate(TongfenMethod="estimate"))
+      })
+  } else {
+    correspondence_list <- mismatch_correspondences %>%
+      lapply(function(c) c %>% mutate(TongfenMethod="estimate"))
+  }
+
+  correspondence_list  %>%
+    aggregate_correspondences() %>%
+    get_tongfen_correspondence()
+}
+
+
+
+#' Check geographic integrety
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
 #' Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
 #' of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.
-#' @param geo1 input geometry 1 of class sf
-#' @param geo2 input geometry 2 of class sf
-#' @param correspondence Correspondence table between `geo1` and `geo2` as e.g.
+#'
+#' @param data alist of geogrpahic data of class sf
+#' @param correspondence Correspondence table with columns the unique geographic identifiers for each of the
+#' geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)
 #' returned by `estimate_tongfen_correspondence`.
-#' @return A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
-#' `TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
-#' aggregated from `geo1` and `geo2`.`
+#' @return A table with columns `TongfenID`, geo_identifiers, the areas of the aggregated regions
+#' corresponding to each geographic identifier column, the tongfen estimation method and the maximum log ratio
+#' of the areas.
 #' @export
-check_tongfen_areas <- function(geo1,geo2,correspondence) {
-  geo1_uid <- names(correspondence)[1]
-  geo2_uid <- names(correspondence)[2]
-  if (!(geo1_uid %in% names(geo1))) {
-    g <- geo1_uid
-    geo1_uid <- geo2_uid
-    geo2_uid <- g
+check_tongfen_areas <- function(data,correspondence) {
+  if (!("TongfenMethod" %in% names(correspondence))) {
+    correspondence$TongfenMethod <- "unknown"
   }
-  if (!(geo1_uid %in% names(geo1))) {
-    stop("Can't match correspondence to geo1.")
-  }
-  if (!(geo2_uid %in% names(geo2))) {
-    stop("Can't match correspondence to geo2.")
-  }
-  d1<-geo1 %>%
-    mutate(area=st_area(.)) %>%
-    st_set_geometry(NULL) %>%
-    inner_join_tongfen_correspondence(correspondence,geo1_uid) %>%
-    group_by(.data$TongfenID) %>%
-    summarize(area1=sum(.data$area))
-  d2 <- geo2 %>%
-    mutate(area=st_area(.)) %>%
-    st_set_geometry(NULL) %>%
-    inner_join_tongfen_correspondence(correspondence,geo2_uid) %>%
-    group_by(.data$TongfenID) %>%
-    summarize(area2=sum(.data$area))
+  data <- ensure_names(data)
+  nn <- names(data)
+  default_columns <- c("TongfenID","TongfenMethod")
+  summary_data <- names(data) %>%
+    lapply(function(nn){
+      d=data[[nn]]
+      match_column <- intersect(names(d),names(correspondence))
+      area_column <- paste0("area_",nn)
+      dd <- d %>%
+        mutate(!!area_column:=sf::st_area(.)) %>%
+        sf::st_set_geometry(NULL) %>%
+        select_at(c(match_column,area_column)) %>%
+        inner_join(correspondence %>%
+                     select_at(c(match_column,default_columns)) %>%
+                     unique(),
+                   by=match_column) %>%
+        group_by(.data$TongfenID) %>%
+        summarize(!!area_column:=sum(!!as.name(area_column)),
+                  TongfenMethod=paste0(unique(.data$TongfenMethod),collapse=", "),
+                  .groups = "drop")
+    }) %>%
+    purrr::reduce(full_join,by="TongfenID")
 
-   inner_join(d1,d2,by="TongfenID") %>%
-     ungroup()
+  method_columns <- names(summary_data)[grepl("TongfenMethod",names(summary_data))]
+  summary_data$M  <- apply(summary_data[,method_columns],1,function(d)paste0(unique(d),collapse = ", "))
+  summary_data %>%
+    select(-method_columns) %>%
+    rename(TongfenMethod=.data$M) %>%
+    mutate(maxa=apply(select(.,matches("^area_")),1,max),
+           mina=apply(select(.,matches("^area_")),1,min)) %>%
+    mutate(max_log_ratio=log(.data$maxa/.data$mina)) %>%
+    select(-.data$maxa,-.data$mina)
 }
 
 

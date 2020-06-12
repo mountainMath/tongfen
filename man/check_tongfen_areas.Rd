@@ -2,25 +2,25 @@
 % Please edit documentation in R/tongfen.R
 \name{check_tongfen_areas}
 \alias{check_tongfen_areas}
-\title{Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
-of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.}
+\title{Check geographic integrety}
 \usage{
-check_tongfen_areas(geo1, geo2, correspondence)
+check_tongfen_areas(data, correspondence)
 }
 \arguments{
-\item{geo1}{input geometry 1 of class sf}
+\item{data}{alist of geogrpahic data of class sf}
 
-\item{geo2}{input geometry 2 of class sf}
-
-\item{correspondence}{Correspondence table between `geo1` and `geo2` as e.g.
+\item{correspondence}{Correspondence table with columns the unique geographic identifiers for each of the
+geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)
 returned by `estimate_tongfen_correspondence`.}
 }
 \value{
-A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
-`TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
-aggregated from `geo1` and `geo2`.`
+A table with columns `TongfenID`, geo_identifiers, the areas of the aggregated regions
+corresponding to each geographic identifier column, the tongfen estimation method and the maximum log ratio
+of the areas.
 }
 \description{
+\lifecycle{maturing}
+
 Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
 of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.
 }

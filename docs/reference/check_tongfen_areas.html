@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
-of geo1 and geo2 differ and there are regions at the edges with large difference in overlap. — check_tongfen_areas • tongfen</title>
+<title>Check geographic integrety — check_tongfen_areas • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,9 +46,9 @@ of geo1 and geo2 differ and there are regions at the edges with large difference
 
 
 
-<meta property="og:title" content="Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
-of geo1 and geo2 differ and there are regions at the edges with large difference in overlap. — check_tongfen_areas" />
-<meta property="og:description" content="Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+<meta property="og:title" content="Check geographic integrety — check_tongfen_areas" />
+<meta property="og:description" content="maturing
+Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
 of geo1 and geo2 differ and there are regions at the edges with large difference in overlap." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
@@ -100,6 +99,9 @@ of geo1 and geo2 differ and there are regions at the edges with large difference
   </a>
 </li>
 <li>
+  <a href="../articles/tongfen.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -126,42 +128,39 @@ of geo1 and geo2 differ and there are regions at the edges with large difference
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
-of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</h1>
+    <h1>Check geographic integrety</h1>
     <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
     <div class="hidden name"><code>check_tongfen_areas.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+    <p>maturing</p>
+<p>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
 of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>check_tongfen_areas</span>(<span class='no'>geo1</span>, <span class='no'>geo2</span>, <span class='no'>correspondence</span>)</pre>
+    <pre class="usage"><span class='fu'>check_tongfen_areas</span>(<span class='no'>data</span>, <span class='no'>correspondence</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>geo1</th>
-      <td><p>input geometry 1 of class sf</p></td>
-    </tr>
-    <tr>
-      <th>geo2</th>
-      <td><p>input geometry 2 of class sf</p></td>
+      <th>data</th>
+      <td><p>alist of geogrpahic data of class sf</p></td>
     </tr>
     <tr>
       <th>correspondence</th>
-      <td><p>Correspondence table between `geo1` and `geo2` as e.g.
+      <td><p>Correspondence table with columns the unique geographic identifiers for each of the
+geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)
 returned by `estimate_tongfen_correspondence`.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
-`TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
-aggregated from `geo1` and `geo2`.`</p>
+    <p>A table with columns `TongfenID`, geo_identifiers, the areas of the aggregated regions
+corresponding to each geographic identifier column, the tongfen estimation method and the maximum log ratio
+of the areas.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

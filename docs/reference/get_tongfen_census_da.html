@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data — get_tongfen_census_da • tongfen</title>
+<title>Canadian Census DA level tongfen — get_tongfen_census_da • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,9 +46,9 @@ Will return CT level data — get_tongfen_census_da • tongfen</title>
 
 
 
-<meta property="og:title" content="Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data — get_tongfen_census_da" />
-<meta property="og:description" content="Grab variables from several censuses on a common geography. Requires sf package to be available
+<meta property="og:title" content="Canadian Census DA level tongfen — get_tongfen_census_da" />
+<meta property="og:description" content="deprecated
+Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
@@ -87,7 +86,7 @@ Will return CT level data" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -98,6 +97,9 @@ Will return CT level data" />
     <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
+</li>
+<li>
+  <a href="../articles/tongfen.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -126,14 +128,14 @@ Will return CT level data" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_statcan_correspondence.R'><code>R/tongfen_statcan_correspondence.R</code></a></small>
+    <h1>Canadian Census DA level tongfen</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca_deprecated.R'><code>R/tongfen_ca_deprecated.R</code></a></small>
     <div class="hidden name"><code>get_tongfen_census_da.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Grab variables from several censuses on a common geography. Requires sf package to be available
+    <p>deprecated</p>
+<p>Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data</p>
     </div>
 
@@ -143,7 +145,6 @@ Will return CT level data</p>
   <span class='kw'>geo_format</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>use_cache</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>census_data_transform</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>id</span>) {     <span class='no'>id</span> },
   <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
@@ -169,10 +170,6 @@ Will return CT level data</p>
     <tr>
       <th>na.rm</th>
       <td><p>logical, determines how NA values should be treated when aggregating variables</p></td>
-    </tr>
-    <tr>
-      <th>census_data_transform</th>
-      <td><p>optional transform function to be applied to census data after being returned from cancensus</p></td>
     </tr>
     <tr>
       <th>quiet</th>

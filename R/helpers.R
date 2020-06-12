@@ -2,7 +2,7 @@ nullify_blank <- function(x){
   if (!is.null(x)) {
     if (is.na(x)) x=NULL else {
       if (x=="") x=NULL
-      }
+    }
   }
   x
 }
@@ -25,7 +25,7 @@ inner_join_tongfen_correspondence <- function(data,correspondence,link){
 
 
 get_tongfen_correspondence <- function(dd){
-  hs <- names(dd)
+  hs <- names(dd)[!grepl("TongfenMethod",names(dd))]
   ddd<- dd %>%
     mutate(TongfenID=!!as.name(hs[1]))
 
@@ -59,6 +59,45 @@ get_tongfen_correspondence <- function(dd){
     ungroup()
 }
 
+assert <- function (expr, error) {
+  if (! expr) stop(error, call. = FALSE)
+}
+
+
+aggregate_correspondences <- function(correspondences){
+  clean_correspondence_names <- function(correspondence) {
+    correspondence %>%
+      select(!matches("Tongfen") | matches("TongfenMethod")) %>%
+      unique()
+  }
+  # compute full correspondence
+  correspondence <- correspondences[[1]] %>%
+    clean_correspondence_names()
+  if (length(correspondences)>1) for (index in seq(2,length(correspondences))) {
+    c <- correspondences[[index]] %>%
+      clean_correspondence_names()
+    match_columns <- intersect(names(correspondence),names(c))
+    match_columns <- match_columns[!grepl("TongfenMethod",match_columns)]
+    correspondence <- inner_join(correspondence,c,by=match_columns)
+  }
+
+  method_columns <- names(correspondence)[grepl("TongfenMethod",names(correspondence))]
+  correspondence$M  <- apply(correspondence[,method_columns],1,function(d)paste0(unique(d),collapse = ", "))
+  correspondence %>% select(-method_columns) %>%
+    rename(TongfenMethod=.data$M)
+}
+
+
+ensure_names <- function(list,default_names=seq(1,length(list))){
+  nn <- names(list)
+  if (is.null(nn)) {
+    nn=default_names
+  } else {
+    nn[nn==""]=default_names[nn==""]
+  }
+  names(list)=nn
+  list
+}
 
 #' @import dplyr
 #' @importFrom stats setNames

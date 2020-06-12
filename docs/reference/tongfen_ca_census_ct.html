@@ -47,7 +47,8 @@
 
 
 <meta property="og:title" content="Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography — tongfen_ca_census_ct" />
-<meta property="og:description" content="Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography" />
+<meta property="og:description" content="deprecated
+Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -97,6 +98,9 @@
   </a>
 </li>
 <li>
+  <a href="../articles/tongfen.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -124,15 +128,24 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a>, <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca_deprecated.R'><code>R/tongfen_ca_deprecated.R</code></a></small>
     <div class="hidden name"><code>tongfen_ca_census_ct.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p>
+    <p>deprecated</p>
+<p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p>
     </div>
 
     <pre class="usage"><span class='fu'>tongfen_ca_census_ct</span>(
+  <span class='no'>data1</span>,
+  <span class='no'>data2</span>,
+  <span class='no'>data2_sum_vars</span>,
+  <span class='kw'>data2_group_vars</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(),
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
+
+<span class='fu'>tongfen_ca_census_ct</span>(
   <span class='no'>data1</span>,
   <span class='no'>data2</span>,
   <span class='no'>data2_sum_vars</span>,
