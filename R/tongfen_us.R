@@ -1,9 +1,13 @@
+fips_code_for_state <- function(s){
+  tidycensus::fips_codes %>%
+    filter(.data$state==s | .data$state_code==s) %>%
+    select(.data$state,.data$state_code) %>%
+    unique()
+}
+
 get_us_ct_correspondence_path <- function(state,year){
   if (year=="2010") {
-    states <- tidycensus::fips_codes %>%
-      select(.data$state,.data$state_code) %>%
-      unique %>%
-      filter(toupper(!!state)==.data$state | !!state==.data$state_code)
+    states <- fips_code_for_state(state)
     if (nrow(states)!= 1) {
       stop(paste0("Could not determine state: ",state))
     }
@@ -21,7 +25,7 @@ get_us_ct_correspondence <- function(state,cache_path=getOption("tongfen.cache_p
   local_path <- file.path(cache_path,file)
   if (!file.exists(local_path)) {
     if (!dir.exists(cache_path)) dir.create(cache_path)
-    utils::download.file(path,local_path)
+    utils::download.file(path,local_path,quiet=TRUE)
   }
   d<-readr::read_csv(local_path,
                      col_names=c("STATE00","COUNTY00","TRACT00","GEOID00",
@@ -34,45 +38,81 @@ get_us_ct_correspondence <- function(state,cache_path=getOption("tongfen.cache_p
                      col_types = "cccciiccccccciicccnnnnnnnnnnnn")
 }
 
+get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongfen.cache_path")){
+  cache_path = file.path(cache_path %||% tempdir(),"us_data")
+  file <- "Cousub_comparability.xlsx"
+  local_path <- file.path(cache_path,file)
+  if (!file.exists(local_path)) {
+    if (!dir.exists(cache_path)) dir.create(cache_path)
+    tmp=tempfile(fileext = ".zip")
+    path="https://www2.census.gov/geo/docs/maps-data/data/comp/cousub_comparabilityxls.zip"
+    utils::download.file(path,tmp,quiet=TRUE)
+    utils::unzip(tmp,exdir = cache_path)
+  }
+  readxl::read_xlsx(local_path)
+}
+
+
+valid_datasets <- c(
+  dec2000 = "US decentennial census 2000",
+  dec2010 = "US decentennial census 2010"
+)
 
 #' Get US census data for 2000 and 2010 census on common census tract based geography
-#' @param state US state to get the data for
-#' @param variables vector with census variable names, possibly named
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
+#' This wraps data acquisition via the tidycensus package and tongfen on a common geography into
+#' a single convenience function.
+#'
+#' @param regions list with regions to query the data for. At this stage, the only
+#' valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``
+#' @param meta metadata for variables to retrieve
+#' @param level aggregation level to return the data on. At this stage, the only valid levels are 'tract' and 'county subdivision'.
+#' @param survey survey to get data for, supported options is "census"
+#' @param base_geo census year to use as base geography, default is `2010`.
 #' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
+#' \lifecycle(maturing)
 #' @export
-get_tongfen_us_census_ct <- function(state,variables){
-  correspondence <- get_us_ct_correspondence(state) %>%
-    select(.data$GEOID00,.data$GEOID10) %>%
-    get_tongfen_correspondence()
+get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
+                                  base_geo = NULL){
 
-  d <- tidycensus::get_decennial("tract",state=state,variables=c("H001001"),geometry=TRUE,year = 2010) %>%
-    left_join(correspondence,by=c("GEOID"="GEOID10")) %>%
-    group_by(.data$TongfenID,.data$TongfenUID) %>%
-    summarize()
-  d1 <- tidycensus::get_decennial("tract",state=state,variables,year = 2010) %>%
-    left_join(correspondence,by=c("GEOID"="GEOID10")) %>%
-    group_by(.data$TongfenID,.data$variable) %>%
-    summarize(value=sum(.data$value))
-  d2 <- tidycensus::get_decennial("tract",state=state,variables,year = 2000) %>%
-    left_join(correspondence,by=c("GEOID"="GEOID00")) %>%
-    group_by(.data$TongfenID,.data$variable) %>%
-    summarize(value=sum(.data$value))
+  datasets <- meta$dataset %>% unique
+  if (is.null(base_geo)) base_geo=datasets[1]
+  assert(base_geo %in% datasets,paste0("base_geo has to be one of the datasets ",paste0(datasets,collapse=", ")))
+  invalid_datasets <- setdiff(datasets,names(valid_datasets))
+  assert(length(invalid_datasets)==0, paste0("Invalid datasets :",paste0(invalid_datasets,collapse = ", ")))
+  assert(level %in% c('tract','county subdivision'),"Only census tracts and counties are supported right now.")
+  assert(survey %in% c('census'),"Only census surveys are supported right now.")
 
-  # dd <- bind_rows(d1 %>% mutate(Year="2010"),
-  #                 d2 %>% mutate(Year="2000"))
+  regions$state %>% lapply(function(state){
+    if (level=='tract') {
+      correspondence <-  get_us_ct_correspondence(state) %>%
+        select(.data$GEOID00,.data$GEOID10)
+    } else  if (level=="county subdivision") {
+      fips <- fips_code_for_state(state)$state_code
+      correspondence <-  get_us_county_subdivision_correspondence() %>%
+        filter(.data$STATEFP10==fips) %>%
+        select(.data$GEOID00,.data$GEOID10)
+    } else {
+      stop("Ooops, should have caught this earler.")
+    }
+    correspondence <- correspondence %>%
+      get_tongfen_correspondence()
 
-  recode_variables <- set_names(names(variables),as.character(variables))
-  if (length(names(variables))==length(variables)) {
-    d1 <- d1 %>% mutate(variable=recode(.data$variable,!!!recode_variables))
-    d2 <- d2 %>% mutate(variable=recode(.data$variable,!!!recode_variables))
-  }
+    data <- datasets %>%
+      lapply(function(ds){
+        m <- meta %>% filter(.data$dataset==ds)
+        year=as.numeric(gsub("dec", "", ds))
+        short_year <- substr(as.character(year),3,4)
+        tidycensus::get_decennial(geography=level, state=state, variables = m$variable, year = year,
+                                  geometry = base_geo==ds, output="wide") %>%
+          rename(!!paste0("GEOID",short_year):=.data$GEOID)
+      }) %>%
+      setNames(datasets)
 
-  ddd <- d1 %>%
-    mutate(variable=paste0(.data$variable,"_","2010")) %>%
-    tidyr::pivot_wider(names_from = "variable",values_from = "value") %>%
-    full_join(d2 %>%
-                mutate(variable=paste0(.data$variable,"_","2000")) %>%
-                tidyr::pivot_wider(names_from = "variable",values_from = "value"),by="TongfenID")
-
-  d %>% left_join(ddd, by="TongfenID") %>% ungroup()
+    tongfen_aggregate(data,correspondence,meta,base_geo = base_geo)
+  }) %>%
+    bind_rows()
 }

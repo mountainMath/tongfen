@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate tongfen metadata for additive variables — meta_for_additive_variables • tongfen</title>
+<title>Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,10 +46,10 @@
 
 
 
-<meta property="og:title" content="Generate tongfen metadata for additive variables — meta_for_additive_variables" />
-<meta property="og:description" content="(maturing)
-
-Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts." />
+<meta property="og:title" content="Get US census data for 2000 and 2010 census on common census tract based geography — get_tongfen_us_census" />
+<meta property="og:description" content="
+This wraps data acquisition via the tidycensus package and tongfen on a common geography into
+a single convenience function." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -128,35 +128,55 @@ Generates metadata to be used in tongfen_aggregate. Variables need to be additiv
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate tongfen metadata for additive variables</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
-    <div class="hidden name"><code>meta_for_additive_variables.Rd</code></div>
+    <h1>Get US census data for 2000 and 2010 census on common census tract based geography</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_us.R'><code>R/tongfen_us.R</code></a></small>
+    <div class="hidden name"><code>get_tongfen_us_census.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>(maturing)
-
-Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.</p>
+    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
+<p>This wraps data acquisition via the tidycensus package and tongfen on a common geography into
+a single convenience function.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>meta_for_additive_variables</span>(<span class='no'>dataset</span>, <span class='no'>variables</span>)</pre>
+    <pre class="usage"><span class='fu'>get_tongfen_us_census</span>(
+  <span class='no'>regions</span>,
+  <span class='no'>meta</span>,
+  <span class='kw'>level</span> <span class='kw'>=</span> <span class='st'>"tract"</span>,
+  <span class='kw'>survey</span> <span class='kw'>=</span> <span class='st'>"census"</span>,
+  <span class='kw'>base_geo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>dataset</th>
-      <td><p>identifier for the dataset contianing the variable</p></td>
+      <th>regions</th>
+      <td><p>list with regions to query the data for. At this stage, the only
+valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``</p></td>
     </tr>
     <tr>
-      <th>variables</th>
-      <td><p>(named) vecotor with additive variables</p></td>
+      <th>meta</th>
+      <td><p>metadata for variables to retrieve</p></td>
+    </tr>
+    <tr>
+      <th>level</th>
+      <td><p>aggregation level to return the data on. At this stage, the only valid levels are 'tract' and 'county subdivision'.</p></td>
+    </tr>
+    <tr>
+      <th>survey</th>
+      <td><p>survey to get data for, supported options is "census"</p></td>
+    </tr>
+    <tr>
+      <th>base_geo</th>
+      <td><p>census year to use as base geography, default is `2010`.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a tibble to be used in tongfen_aggregate</p>
+    <p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
+(maturing)</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

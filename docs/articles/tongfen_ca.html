@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TongFen Demo • tongfen</title>
+<title>TongFen for Canadian census data • tongfen</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="TongFen Demo">
+<script src="../pkgdown.js"></script><meta property="og:title" content="TongFen for Canadian census data">
 <meta property="og:description" content="tongfen">
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png">
 <meta property="og:image:alt" content="tongfen">
@@ -55,6 +55,9 @@
   </a>
 </li>
 <li>
+  <a href="../articles/tongfen.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -81,10 +84,10 @@
       </header><script src="tongfen_ca_files/header-attrs-2.2/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>TongFen Demo</h1>
+      <h1 data-toc-skip>TongFen for Canadian census data</h1>
                         <h4 class="author">Jens von Bergmann</h4>
             
-            <h4 class="date">2020-06-08</h4>
+            <h4 class="date">2020-06-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mountainMath/tongfen/blob/master/vignettes/tongfen_ca.Rmd"><code>vignettes/tongfen_ca.Rmd</code></a></small>
       <div class="hidden name"><code>tongfen_ca.Rmd</code></div>
@@ -93,113 +96,42 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(<span class="no">rbind</span>,<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2006"</span>,<span class="st">"2011"</span>,<span class="st">"2016"</span>),<span class="kw">function</span>(<span class="no">year</span>){
-  <span class="no">var</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"Population "</span>,<span class="no">year</span>)
-  <span class="fu">get_census</span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"CA"</span>,<span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span>(<span class="no">year</span>,<span class="fl">3</span>,<span class="fl">4</span>)),<span class="kw">regions</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CMA</span><span class="kw">=</span><span class="st">"59933"</span>),
-             <span class="kw">geo_format</span> <span class="kw">=</span> <span class="st">'sf'</span>,<span class="kw">level</span><span class="kw">=</span><span class="st">"CT"</span>,<span class="kw">quiet</span><span class="kw">=</span><span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
-    <span class="fu">select</span>(<span class="no">GeoUID</span>,<span class="no">Population</span>,<span class="no">Households</span>,<span class="no">Dwellings</span>, <span class="no">geometry</span>) <span class="kw">%&gt;%</span>
-    <span class="fu">mutate</span>(<span class="kw">Year</span><span class="kw">=</span><span class="no">year</span>)
-}))</pre></body></html></div>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">data_2006</span> <span class="kw">&lt;-</span> <span class="no">data</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">Year</span><span class="kw">==</span><span class="st">"2006"</span>)
-<span class="no">data_2011</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tongfen_ca_census_ct.html">tongfen_ca_census_ct</a></span>(<span class="no">data_2006</span>,<span class="no">data</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">Year</span><span class="kw">==</span><span class="st">"2011"</span>),<span class="st">"Population"</span>)
-<span class="no">data_2016</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tongfen_ca_census_ct.html">tongfen_ca_census_ct</a></span>(<span class="no">data_2006</span>,<span class="no">data</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">Year</span><span class="kw">==</span><span class="st">"2016"</span>),<span class="st">"Population"</span>)
-
-<span class="no">geometric_average</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>,<span class="no">n</span>){<span class="fu"><a href="https://rdrr.io/r/base/sign.html">sign</a></span>(<span class="no">x</span>) * (<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fl">1</span>+<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span>(<span class="no">x</span>))/<span class="no">n</span>)-<span class="fl">1</span>)}
-
-
-<span class="no">plot_data</span> <span class="kw">&lt;-</span> <span class="no">data_2006</span> <span class="kw">%&gt;%</span>
-  <span class="fu">rename</span>(<span class="kw">`Population 2006`</span><span class="kw">=</span><span class="no">Population</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">left_join</span>(<span class="no">data_2011</span> <span class="kw">%&gt;%</span> <span class="no">as.data.frame</span> <span class="kw">%&gt;%</span> <span class="fu">select</span>(<span class="no">GeoUID</span>,<span class="no">Population</span>) <span class="kw">%&gt;%</span> <span class="fu">rename</span>(<span class="kw">`Population 2011`</span><span class="kw">=</span><span class="no">Population</span>),<span class="kw">by</span><span class="kw">=</span><span class="st">"GeoUID"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">left_join</span>(<span class="no">data_2016</span> <span class="kw">%&gt;%</span> <span class="no">as.data.frame</span> <span class="kw">%&gt;%</span> <span class="fu">select</span>(<span class="no">GeoUID</span>,<span class="no">Population</span>) <span class="kw">%&gt;%</span> <span class="fu">rename</span>(<span class="kw">`Population 2016`</span><span class="kw">=</span><span class="no">Population</span>),<span class="kw">by</span><span class="kw">=</span><span class="st">"GeoUID"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">mutate</span>(<span class="kw">`2006 - 2011`</span><span class="kw">=</span><span class="fu">geometric_average</span>((<span class="no">`Population 2011`</span>-<span class="no">`Population 2006`</span>)/<span class="no">`Population 2006`</span>,<span class="fl">5</span>),
-         <span class="kw">`2011 - 2016`</span><span class="kw">=</span><span class="fu">geometric_average</span>((<span class="no">`Population 2016`</span>-<span class="no">`Population 2011`</span>)/<span class="no">`Population 2011`</span>,<span class="fl">5</span>),
-         <span class="kw">`2006 - 2016`</span><span class="kw">=</span><span class="fu">geometric_average</span>((<span class="no">`Population 2016`</span>-<span class="no">`Population 2006`</span>)/<span class="no">`Population 2006`</span>,<span class="fl">10</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu">gather</span>(<span class="kw">key</span><span class="kw">=</span><span class="st">"Period"</span>,<span class="kw">value</span><span class="kw">=</span><span class="st">"Population Change"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2006 - 2011"</span>,<span class="st">"2011 - 2016"</span>,<span class="st">"2006 - 2016"</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu">mutate</span>(<span class="kw">Period</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Period</span>,<span class="kw">levels</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2006 - 2011"</span>,<span class="st">"2011 - 2016"</span>,<span class="st">"2006 - 2016"</span>)))</pre></body></html></div>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">0.15</span>,-<span class="fl">0.1</span>,-<span class="fl">0.075</span>,-<span class="fl">0.05</span>,-<span class="fl">0.025</span>,<span class="fl">0</span>,<span class="fl">0.025</span>,<span class="fl">0.05</span>,<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>)
-<span class="no">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"-15% to -10%"</span>,<span class="st">"-10% to -7.5%"</span>,<span class="st">"-7.5% to -5%"</span>,<span class="st">"-5% to -2.5%"</span>,<span class="st">"-2.5% to 0%"</span>,<span class="st">"0% to 2.5%"</span>,<span class="st">"2.5% to 5%"</span>,<span class="st">"5% to 10%"</span>,<span class="st">"10% to 20%"</span>,<span class="st">"20% to 30%"</span>)
-<span class="no">colors</span> <span class="kw">&lt;-</span> <span class="kw pkg">RColorBrewer</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html">brewer.pal</a></span>(<span class="fl">10</span>,<span class="st">"PiYG"</span>)
-
-<span class="fu">ggplot</span>(<span class="no">plot_data</span> <span class="kw">%&gt;%</span> <span class="fu">mutate</span>(<span class="kw">c</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span>(<span class="no">`Population Change`</span>,<span class="kw">breaks</span><span class="kw">=</span><span class="no">breaks</span>, <span class="kw">labels</span><span class="kw">=</span><span class="no">labels</span>)),<span class="fu">aes</span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">c</span>)) +
-  <span class="fu">geom_sf</span>(<span class="kw">size</span><span class="kw">=</span><span class="fl">0</span>) +
-  <span class="fu">scale_fill_manual</span>(<span class="kw">values</span><span class="kw">=</span><span class="fu">set_names</span>(<span class="no">colors</span>,<span class="no">labels</span>)) +
-  <span class="fu">facet_wrap</span>(<span class="st">"Period"</span>,<span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>) +
-  <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span>() +
-  <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">panel.grid.major</span> <span class="kw">=</span> <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_line</a></span>(<span class="kw">colour</span> <span class="kw">=</span> <span class="st">"transparent"</span>)) +
-  <span class="fu">labs</span>(<span class="kw">fill</span><span class="kw">=</span><span class="st">"Average Annual\nPopulation Change"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">cancensus</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">sf</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tongfen</span>)
+<span class="co">#Sys.setenv(CM_API_KEY = getOption("cancensus.api_key"))</span></pre></body></html></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">rent_variables</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">rent_2001</span><span class="kw">=</span><span class="st">"v_CA01_1667"</span>,<span class="kw">rent_2016</span><span class="kw">=</span><span class="st">"v_CA16_4901"</span>,
+                    <span class="kw">rent_2011</span><span class="kw">=</span><span class="st">"v_CA11N_2292"</span>,<span class="kw">rent_2006</span><span class="kw">=</span><span class="st">"v_CA06_2050"</span>)
+<span class="no">regions</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CMA</span><span class="kw">=</span><span class="st">"59933"</span>)
+<span class="no">rent_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_ca_census.html">get_tongfen_ca_census</a></span>(<span class="kw">regions</span><span class="kw">=</span><span class="no">regions</span>, <span class="kw">vectors</span><span class="kw">=</span><span class="no">rent_variables</span>, <span class="kw">quiet</span><span class="kw">=</span><span class="fl">TRUE</span>,
+                                   <span class="kw">method</span><span class="kw">=</span><span class="st">"estimate"</span>, <span class="kw">level</span><span class="kw">=</span><span class="st">"CT"</span>, <span class="kw">base_geo</span> <span class="kw">=</span> <span class="st">"CA16"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">periods</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2001-2006"</span>,<span class="st">"2006-2011"</span>,<span class="st">"2011-2016"</span>,<span class="st">"2001-2016"</span>)
+<span class="no">plot_data</span> <span class="kw">&lt;-</span> <span class="no">rent_data</span> <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">`2001-2006`</span><span class="kw">=</span><span class="no">rent_2006</span>/<span class="no">rent_2001</span>-<span class="fl">1</span>,
+         <span class="kw">`2006-2011`</span><span class="kw">=</span><span class="no">rent_2011</span>/<span class="no">rent_2006</span>-<span class="fl">1</span>,
+         <span class="kw">`2011-2016`</span><span class="kw">=</span><span class="no">rent_2016</span>/<span class="no">rent_2011</span>-<span class="fl">1</span>,
+         <span class="kw">`2001-2016`</span><span class="kw">=</span><span class="no">rent_2016</span>/<span class="no">rent_2001</span>-<span class="fl">1</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span>(<span class="kw">cols</span> <span class="kw">=</span> <span class="no">periods</span>,
+               <span class="kw">names_to</span><span class="kw">=</span><span class="st">"Period"</span>,<span class="kw">values_to</span><span class="kw">=</span><span class="st">"Change"</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Period</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Period</span>,<span class="kw">level</span><span class="kw">=</span><span class="no">periods</span>)) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/sf/man/sf.html">st_sf</a></span>()
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">plot_data</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">Change</span>)) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span>(<span class="kw">size</span><span class="kw">=</span><span class="fl">0.1</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html">scale_fill_gradient2</a></span>(<span class="kw">labels</span><span class="kw">=</span><span class="kw pkg">scales</span><span class="kw ns">::</span><span class="no"><a href="https://scales.r-lib.org//reference/label_percent.html">percent</a></span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span>(<span class="kw">datum</span> <span class="kw">=</span> <span class="fl">NA</span>,<span class="kw">xlim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">123.3</span>,-<span class="fl">122.5</span>),<span class="kw">ylim</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">49</span>,<span class="fl">49.42</span>)) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(<span class="st">"Period"</span>,<span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">title</span><span class="kw">=</span><span class="st">"Change in average gross rent"</span>)</pre></body></html></div>
 <p><img src="tongfen_ca_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<div id="using-the-general-estimate" class="section level1">
-<h1 class="hasAnchor">
-<a href="#using-the-general-estimate" class="anchor"></a>Using the general estimate</h1>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">data_2006</span> <span class="kw">&lt;-</span> <span class="no">data</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">Year</span><span class="kw">==</span><span class="st">"2006"</span>)
-<span class="no">data_2011</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tongfen_estimate.html">tongfen_estimate</a></span>(<span class="no">data_2006</span>,<span class="no">data</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">Year</span><span class="kw">==</span><span class="st">"2011"</span>),<span class="st">"Population"</span>,<span class="st">"GeoUID"</span>)
-<span class="no">data_2016</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/tongfen_estimate.html">tongfen_estimate</a></span>(<span class="no">data_2006</span>,<span class="no">data</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">Year</span><span class="kw">==</span><span class="st">"2016"</span>),<span class="st">"Population"</span>,<span class="st">"GeoUID"</span>)
-
-<span class="no">geometric_average</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>,<span class="no">n</span>){<span class="fu"><a href="https://rdrr.io/r/base/sign.html">sign</a></span>(<span class="no">x</span>) * (<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fl">1</span>+<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span>(<span class="no">x</span>))/<span class="no">n</span>)-<span class="fl">1</span>)}
-
-
-<span class="no">plot_data</span> <span class="kw">&lt;-</span> <span class="no">data_2006</span> <span class="kw">%&gt;%</span>
-  <span class="fu">rename</span>(<span class="kw">`Population 2006`</span><span class="kw">=</span><span class="no">Population</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">left_join</span>(<span class="no">data_2011</span> <span class="kw">%&gt;%</span> <span class="no">as.data.frame</span> <span class="kw">%&gt;%</span> <span class="fu">select</span>(<span class="no">GeoUID</span>,<span class="no">Population</span>) <span class="kw">%&gt;%</span> <span class="fu">rename</span>(<span class="kw">`Population 2011`</span><span class="kw">=</span><span class="no">Population</span>),<span class="kw">by</span><span class="kw">=</span><span class="st">"GeoUID"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">left_join</span>(<span class="no">data_2016</span> <span class="kw">%&gt;%</span> <span class="no">as.data.frame</span> <span class="kw">%&gt;%</span> <span class="fu">select</span>(<span class="no">GeoUID</span>,<span class="no">Population</span>) <span class="kw">%&gt;%</span> <span class="fu">rename</span>(<span class="kw">`Population 2016`</span><span class="kw">=</span><span class="no">Population</span>),<span class="kw">by</span><span class="kw">=</span><span class="st">"GeoUID"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">mutate</span>(<span class="kw">`2006 - 2011`</span><span class="kw">=</span><span class="fu">geometric_average</span>((<span class="no">`Population 2011`</span>-<span class="no">`Population 2006`</span>)/<span class="no">`Population 2006`</span>,<span class="fl">5</span>),
-         <span class="kw">`2011 - 2016`</span><span class="kw">=</span><span class="fu">geometric_average</span>((<span class="no">`Population 2016`</span>-<span class="no">`Population 2011`</span>)/<span class="no">`Population 2011`</span>,<span class="fl">5</span>),
-         <span class="kw">`2006 - 2016`</span><span class="kw">=</span><span class="fu">geometric_average</span>((<span class="no">`Population 2016`</span>-<span class="no">`Population 2006`</span>)/<span class="no">`Population 2006`</span>,<span class="fl">10</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu">gather</span>(<span class="kw">key</span><span class="kw">=</span><span class="st">"Period"</span>,<span class="kw">value</span><span class="kw">=</span><span class="st">"Population Change"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2006 - 2011"</span>,<span class="st">"2011 - 2016"</span>,<span class="st">"2006 - 2016"</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu">mutate</span>(<span class="kw">Period</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Period</span>,<span class="kw">levels</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2006 - 2011"</span>,<span class="st">"2011 - 2016"</span>,<span class="st">"2006 - 2016"</span>)))</pre></body></html></div>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">0.15</span>,-<span class="fl">0.1</span>,-<span class="fl">0.075</span>,-<span class="fl">0.05</span>,-<span class="fl">0.025</span>,<span class="fl">0</span>,<span class="fl">0.025</span>,<span class="fl">0.05</span>,<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>)
-<span class="no">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"-15% to -10%"</span>,<span class="st">"-10% to -7.5%"</span>,<span class="st">"-7.5% to -5%"</span>,<span class="st">"-5% to -2.5%"</span>,<span class="st">"-2.5% to 0%"</span>,<span class="st">"0% to 2.5%"</span>,<span class="st">"2.5% to 5%"</span>,<span class="st">"5% to 10%"</span>,<span class="st">"10% to 20%"</span>,<span class="st">"20% to 30%"</span>)
-<span class="no">colors</span> <span class="kw">&lt;-</span> <span class="kw pkg">RColorBrewer</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html">brewer.pal</a></span>(<span class="fl">10</span>,<span class="st">"PiYG"</span>)
-
-<span class="fu">ggplot</span>(<span class="no">plot_data</span> <span class="kw">%&gt;%</span> <span class="fu">mutate</span>(<span class="kw">c</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span>(<span class="no">`Population Change`</span>,<span class="kw">breaks</span><span class="kw">=</span><span class="no">breaks</span>, <span class="kw">labels</span><span class="kw">=</span><span class="no">labels</span>)),<span class="fu">aes</span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">c</span>)) +
-  <span class="fu">geom_sf</span>(<span class="kw">size</span><span class="kw">=</span><span class="fl">0</span>) +
-  <span class="fu">scale_fill_manual</span>(<span class="kw">values</span><span class="kw">=</span><span class="fu">set_names</span>(<span class="no">colors</span>,<span class="no">labels</span>)) +
-  <span class="fu">facet_wrap</span>(<span class="st">"Period"</span>,<span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>) +
-  <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span>() +
-  <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">panel.grid.major</span> <span class="kw">=</span> <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_line</a></span>(<span class="kw">colour</span> <span class="kw">=</span> <span class="st">"transparent"</span>)) +
-  <span class="fu">labs</span>(<span class="kw">fill</span><span class="kw">=</span><span class="st">"Average Annual\nPopulation Change"</span>)</pre></body></html></div>
-<p><img src="tongfen_ca_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r">rent_variables &lt;- c("v_CA16_4901",  "v_CA11N_2292","v_CA06_2050")
-regions=list(CMA="59933")
-rent_data &lt;- get_tongfen_ca_census_ct(regions=regions,vectors=rent_variables,geo_base = 'CA16')
-#&gt; 
-Downloading: 8.8 kB     
-Downloading: 8.8 kB     
-Downloading: 8.8 kB     
-Downloading: 8.8 kB     
-Downloading: 8.8 kB     
-Downloading: 8.8 kB     
-Downloading: 11 kB     
-Downloading: 11 kB     
-Downloading: 11 kB     
-Downloading: 11 kB     
-Downloading: 11 kB     
-Downloading: 11 kB     
-Downloading: 9.9 kB     
-Downloading: 9.9 kB     
-Downloading: 9.9 kB     
-Downloading: 9.9 kB     
-Downloading: 9.9 kB     
-Downloading: 9.9 kB</pre></body></html></div>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">plot_data</span> <span class="kw">&lt;-</span> <span class="no">rent_data</span> <span class="kw">%&gt;%</span>
-  <span class="fu">mutate</span>(<span class="kw">`2006-2011`</span><span class="kw">=</span><span class="no">v_CA11N_2292</span>/<span class="no">v_CA06_2050</span>,
-         <span class="kw">`2011-2016`</span><span class="kw">=</span><span class="no">v_CA16_4901</span>/<span class="no">v_CA11N_2292</span>,
-         <span class="kw">`2006-2016`</span><span class="kw">=</span><span class="no">v_CA16_4901</span>/<span class="no">v_CA06_2050</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">gather</span>(<span class="kw">key</span><span class="kw">=</span><span class="st">"Period"</span>,<span class="kw">value</span><span class="kw">=</span><span class="st">"Change"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2006-2011"</span>,<span class="st">"2011-2016"</span>,<span class="st">"2006-2016"</span>))
-<span class="fu">ggplot</span>(<span class="no">plot_data</span>,<span class="fu">aes</span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">Change</span>)) +
-  <span class="fu">geom_sf</span>(<span class="kw">size</span><span class="kw">=</span><span class="fl">0</span>) +
-  <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span>() +
-  <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">panel.grid.major</span> <span class="kw">=</span> <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_line</a></span>(<span class="kw">colour</span> <span class="kw">=</span> <span class="st">"transparent"</span>)) +
-  <span class="fu">scale_fill_viridis_c</span>() +
-  <span class="fu">facet_wrap</span>(<span class="st">"Period"</span>,<span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>)</pre></body></html></div>
-<p><img src="tongfen_ca_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-</div>
 <div id="aggregating-up-data-across-regions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#aggregating-up-data-across-regions" class="anchor"></a>Aggregating up data across regions</h1>
 <p>Another application is simply aggregating up variables for a selection of regions from a single census. Suppose we want to understand the share of renters in the Vancouver School District, as well as the share of renter households spending more than 30% of income on housing.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r">vectors &lt;- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
-meta=meta_for_ca_census_vectors(vectors)
+<div class="sourceCode" id="cb4"><html><body><pre class="r">vectors &lt;- c("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+meta=meta_for_ca_census_vectors(vectors) %&gt;%
+  bind_rows(meta_for_additive_variables("CA16",c("Population","Dwellings","Households")))
 vsb_regions &lt;- list(CSD=c("5915022","5915803"),
                     CT=c("9330069.01","9330069.02","9330069.00"))
 vsb &lt;- get_census("CA16",regions=vsb_regions,vectors=meta$variable,labels="short")
@@ -210,10 +142,28 @@ Downloading: 440 B
 Downloading: 440 B     
 Downloading: 440 B     
 Downloading: 440 B
-vsb &lt;- aggregate_data_with_meta(vsb,bind_rows(meta,tibble(variable=c("Population","Dwellings","Households")))) %&gt;%
+vsb &lt;- aggregate_data_with_meta(vsb, meta) %&gt;%
   mutate(Total=v_CA16_4836,Renters=v_CA16_4838,rent_poor=v_CA16_4899/100) %&gt;%
   mutate(rent_share=Renters/Total)</pre></body></html></div>
 <p>53% of Vancouver School District households rent, 45% of which are shelter cost burdened.</p>
+<div id="change-in-vancouver-children" class="section level2">
+<h2 class="hasAnchor">
+<a href="#change-in-vancouver-children" class="anchor"></a>Change in Vancouver children</h2>
+<p>Data can also be obtained at dissemination area level. As an example we look at the change in children aged 0 to 14 in the Vancouver School District.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">variables</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2016_0-14"</span><span class="kw">=</span><span class="st">"v_CA16_4"</span>,
+               <span class="st">"2011_0-4"</span><span class="kw">=</span><span class="st">"v_CA11F_8"</span>,<span class="st">"2011_5-9"</span><span class="kw">=</span><span class="st">"v_CA11F_11"</span>,<span class="st">"2011_10-14"</span><span class="kw">=</span><span class="st">"v_CA11F_14"</span>)
+<span class="no">children_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_ca_census.html">get_tongfen_ca_census</a></span>(<span class="kw">regions</span> <span class="kw">=</span> <span class="no">vsb_regions</span>, <span class="kw">vectors</span> <span class="kw">=</span> <span class="no">variables</span>,
+                                       <span class="kw">level</span><span class="kw">=</span><span class="st">"DA"</span>, <span class="kw">quiet</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">`2011_0-14`</span><span class="kw">=</span><span class="kw pkg">purrr</span><span class="kw ns">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/reduce.html">reduce</a></span>(<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw pkg">sf</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/sf/man/st_geometry.html">st_set_geometry</a></span>(<span class="no">.</span>,<span class="kw">NULL</span>), <span class="fu"><a href="https://dplyr.tidyverse.org/reference/reexports.html">starts_with</a></span>(<span class="st">"2011_"</span>)), <span class="no">`+`</span>)) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">change</span><span class="kw">=</span><span class="no">`2016_0-14`</span>/<span class="no">Population_CA16</span>-<span class="no">`2011_0-14`</span>/<span class="no">Population_CA11</span>)
+
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">children_data</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">change</span>)) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span>(<span class="kw">size</span><span class="kw">=</span><span class="fl">0.1</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html">scale_fill_gradient2</a></span>(<span class="kw">labels</span><span class="kw">=</span><span class="kw pkg">scales</span><span class="kw ns">::</span><span class="no"><a href="https://scales.r-lib.org//reference/label_percent.html">percent</a></span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span>(<span class="kw">datum</span><span class="kw">=</span><span class="fl">NA</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">title</span><span class="kw">=</span><span class="st">"Percentage point change in share of children aged 0-14 between 2011 and 2016"</span>,<span class="kw">fill</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
+<p><img src="tongfen_ca_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+</div>
 </div>
   </div>
 

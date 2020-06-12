@@ -112,38 +112,60 @@ library(tongfen)</a></code></pre>
 </ul>
 <p>in your <code>.Rprofile</code> or <code>.Renviron</code> file.</p>
 </div>
-<div id="introduction" class="section level3">
-<h3 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h3>
-<p>The package offers several functions</p>
+<div id="general-tongfen" class="section level2">
+<h2 class="hasAnchor">
+<a href="#general-tongfen" class="anchor"></a>General TongFen</h2>
+<p>The <code>tongfen</code> package is build around the following basic <strong>TongFen workflow</strong>:</p>
 <ol>
+<li>Given a list of datasets on diverse geographies, <strong>generate a correspondence table</strong> that links the geographies and specifies how to aggregate them up to a (least) common geography via <code>estimate_tongfen_correspondence</code>.</li>
 <li>
-<code>tongfen_estimate</code> makes no assumption on the underlying geographies and returns estimates of the data on the geography of the first dataset.</li>
-<li>
-<code>estimate_tongfen_correspondence</code> creates a correspondence table for least common denomicator geography given two different but congruent input geograpies.</li>
+<strong>generate metadata</strong> that specifies how variables can be aggregated up, the <code>meta_for_additive_variables</code> function does this for additive variables.</li>
+<li>Use the correspondence table and metadata to generate a dataset with variables from the original datasets aggregated up on a common geography via <code>tongfen_aggregate</code>.</li>
 </ol>
-<div id="canadian-census-data" class="section level4">
-<h4 class="hasAnchor">
-<a href="#canadian-census-data" class="anchor"></a>Canadian census data</h4>
-<p>The package is well-integrated to work with Canadian census data.</p>
+<p>A convenience function to validate geographic TongFen fit via area comparison is available via <code>check_tongfen_areas</code>, it allows to explore and deal with spatial mismatches during TongFen.</p>
+<div id="aggregation-of-variables" class="section level3">
+<h3 class="hasAnchor">
+<a href="#aggregation-of-variables" class="anchor"></a>Aggregation of variables</h3>
+<p>Finding a common tiling of several different yet congruent geographies is only one part of the problem TongFen addresses, aggregating up the variables is the other part. The <code>tongfen</code> package deals with this using a <em>metadata</em> table that specifies how variables should be aggregated. In it’s simplest form values are simply added up. The <code>meta_for_additive_variables</code> convenience function builds the metadata for additive variables. Metadata for non-additive variables like averages, ratios or percentages needs more care to build, it requires additional information on the <strong>parent variable</strong> that specifies the denominator of the average, ratio or percentage. Other data, like medians, can’t be aggregated up, although <code>tongfen</code> can provide estimates of medians on aggregated geographies by treating them as averages.</p>
+</div>
+</div>
+<div id="data-specific-implementations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#data-specific-implementations" class="anchor"></a>Data-specific implementations</h2>
+<p>The need for TongFen comes up frequently with certain types of geographies. Census geographies is one such example. In some cases these data sources come with their own correspondence files that go beyond geographic matchup but also join regions to alleviate data integrity problems like geocoding issues.</p>
+<p>In such cases it can be worthwhile to wrap data acquisition and TongFen into one convenience function, and also extend the TongFen <em>method</em> parameter to allow for external correspondence files to be used.</p>
+<div id="canadian-census-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#canadian-census-data" class="anchor"></a>Canadian census data</h3>
+<p>The package is well-integrated to work with Canadian census data in two essential ways.</p>
 <ul>
 <li>
-<code>tongfen_ca_censusct</code> works on Canadian census tracts from different censuses and returns the data on a common geography. This takes a loose approach to tongfen by generating the correspondence from geographic data and optionally assuming regions with the same GeoUIDs are the same and boundary changes of these only affect greenfield sites.</li>
+<code>meta_for_ca_census_vectors</code> builds rich metadata for a given list of Canadian census variables by utilizing the metadata available via <a href="https://censusmapper.ca">CensusMapper</a>. In particular, this automates the proper aggregation of non-count variables like averages, ratios and percentages.</li>
 <li>
-<code>get_tongfen_ca_censusct</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs</li>
-<li>
-<code>get_tongfen_ca_censusct_from_da</code> get Canadian census variables from any of the 2001, 2006, 2011 and 2016 censuses on a common geography based on CTs, build up from a DA level correspondence. This gives a more accurate, but coarser, match compared to using <code>get_tongfen_ca_censusct</code> and will use the official DA correspondence files.</li>
+<code>get_tongfen_ca_census</code> wraps the process of data acquisition (via CensusMapper and the <a href="https://mountainmath.github.io/cancensus/index.html"><strong>cancensus</strong> package</a> and tongfen into one convenience function. At the same time it adds the TongFen <code>method = "statcan"</code> option that uses the Statistics Canada correspondence files to build the common geography.</li>
+<li>The <code>get_tongfen_correspondence_ca_census</code> function breaks out the correspondence generation to aid the process of accessing the Statistics Canada correspondence files (and better integration of generating correspondences for Canadian census geographies in general) to facilitate mixing in non-census data coming on census geographies, like for example <a href="https://www03.cmhc-schl.gc.ca/hmip-pimh">CMHC data</a>.</li>
 </ul>
 </div>
-<div id="us-census-data" class="section level4">
-<h4 class="hasAnchor">
-<a href="#us-census-data" class="anchor"></a>US census data</h4>
+<div id="us-census-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#us-census-data" class="anchor"></a>US census data</h3>
 <ul>
-<li><code>get_tongfen_us_census_ct</code></li>
+<li>
+<code>get_tongfen_us_census</code> integrates the data acquisition (via the <a href="https://walker-data.com/tidycensus/index.html"><strong>tidycensus</strong> package</a>) with TongFen, and adds the tongfen <code>method = "census.gov"</code> to use the US Census Bureau correspondence files for matching.</li>
 </ul>
-<p>Not all data can be aggregated in this form, and some data requires different aggregation functions than others. For example, in census data we encounter variables representing simple counts, for example population, that must be added up when joining geographic regions. Averages or percentages require a weighted sum, medians cannot be aggregated but may be approximated.</p>
-<p>In the case of the data originating from the <strong>cancensus</strong> package the aggregation will be done automatically whenever possible, in other cases the user needs to specify how data should be aggregated.</p>
 </div>
+</div>
+<div id="other-implementations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#other-implementations" class="anchor"></a>Other implementations</h2>
+<p>The <code>tongfen</code> package is open to add extensions for other specialized data sources, as well as extensions of existing ones.</p>
+</div>
+<div id="fixed-target-geography-estimation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixed-target-geography-estimation" class="anchor"></a>Fixed target geography estimation</h2>
+<p>When geographies aren’t sufficiently congruent or the target geography is fixed, we won’t be able to use the <code>tongfen</code> methods to compute the data on a common geography but have to instead rely on estimates. The <code>tongfen_estimate</code> makes no assumption on the underlying geographies and returns estimates of the data on the target geography. It uses area-weighted interpolation to achieve this, and can be refined to dasymmetric estimates using the <code>proportional_reaggregate</code> function.</p>
+<p>This method has the example that it works independent of the nature of the underlying geographies, but comes at the heavy price of only being an estimate. To be useful for research purposes we also need methods to estimate the errors this introduces and the effects this has on subsequent analysis results.</p>
+<p>Methods to facilitate this are still under active development.</p>
 </div>
 </div>
   </div>

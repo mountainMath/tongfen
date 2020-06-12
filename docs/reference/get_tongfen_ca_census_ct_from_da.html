@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data — get_tongfen_ca_census_ct_from_da • tongfen</title>
+<title>Canadian census CT level tongfen via DA correspondence — get_tongfen_ca_census_ct_from_da • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,9 +46,8 @@ Will return CT level data — get_tongfen_ca_census_ct_from_da • tongfen</titl
 
 
 
-<meta property="og:title" content="Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data — get_tongfen_ca_census_ct_from_da" />
-<meta property="og:description" content="deprecated
+<meta property="og:title" content="Canadian census CT level tongfen via DA correspondence — get_tongfen_ca_census_ct_from_da" />
+<meta property="og:description" content="
 Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
@@ -130,28 +128,18 @@ Will return CT level data" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a>, <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca_deprecated.R'><code>R/tongfen_ca_deprecated.R</code></a></small>
+    <h1>Canadian census CT level tongfen via DA correspondence</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca_deprecated.R'><code>R/tongfen_ca_deprecated.R</code></a></small>
     <div class="hidden name"><code>get_tongfen_ca_census_ct_from_da.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>deprecated</p>
+    <p><img src='figures/lifecycle-deprecated.svg' alt='Deprecated lifecycle' /></p>
 <p>Grab variables from several censuses on a common geography. Requires sf package to be available
 Will return CT level data</p>
     </div>
 
     <pre class="usage"><span class='fu'>get_tongfen_ca_census_ct_from_da</span>(
-  <span class='no'>regions</span>,
-  <span class='no'>vectors</span>,
-  <span class='kw'>geo_format</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>use_cache</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)
-
-<span class='fu'>get_tongfen_ca_census_ct_from_da</span>(
   <span class='no'>regions</span>,
   <span class='no'>vectors</span>,
   <span class='kw'>geo_format</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
@@ -187,16 +175,11 @@ Will return CT level data</p>
       <th>quiet</th>
       <td><p>suppress download progress output, default is `TRUE`</p></td>
     </tr>
-    <tr>
-      <th>census_data_transform</th>
-      <td><p>optional transform function to be applied to census data after being returned from cancensus</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>dataframe with variables on common geography</p>
-<p>dataframe with variables on common geography</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

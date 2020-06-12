@@ -86,7 +86,8 @@ Data can also be obtained at dissemination area level. As an example we look at 
 ```{r}
 variables <- c("2016_0-14"="v_CA16_4",
                "2011_0-4"="v_CA11F_8","2011_5-9"="v_CA11F_11","2011_10-14"="v_CA11F_14")
-children_data <- get_tongfen_ca_census(regions = vsb_regions, vectors = variables, level="DA") %>%
+children_data <- get_tongfen_ca_census(regions = vsb_regions, vectors = variables, 
+                                       level="DA", quiet = TRUE) %>%
   mutate(`2011_0-14`=purrr::reduce(select(sf::st_set_geometry(.,NULL), starts_with("2011_")), `+`)) %>%
   mutate(change=`2016_0-14`/Population_CA16-`2011_0-14`/Population_CA11)
 

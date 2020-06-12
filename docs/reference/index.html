@@ -151,6 +151,12 @@
       <tr>
         
         <td>
+          <p><code><a href="add_census_ca_base_variables.html">add_census_ca_base_variables()</a></code> </p>
+        </td>
+        <td><p>Generate metadata from Candian census vectors</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="aggregate_data_with_meta.html">aggregate_data_with_meta()</a></code> </p>
         </td>
         <td><p>Aggregate variables in grouped data</p></td>
@@ -175,7 +181,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> <code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> </p>
+          <p><code><a href="get_correspondence_ca_census_for.html">get_correspondence_ca_census_for()</a></code> </p>
         </td>
         <td><p>Get StatCan DA or DB level correspondence file</p></td>
       </tr><tr>
@@ -187,24 +193,15 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_ca_census_ct.html">get_tongfen_ca_census_ct()</a></code> </p>
+          <p><code><a href="get_tongfen_ca_census.html">get_tongfen_ca_census()</a></code> </p>
         </td>
-        <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data</p></td>
+        <td><p>Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> <code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> </p>
+          <p><code><a href="get_tongfen_ca_census_ct_from_da.html">get_tongfen_ca_census_ct_from_da()</a></code> </p>
         </td>
-        <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_tongfen_ca_census_da.html">get_tongfen_ca_census_da()</a></code> </p>
-        </td>
-        <td><p>Grab variables from several censuses on a common geography. Requires sf package to be available
-Will return CT level data</p></td>
+        <td><p>Canadian census CT level tongfen via DA correspondence</p></td>
       </tr><tr>
         
         <td>
@@ -220,7 +217,13 @@ Will return CT level data</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_tongfen_us_census_ct.html">get_tongfen_us_census_ct()</a></code> </p>
+          <p><code><a href="get_tongfen_correspondence_ca_census.html">get_tongfen_correspondence_ca_census()</a></code> </p>
+        </td>
+        <td><p>Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_tongfen_us_census.html">get_tongfen_us_census()</a></code> </p>
         </td>
         <td><p>Get US census data for 2000 and 2010 census on common census tract based geography</p></td>
       </tr><tr>
@@ -234,8 +237,7 @@ Will return CT level data</p></td>
         <td>
           <p><code><a href="meta_for_ca_census_vectors.html">meta_for_ca_census_vectors()</a></code> </p>
         </td>
-        <td><p>Build tibble with information on how to aggregate variables given vectors
-Queries list_census_variables to obtain needed information and add in vectors needed for aggregation</p></td>
+        <td><p>Generate metadata from Candian census vectors</p></td>
       </tr><tr>
         
         <td>
@@ -251,9 +253,9 @@ Queries list_census_variables to obtain needed information and add in vectors ne
       </tr><tr>
         
         <td>
-          <p><code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> <code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> </p>
+          <p><code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code> </p>
         </td>
-        <td><p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p></td>
+        <td><p>Canadian census CT level tongfen via identifier matching</p></td>
       </tr><tr>
         
         <td>

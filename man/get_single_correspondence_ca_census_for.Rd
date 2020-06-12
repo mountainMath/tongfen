@@ -15,7 +15,8 @@ get_single_correspondence_ca_census_for(
 
 \item{level}{geographic level, DA or DB}
 
-\item{refresh}{reload the correspondence files, default is `FALSE`}
+\item{refresh}{reload the correspondence files, default is `FALSE`
+\lifecycle{maturing}}
 }
 \value{
 tibble with correspondence table`

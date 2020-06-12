@@ -2,8 +2,7 @@
 % Please edit documentation in R/tongfen_ca.R
 \name{meta_for_ca_census_vectors}
 \alias{meta_for_ca_census_vectors}
-\title{Build tibble with information on how to aggregate variables given vectors
-Queries list_census_variables to obtain needed information and add in vectors needed for aggregation}
+\title{Generate metadata from Candian census vectors}
 \usage{
 meta_for_ca_census_vectors(vectors)
 }
@@ -15,6 +14,8 @@ tidy dataframe with metadata information for requested variables and additional 
 needed for tongfen operations
 }
 \description{
+\lifecycle(maturing)
+
 Build tibble with information on how to aggregate variables given vectors
 Queries list_census_variables to obtain needed information and add in vectors needed for aggregation
 }
