@@ -21,7 +21,7 @@ expects that `base_geo` is an element of `names(data)`.}
 aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.
 }
 \description{
-\lifecycle(maturing)
+\lifecycle{maturing}
 
 Aggregate variables secified in meta for several datasets according to correspondence.
 }

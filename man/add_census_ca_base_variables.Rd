@@ -13,7 +13,7 @@ add_census_ca_base_variables(meta)
 tibble with metadata
 }
 \description{
-\lifecycle(maturing)
+\lifecycle{maturing}
 
 Add Population, Dwellings, and Household counts to metadata
 }

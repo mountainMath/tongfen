@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Perform tongfen according to correspondence — tongfen_aggregate • tongfen</title>
+<title>Check geographic integrety — check_tongfen_single_areas • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,10 @@
 
 
 
-<meta property="og:title" content="Perform tongfen according to correspondence — tongfen_aggregate" />
+<meta property="og:title" content="Check geographic integrety — check_tongfen_single_areas" />
 <meta property="og:description" content="
-Aggregate variables secified in meta for several datasets according to correspondence." />
+Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap." />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -139,44 +140,42 @@ Aggregate variables secified in meta for several datasets according to correspon
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Perform tongfen according to correspondence</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
-    <div class="hidden name"><code>tongfen_aggregate.Rd</code></div>
+    <h1>Check geographic integrety</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tonfen_deprecated.R'><code>R/tonfen_deprecated.R</code></a></small>
+    <div class="hidden name"><code>check_tongfen_single_areas.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
-<p>Aggregate variables secified in meta for several datasets according to correspondence.</p>
+    <p><img src='figures/lifecycle-deprecated.svg' alt='Deprecated lifecycle' /></p>
+<p>Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
+of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_aggregate</span>(<span class='no'>data</span>, <span class='no'>correspondence</span>, <span class='kw'>meta</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>base_geo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>check_tongfen_single_areas</span>(<span class='no'>geo1</span>, <span class='no'>geo2</span>, <span class='no'>correspondence</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data</th>
-      <td><p>list of datasets to be aggregated</p></td>
+      <th>geo1</th>
+      <td><p>input geometry 1 of class sf</p></td>
+    </tr>
+    <tr>
+      <th>geo2</th>
+      <td><p>input geometry 2 of class sf</p></td>
     </tr>
     <tr>
       <th>correspondence</th>
-      <td><p>correspondence data for gluing up the datasets</p></td>
-    </tr>
-    <tr>
-      <th>meta</th>
-      <td><p>metadata containing aggregation rules as for example returned by `meta_for_ca_census_vectors`</p></td>
-    </tr>
-    <tr>
-      <th>base_geo</th>
-      <td><p>identifier for which data element to base the final geography on,
-uses the first data element if  `NULL` (default),
-expects that `base_geo` is an element of `names(data)`.</p></td>
+      <td><p>Correspondence table between `geo1` and `geo2` as e.g.
+returned by `estimate_tongfen_correspondence`.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.</p>
+    <p>A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
+`TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
+aggregated from `geo1` and `geo2`.`</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

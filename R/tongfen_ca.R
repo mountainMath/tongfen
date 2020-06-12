@@ -61,7 +61,7 @@ geo_dataset_from_dataset <- function(datasets){
 #' Generate metadata from Candian census vectors
 #'
 #' @description
-#' \lifecycle(maturing)
+#' \lifecycle{maturing}
 #'
 #' Build tibble with information on how to aggregate variables given vectors
 #' Queries list_census_variables to obtain needed information and add in vectors needed for aggregation
@@ -127,7 +127,7 @@ meta_for_ca_census_vectors <- function(vectors){
 #' Generate metadata from Candian census vectors
 #'
 #' @description
-#' \lifecycle(maturing)
+#' \lifecycle{maturing}
 #'
 #' Add Population, Dwellings, and Household counts to metadata
 #' @param meta ribble with metadata as for example provided by `meta_for_ca_census_vectors`
@@ -146,10 +146,13 @@ add_census_ca_base_variables <- function(meta){
 }
 
 #' Get StatCan DA or DB level correspondence file
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
 #' @param year census year
 #' @param level geographic level, DA or DB
 #' @param refresh reload the correspondence files, default is `FALSE`
-#' \lifecycle{maturing}
 #' @return tibble with correspondence table`
 get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refresh=FALSE) {
   level=level[1]
@@ -180,6 +183,11 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 
 
 
+#' Get StatCan correspondence data
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
 #' Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
@@ -195,7 +203,6 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
 #' @return dataframe with the multi-census correspondence file
-#' \lifecycle{maturing}
 #' @export
 get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="CT", method="statcan",
                                                  tolerance = 50, area_mismatch_cutoff = 0.1,
@@ -290,7 +297,11 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 }
 
 
-
+#' Togfen data from several Canadian censuses
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
 #' Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
@@ -312,7 +323,6 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
 #' @param data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
-#' \lifecycle{maturing}
 #' @export
 get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
                                   base_geo=NULL,na.rm=FALSE,

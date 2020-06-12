@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen_ca.R
 \name{get_tongfen_ca_census}
 \alias{get_tongfen_ca_census}
-\title{Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available}
+\title{Togfen data from several Canadian censuses}
 \usage{
 get_tongfen_ca_census(
   regions,
@@ -50,8 +50,9 @@ only used when method is 'estimate' or 'identifier'}
 }
 \value{
 dataframe with variables on common geography
-\lifecycle{maturing}
 }
 \description{
+\lifecycle{maturing}
+
 Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
 }

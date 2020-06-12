@@ -15,12 +15,11 @@ get_single_correspondence_ca_census_for(
 
 \item{level}{geographic level, DA or DB}
 
-\item{refresh}{reload the correspondence files, default is `FALSE`
-\lifecycle{maturing}}
+\item{refresh}{reload the correspondence files, default is `FALSE`}
 }
 \value{
 tibble with correspondence table`
 }
 \description{
-Get StatCan DA or DB level correspondence file
+\lifecycle{maturing}
 }

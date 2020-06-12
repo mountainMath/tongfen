@@ -21,7 +21,7 @@ aggregate_data_with_meta(data, meta, geo = FALSE, na.rm = TRUE, quiet = FALSE)
 data frame with variables aggregated to new common geography
 }
 \description{
-\lifecycle(maturing)
+\lifecycle{maturing}
 
 Aggregate census data up, assumes data is grouped for aggregation
 Uses data from meta to determine how to aggregate up

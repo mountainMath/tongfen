@@ -17,6 +17,6 @@ get_correspondence_ca_census_for(years, level, refresh = FALSE)
 tibble with correspondence table`spanning all years
 }
 \description{
-\lifecycle(deprecated)
+\lifecycle{deprecated}
 Joins the StatCan correspodence files for several census years
 }

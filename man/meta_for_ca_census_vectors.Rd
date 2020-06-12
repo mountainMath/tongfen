@@ -14,7 +14,7 @@ tidy dataframe with metadata information for requested variables and additional 
 needed for tongfen operations
 }
 \description{
-\lifecycle(maturing)
+\lifecycle{maturing}
 
 Build tibble with information on how to aggregate variables given vectors
 Queries list_census_variables to obtain needed information and add in vectors needed for aggregation

@@ -26,7 +26,6 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``}
 }
 \value{
 sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
-\lifecycle(maturing)
 }
 \description{
 \lifecycle{maturing}

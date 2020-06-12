@@ -158,7 +158,7 @@ tongfen_ca_census_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c()
 #' Get StatCan DA or DB level correspondence file
 #'
 #' @description
-#' \lifecycle(deprecated)
+#' \lifecycle{deprecated}
 #' Joins the StatCan correspodence files for several census years
 #'
 #' @param years list of census years

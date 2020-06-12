@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen_ca.R
 \name{get_tongfen_correspondence_ca_census}
 \alias{get_tongfen_correspondence_ca_census}
-\title{Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available}
+\title{Get StatCan correspondence data}
 \usage{
 get_tongfen_correspondence_ca_census(
   geo_datasets,
@@ -38,8 +38,9 @@ this method only works for "DB", "DA" and "CT" levels.
 }
 \value{
 dataframe with the multi-census correspondence file
-\lifecycle{maturing}
 }
 \description{
+\lifecycle{maturing}
+
 Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available
 }

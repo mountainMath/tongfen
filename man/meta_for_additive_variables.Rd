@@ -15,7 +15,7 @@ meta_for_additive_variables(dataset, variables)
 a tibble to be used in tongfen_aggregate
 }
 \description{
-\lifecycle(maturing)
+\lifecycle{maturing}
 
 Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.
 }

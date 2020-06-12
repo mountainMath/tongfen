@@ -73,7 +73,6 @@ valid_datasets <- c(
 #' @param survey survey to get data for, supported options is "census"
 #' @param base_geo census year to use as base geography, default is `2010`.
 #' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
-#' \lifecycle(maturing)
 #' @export
 get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
                                   base_geo = NULL){

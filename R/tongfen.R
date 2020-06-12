@@ -1,7 +1,7 @@
 #' Generate tongfen metadata for additive variables
 #'
 #' @description
-#' \lifecycle(maturing)
+#' \lifecycle{maturing}
 #'
 #' Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.
 #'
@@ -68,7 +68,7 @@ tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
 #' Aggregate variables in grouped data
 #'
 #' @description
-#' \lifecycle(maturing)
+#' \lifecycle{maturing}
 #'
 #' Aggregate census data up, assumes data is grouped for aggregation
 #' Uses data from meta to determine how to aggregate up
@@ -155,7 +155,7 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' Perform tongfen according to correspondence
 #'
 #' @description
-#' \lifecycle(maturing)
+#' \lifecycle{maturing}
 #'
 #' Aggregate variables secified in meta for several datasets according to correspondence.
 #'
