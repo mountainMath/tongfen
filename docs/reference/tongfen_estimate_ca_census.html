@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate variable values for custom geography — tongfen_estimate • tongfen</title>
+<title>Tongfen estimate data for given geometry — tongfen_estimate_ca_census • tongfen</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,10 @@
 
 
 
-<meta property="og:title" content="Estimate variable values for custom geography — tongfen_estimate" />
+<meta property="og:title" content="Tongfen estimate data for given geometry — tongfen_estimate_ca_census" />
 <meta property="og:description" content="
-Estimates data from source geometry onto target geometry" />
+Estimates values for the given census vectors for the given geometry using
+data from the specified level range" />
 <meta property="og:image" content="https://mountainmath.github.io/tongfen/logo.png" />
 <meta property="og:image:alt" content="tongfen" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -139,32 +140,33 @@ Estimates data from source geometry onto target geometry" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate variable values for custom geography</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen.R'><code>R/tongfen.R</code></a></small>
-    <div class="hidden name"><code>tongfen_estimate.Rd</code></div>
+    <h1>Tongfen estimate data for given geometry</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mountainMath/tongfen/blob/master/R/tongfen_ca.R'><code>R/tongfen_ca.R</code></a></small>
+    <div class="hidden name"><code>tongfen_estimate_ca_census.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
-<p>Estimates data from source geometry onto target geometry</p>
+<p>Estimates values for the given census vectors for the given geometry using
+data from the specified level range</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_estimate</span>(<span class='no'>target</span>, <span class='no'>source</span>, <span class='no'>meta</span>)</pre>
+    <pre class="usage"><span class='fu'>tongfen_estimate_ca_census</span>(<span class='no'>geometry</span>, <span class='no'>level</span>, <span class='no'>vectors</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>target</th>
-      <td><p>custom geography to estimate values for</p></td>
+      <th>geometry</th>
+      <td><p>geometry</p></td>
     </tr>
     <tr>
-      <th>source</th>
-      <td><p>input geography with values</p></td>
+      <th>level</th>
+      <td><p>level to use for tongfen</p></td>
     </tr>
     <tr>
-      <th>meta</th>
-      <td><p>metadata for variable aggregation</p></td>
+      <th>vectors</th>
+      <td><p>census variables to aggregate data for, can be named.</p></td>
     </tr>
     </table>
 

@@ -293,6 +293,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
                                                       tolerance=200,
                                                       computation_crs=3347)
   }
+
   correspondence
 }
 
@@ -366,7 +367,8 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
                                                            refresh = refresh)
     aggregated_data <- tongfen_aggregate(data,correspondence,meta)
   }
-  aggregated_data
+  aggregated_data %>%
+    rename_with_meta(meta)
 }
 
 #' Tongfen estimate data for given geometry
@@ -379,22 +381,25 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
 #'
 #' @param geometry geometry
 #' @param level level to use for tongfen
-#' @param vectors List of cancensus vectors, can come from different census years
+#' @param vectors census variables to aggregate data for, can be named.
 #'
 #' @export
 tongfen_estimate_ca_census <- function(geometry,level,vectors, na.rm=FALSE) {
-  datasets <- datasets_from_vectors(vectors)
-  regions <- datasets %>% lapply(function(ds){
-    cancensus::get_intersecting_geometries(dataset=ds,level=level,geometry=geometry)
+  meta <- meta_for_ca_census_vectors(vectors)
+  datasets <- meta$geo_dataset %>% unique()
+  regions <- datasets %>%
+    lapply(function(ds){
+    cancensus::get_intersecting_geometries(dataset=ds, level=level, geometry=geometry)
   }) %>%
     lapply(as_tibble) %>%
     bind_rows() %>%
     unique %>%
     as.list()
 
-  census_data <- get_tongfen_ca_census(regions = regions, vectors = vectors, level = level, na.rm = na.rm)
+  census_data <- get_tongfen_ca_census(regions = regions, vectors = vectors,
+                                       level = level, na.rm = na.rm)
 
-  result <- tongfen_estimate(geometry, census_data,vectors)
+  result <- tongfen_estimate(target = geometry, source = census_data, meta = meta)
 }
 
 #' @import dplyr
