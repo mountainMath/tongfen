@@ -382,10 +382,19 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
 #' @param vectors List of cancensus vectors, can come from different census years
 #'
 #' @export
-tongfen_estimate_ca_census <- function(geometry,level,vectors) {
+tongfen_estimate_ca_census <- function(geometry,level,vectors, na.rm=FALSE) {
+  datasets <- datasets_from_vectors(vectors)
+  regions <- datasets %>% lapply(function(ds){
+    cancensus::get_intersecting_geometries(dataset=ds,level=level,geometry=geometry)
+  }) %>%
+    lapply(as_tibble) %>%
+    bind_rows() %>%
+    unique %>%
+    as.list()
 
-  regions <- cancensus::get_intersecting_geometries("CA16",level=level,geometry=geometry)
-  d<-get_tongfen_ca_census()
+  census_data <- get_tongfen_ca_census(regions = regions, vectors = vectors, level = level, na.rm = na.rm)
+
+  result <- tongfen_estimate(geometry, census_data,vectors)
 }
 
 #' @import dplyr
