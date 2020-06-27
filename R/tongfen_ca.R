@@ -369,8 +369,24 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
   aggregated_data
 }
 
+#' Tongfen estimate data for given geometry
+#'
+#' @description
+#' \lifecycle{maturing}
+#'
+#' Estimates values for the given census vectors for the given geometry using
+#' data from the specified level range
+#'
+#' @param geometry geometry
+#' @param level level to use for tongfen
+#' @param vectors List of cancensus vectors, can come from different census years
+#'
+#' @export
+tongfen_estimate_ca_census <- function(geometry,level,vectors) {
 
-
+  regions <- cancensus::get_intersecting_geometries("CA16",level=level,geometry=geometry)
+  d<-get_tongfen_ca_census()
+}
 
 #' @import dplyr
 #' @importFrom rlang .data
