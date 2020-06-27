@@ -12,6 +12,8 @@ tongfen_estimate_ca_census(geometry, level, vectors, na.rm = FALSE)
 \item{level}{level to use for tongfen}
 
 \item{vectors}{census variables to aggregate data for, can be named.}
+
+\item{na.rm}{how to deal with NA values, default is \code{FALSE}.}
 }
 \description{
 \lifecycle{maturing}

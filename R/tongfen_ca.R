@@ -382,6 +382,7 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
 #' @param geometry geometry
 #' @param level level to use for tongfen
 #' @param vectors census variables to aggregate data for, can be named.
+#' @param na.rm how to deal with NA values, default is \code{FALSE}.
 #'
 #' @export
 tongfen_estimate_ca_census <- function(geometry,level,vectors, na.rm=FALSE) {
