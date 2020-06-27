@@ -149,26 +149,22 @@ Estimates data from source geometry onto target geometry" />
 <p>Estimates data from source geometry onto target geometry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_estimate</span>(<span class='no'>data1</span>, <span class='no'>data2</span>, <span class='no'>data2_sum_vars</span>, <span class='kw'>unique_key</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
+    <pre class="usage"><span class='fu'>tongfen_estimate</span>(<span class='no'>target</span>, <span class='no'>source</span>, <span class='no'>meta</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data1</th>
+      <th>target</th>
       <td><p>custom geography to estimate values for</p></td>
     </tr>
     <tr>
-      <th>data2</th>
+      <th>source</th>
       <td><p>input geography with values</p></td>
     </tr>
     <tr>
-      <th>data2_sum_vars</th>
-      <td><p>columns of data2 to be summed up</p></td>
-    </tr>
-    <tr>
-      <th>unique_key</th>
-      <td><p>optional unique key for each geography in data1</p></td>
+      <th>meta</th>
+      <td><p>metadata for variable aggregation</p></td>
     </tr>
     </table>
 

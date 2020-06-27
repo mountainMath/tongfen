@@ -4,16 +4,14 @@
 \alias{tongfen_estimate}
 \title{Estimate variable values for custom geography}
 \usage{
-tongfen_estimate(data1, data2, data2_sum_vars, unique_key = NA)
+tongfen_estimate(target, source, meta)
 }
 \arguments{
-\item{data1}{custom geography to estimate values for}
+\item{target}{custom geography to estimate values for}
 
-\item{data2}{input geography with values}
+\item{source}{input geography with values}
 
-\item{data2_sum_vars}{columns of data2 to be summed up}
-
-\item{unique_key}{optional unique key for each geography in data1}
+\item{meta}{metadata for variable aggregation}
 }
 \description{
 \lifecycle{maturing}

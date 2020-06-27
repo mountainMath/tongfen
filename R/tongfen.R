@@ -30,37 +30,75 @@ meta_for_additive_variables <- function(dataset,variables){
 #'
 #' Estimates data from source geometry onto target geometry
 #'
-#' @param data1 custom geography to estimate values for
-#' @param data2 input geography with values
-#' @param data2_sum_vars columns of data2 to be summed up
-#' @param unique_key optional unique key for each geography in data1
+#' @param target custom geography to estimate values for
+#' @param source input geography with values
+#' @param meta metadata for variable aggregation
 #' @export
-tongfen_estimate <- function(data1,data2,data2_sum_vars,unique_key=NA) {
-  # right now this only works for variables that are sums. Does not quite sum up to total in case areas don't overlap all that well.
-  # but makes no assumptions on geograhies and is quite fast
-  # the exlicit use of the "Group.1" variable feels fishy
-  if (is.na(unique_key)) {
-    unique_key="tongfen_row_number"
-    data1 <- data1 %>% mutate(!!unique_key:=row_number())
-  }
+tongfen_estimate <- function(target,source,meta) {
+
+  unique_key="tongfen_row_number"
+  target <- target %>% mutate(!!unique_key:=row_number())
+
+  meta <- meta %>%
+    cut_meta(source,.) %>%
+    mutate(var_name=paste0("v",row_number()))
+
   # rename variables, st_interpolate_aw does not handle column names with special characters
-  rename_vars <- purrr::set_names(data2_sum_vars,paste0("v",seq(1,length(data2_sum_vars))))
-  rename_back <- purrr::set_names(names(rename_vars),as.character(rename_vars))
-  result <- sf::st_interpolate_aw(data2 %>%
-                                    select(data2_sum_vars) %>%
-                                    rename(!!!rename_vars) %>%
-                                    mutate_all(function(x)tidyr::replace_na(x,0)),
-                                  data1,
+  safe_rename_vars <- setNames(meta$data_var,meta$var_name)
+  safe_rename_back <- setNames(meta$var_name,meta$data_var)
+  result <- sf::st_interpolate_aw(source %>%
+                                    select(meta$data_var) %>%
+                                    rename(!!!safe_rename_vars) %>%
+                                    mutate_all(function(x)tidyr::replace_na(x,0)) %>%
+                                    pre_scale(meta,meta_var = "data_var"),
+                                  target,
                                   extensive = TRUE) %>%
-    left_join(data1 %>%
-                sf::st_set_geometry(NULL) %>%
-                select(unique_key) %>%
-                mutate(Group.1=row_number()),
-              by="Group.1") %>%
-    select(-.data$Group.1) %>%
-    rename(!!!rename_back)
+    rename(!!unique_key:=.data$Group.1) %>%
+    post_scale(meta,meta_var = "data_var") %>%
+    left_join(target %>% sf::st_set_geometry(NULL),
+              by=unique_key) %>%
+    select(-one_of(unique_key)) %>%
+    rename(!!!safe_rename_back)
 
   result
+}
+
+cut_meta <- function(data,meta){
+  meta <- meta %>%
+    filter(.data$variable %in% names(data)|.data$label %in% names(data)) %>%
+    mutate(data_var=ifelse(.data$variable %in% names(data),.data$variable,.data$label))
+}
+
+pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
+  parent_lookup <- setNames(meta$parent,meta %>% pull(meta_var))
+  to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
+  not_additive <- filter(meta,.data$rule == "Not additive") %>% pull(meta_var)
+  median_vars <- filter(meta,.data$rule %in% c("Median")) %>% pull(meta_var)
+
+  if(!quiet) {
+    if (length(not_additive)>0)
+      warning(paste0("Don't know how to TongFen: ",paste0(not_additive,collapse = ", ")))
+    if (length(median_vars)>0)
+      message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
+  }
+
+
+  for (x in to_scale) {
+    data <- data %>% mutate(!!x := !!as.name(x)*!!as.name(parent_lookup[x]))
+  }
+
+  data
+}
+
+post_scale <- function(data,meta,meta_var="data_var") {
+  parent_lookup <- setNames(meta$parent,meta %>% pull(meta_var))
+  to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
+
+  for (x in to_scale) {
+    data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(parent_lookup[x]))
+  }
+
+  data
 }
 
 
