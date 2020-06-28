@@ -79,6 +79,9 @@ meta_for_ca_census_vectors <- function(vectors){
     nn[nn==""]=vectors[nn==""]
   }
 
+  if (length(vectors)==0) {
+    meta <- tibble::tibble(variable=NA,label=NA,dataset=datasets_from_vectors(vectors))
+  }
   meta <- tibble::tibble(variable=vectors,label=nn,dataset=datasets_from_vectors(vectors)) %>%
     mutate(type="Original", aggregation="0",units=NA)
   datasets <- meta$dataset %>%
@@ -306,7 +309,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
-#' @param vectors List of cancensus vectors, can come from different census years
+#' @param meta metadata for the census veraiables to aggregate, for example as returned
+#' by \code{meta_for_ca_census_vectors}.
 #' @param level aggregation level to return data on (default is "CT")
 #' @param method tongfen method, options are "statcan" (the default), "estimate", "identifier".
 #' * "statcan" method builds up the common geography using Statistics Canada correspondence files, at this point
@@ -325,7 +329,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' @param data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
-get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
+get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                   base_geo=NULL,na.rm=FALSE,
                                   tolerance = 50,
                                   area_mismatch_cutoff = 0.1,
@@ -333,8 +337,6 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
                                   refresh=FALSE,
                                   data_transform=function(d)d) {
   use_cache <- !refresh
-  meta <- meta_for_ca_census_vectors(vectors) %>%
-    add_census_ca_base_variables()
 
   geo_datasets <- meta$geo_dataset %>% unique() %>% sort()
 
@@ -380,13 +382,13 @@ get_tongfen_ca_census <- function(regions,vectors,level="CT",method="statcan",
 #' data from the specified level range
 #'
 #' @param geometry geometry
+#' @param meta metadata for the census veraiables to aggregate, for example as returned
 #' @param level level to use for tongfen
-#' @param vectors census variables to aggregate data for, can be named.
+#' by \code{meta_for_ca_census_vectors}.
 #' @param na.rm how to deal with NA values, default is \code{FALSE}.
 #'
 #' @export
-tongfen_estimate_ca_census <- function(geometry,level,vectors, na.rm=FALSE) {
-  meta <- meta_for_ca_census_vectors(vectors)
+tongfen_estimate_ca_census <- function(geometry, meta, level, na.rm=FALSE) {
   datasets <- meta$geo_dataset %>% unique()
   regions <- datasets %>%
     lapply(function(ds){
@@ -397,7 +399,7 @@ tongfen_estimate_ca_census <- function(geometry,level,vectors, na.rm=FALSE) {
     unique %>%
     as.list()
 
-  census_data <- get_tongfen_ca_census(regions = regions, vectors = vectors,
+  census_data <- get_tongfen_ca_census(regions = regions, meta = meta,
                                        level = level, na.rm = na.rm)
 
   result <- tongfen_estimate(target = geometry, source = census_data, meta = meta)

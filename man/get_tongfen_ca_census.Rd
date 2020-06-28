@@ -6,7 +6,7 @@
 \usage{
 get_tongfen_ca_census(
   regions,
-  vectors,
+  meta,
   level = "CT",
   method = "statcan",
   base_geo = NULL,
@@ -21,7 +21,8 @@ get_tongfen_ca_census(
 \arguments{
 \item{regions}{census region list, should be inclusive list of GeoUIDs across censuses}
 
-\item{vectors}{List of cancensus vectors, can come from different census years}
+\item{meta}{metadata for the census veraiables to aggregate, for example as returned
+by \code{meta_for_ca_census_vectors}.}
 
 \item{level}{aggregation level to return data on (default is "CT")}
 

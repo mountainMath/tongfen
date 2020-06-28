@@ -151,7 +151,7 @@ Get data from several Candian censuses on a common geography. Requires sf and ca
 
     <pre class="usage"><span class='fu'>get_tongfen_ca_census</span>(
   <span class='no'>regions</span>,
-  <span class='no'>vectors</span>,
+  <span class='no'>meta</span>,
   <span class='kw'>level</span> <span class='kw'>=</span> <span class='st'>"CT"</span>,
   <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"statcan"</span>,
   <span class='kw'>base_geo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -171,8 +171,9 @@ Get data from several Candian censuses on a common geography. Requires sf and ca
       <td><p>census region list, should be inclusive list of GeoUIDs across censuses</p></td>
     </tr>
     <tr>
-      <th>vectors</th>
-      <td><p>List of cancensus vectors, can come from different census years</p></td>
+      <th>meta</th>
+      <td><p>metadata for the census veraiables to aggregate, for example as returned
+by <code>meta_for_ca_census_vectors</code>.</p></td>
     </tr>
     <tr>
       <th>level</th>

@@ -151,7 +151,7 @@ data from the specified level range" />
 data from the specified level range</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_estimate_ca_census</span>(<span class='no'>geometry</span>, <span class='no'>level</span>, <span class='no'>vectors</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>tongfen_estimate_ca_census</span>(<span class='no'>geometry</span>, <span class='no'>meta</span>, <span class='no'>level</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,12 +161,13 @@ data from the specified level range</p>
       <td><p>geometry</p></td>
     </tr>
     <tr>
-      <th>level</th>
-      <td><p>level to use for tongfen</p></td>
+      <th>meta</th>
+      <td><p>metadata for the census veraiables to aggregate, for example as returned</p></td>
     </tr>
     <tr>
-      <th>vectors</th>
-      <td><p>census variables to aggregate data for, can be named.</p></td>
+      <th>level</th>
+      <td><p>level to use for tongfen
+by <code>meta_for_ca_census_vectors</code>.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>

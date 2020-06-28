@@ -26,7 +26,7 @@ get_tongfen_census_ct <- function(regions,
   base_geo <- ifelse(is.na(geo_format),NULL,meta$geo_dataset %>% unique %>% sort %>% first )
 
   get_tongfen_ca_census(regions = regions,
-                        vectors = vectors,
+                        meta = meta,
                         level = 'CT',
                         method = 'identifier',
                         tolerance = 500,
@@ -58,7 +58,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
   base_geo <- ifelse(is.na(geo_format),NULL,meta$geo_dataset %>% unique %>% sort %>% first )
 
   get_tongfen_ca_census(regions = regions,
-                        vectors = vectors,
+                        meta = meta,
                         level = 'DA',
                         method = 'statcan',
                         base_geo = base_geo,
@@ -90,7 +90,7 @@ get_tongfen_ca_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_c
   base_geo <- ifelse(is.na(geo_format),NULL,meta$geo_dataset %>% unique %>% sort %>% first )
 
   get_tongfen_ca_census(regions = regions,
-                        vectors = vectors,
+                        meta = meta,
                         level = 'CT',
                         method = 'statcan',
                         base_geo = base_geo,
