@@ -4,14 +4,22 @@
 \alias{tongfen_estimate_ca_census}
 \title{Tongfen estimate data for given geometry}
 \usage{
-tongfen_estimate_ca_census(geometry, meta, level, na.rm = FALSE)
+tongfen_estimate_ca_census(
+  geometry,
+  meta,
+  level,
+  intersection_level = level,
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{geometry}{geometry}
 
 \item{meta}{metadata for the census veraiables to aggregate, for example as returned}
 
-\item{level}{level to use for tongfen
+\item{level}{level to use for tongfen}
+
+\item{intersection_level}{level to use for geometry intersection, if different from tongfen level
 by \code{meta_for_ca_census_vectors}.}
 
 \item{na.rm}{how to deal with NA values, default is \code{FALSE}.}

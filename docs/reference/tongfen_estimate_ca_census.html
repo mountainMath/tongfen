@@ -151,7 +151,13 @@ data from the specified level range" />
 data from the specified level range</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_estimate_ca_census</span>(<span class='no'>geometry</span>, <span class='no'>meta</span>, <span class='no'>level</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>tongfen_estimate_ca_census</span>(
+  <span class='no'>geometry</span>,
+  <span class='no'>meta</span>,
+  <span class='no'>level</span>,
+  <span class='kw'>intersection_level</span> <span class='kw'>=</span> <span class='no'>level</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,7 +172,11 @@ data from the specified level range</p>
     </tr>
     <tr>
       <th>level</th>
-      <td><p>level to use for tongfen
+      <td><p>level to use for tongfen</p></td>
+    </tr>
+    <tr>
+      <th>intersection_level</th>
+      <td><p>level to use for geometry intersection, if different from tongfen level
 by <code>meta_for_ca_census_vectors</code>.</p></td>
     </tr>
     <tr>
