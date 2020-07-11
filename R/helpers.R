@@ -67,18 +67,21 @@ assert <- function (expr, error) {
 aggregate_correspondences <- function(correspondences){
   clean_correspondence_names <- function(correspondence) {
     correspondence %>%
-      select(!matches("Tongfen") | matches("TongfenMethod")) %>%
-      unique()
+      select(!matches("Tongfen") | matches("TongfenMethod"))
   }
   # compute full correspondence
-  correspondence <- correspondences[[1]] %>%
+  # order by length to speed up the process
+  lengths <- correspondences %>% lapply(nrow) %>% unlist %>% rank
+
+  correspondence <- correspondences[[lengths[1]]] %>%
     clean_correspondence_names()
-  if (length(correspondences)>1) for (index in seq(2,length(correspondences))) {
+  if (length(correspondences)>1) for (index in lengths[-1]) {
     c <- correspondences[[index]] %>%
       clean_correspondence_names()
     match_columns <- intersect(names(correspondence),names(c))
     match_columns <- match_columns[!grepl("TongfenMethod",match_columns)]
-    correspondence <- inner_join(correspondence,c,by=match_columns)
+    correspondence <- inner_join(correspondence,c,by=match_columns) %>%
+      unique()
   }
 
   method_columns <- names(correspondence)[grepl("TongfenMethod",names(correspondence))]
