@@ -271,13 +271,13 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
         previous_year <- geo_years[which(geo_years==year)-1]
         ds1 <- geo_datasets[geo_years==year]
         ds2 <- geo_datasets[geo_years==previous_year]
-        if (!is.null(ds1)) {
+        if (!is.null(ds1) && length(ds1)>0) {
           match_column <- intersect(names(c),names(c_links[[ds1]]))
           c <- c %>%
             inner_join(c_links[[ds1]],by=match_column) %>%
             select(-match_column)
         }
-        if (!is.null(ds2)) {
+        if (!is.null(ds2) && length(ds2)>0) {
           match_column <- intersect(names(c),names(c_links[[ds2]]))
           c <- c %>%
             inner_join(c_links[[ds2]],by=match_column) %>%
