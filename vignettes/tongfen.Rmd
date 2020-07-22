@@ -42,6 +42,7 @@ data <- years %>%
   uid_label <- paste0("GeoUID",dataset)
   geo_identifiers <<- c(geo_identifiers,uid_label)
   get_census(dataset, regions=vsb_regions, geo_format = 'sf', level="CT", quiet=TRUE) %>%
+    sf::st_sf() %>%
     rename(!!as.name(uid_label):=GeoUID) %>%
     mutate(Year=year)
 }) %>% setNames(years)

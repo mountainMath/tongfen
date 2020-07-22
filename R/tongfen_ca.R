@@ -35,8 +35,20 @@ GEO_DATASET_LOOKUP <- c(
   setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
 )
 
+geo_dataset_for_years <- function(years){
+  dataset_list <- cancensus::list_census_datasets()
+  years %>%
+    lapply(function(year){
+      dataset_list %>%
+        filter(.data$description==paste0(year," Canada Census")|.data$description==paste0(year," Canada Census and NHS")) %>%
+        pull(.data$geo_dataset) %>%
+        unique()
+    }) %>%
+    unlist()
+}
+
 geo_dataset_from_dataset <- function(datasets){
-  if (FALSE) { # legacy until cansim updates
+  if (TRUE) { # legacy until cancensus updates
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.)
   dataset_list <- cancensus::list_census_datasets()
   lapply(datasets, function(ds){
@@ -234,6 +246,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     if (!(statcan_level %in% c("DB","DA"))) statcan_level <- "DA"
     geo_years <- geo_datasets %>% years_from_datasets()
     years<-as.integer(geo_years)
+    all_geo_years=seq(min(years),max(years),5)
+    all_geo_datasets <- geo_dataset_for_years(all_geo_years)
     prefix=paste0(statcan_level,"UID")
 
     if (level=="CT") {
@@ -248,7 +262,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
         }) %>%
         setNames(geo_datasets)
     } else if (level %in% c("DB","DA")){
-      c_links <- geo_datasets %>%
+      c_links <- all_geo_datasets %>%
         lapply(function(ds){
           year <- years_from_datasets(ds)
           base_column <- paste0(prefix,year)
@@ -258,34 +272,43 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
             select_at(match_column) %>%
             mutate(!!base_column:=!!as.name(match_column))
         }) %>%
-        setNames(geo_datasets)
+        setNames(all_geo_datasets)
     } else {
       stop("Oops, should have caught this earlier.")
     }
 
-    correspondence_years=seq(min(years),max(years),5)[-1]
+    correspondence_years=all_geo_years[-1]
     correspondence <- correspondence_years %>%
       lapply(function(year){
         c <- get_single_correspondence_ca_census_for(year,statcan_level) %>%
           select(-.data$flag)
-        previous_year <- geo_years[which(geo_years==year)-1]
-        ds1 <- geo_datasets[geo_years==year]
-        ds2 <- geo_datasets[geo_years==previous_year]
+        previous_year <- all_geo_years[which(all_geo_years==year)-1]
+        ds1 <- all_geo_datasets[all_geo_years==year]
+        ds2 <- all_geo_datasets[all_geo_years==previous_year]
         if (!is.null(ds1) && length(ds1)>0) {
           match_column <- intersect(names(c),names(c_links[[ds1]]))
-          c <- c %>%
-            inner_join(c_links[[ds1]],by=match_column) %>%
-            select(-match_column)
+          if (!is.null(match_column)) {
+            c <- c %>%
+              inner_join(c_links[[ds1]],by=match_column) %>%
+              select(-all_of(match_column)) %>%
+              unique()
+          }
         }
         if (!is.null(ds2) && length(ds2)>0) {
           match_column <- intersect(names(c),names(c_links[[ds2]]))
-          c <- c %>%
-            inner_join(c_links[[ds2]],by=match_column) %>%
-            select(-match_column)
+          if (!is.null(match_column)) {
+            c <- c %>%
+              inner_join(c_links[[ds2]],by=match_column) %>%
+              select(-all_of(match_column)) %>%
+              unique()
+          }
         }
-        c %>% mutate(TongfenMethod="statcan")
+        c %>%
+          mutate(TongfenMethod="statcan")
       }) %>%
       aggregate_correspondences() %>%
+      select(c(paste0("GeoUID",geo_datasets),"TongfenMethod")) %>%
+      unique() %>%
       get_tongfen_correspondence()
     #setNames(correspondence_years)
   } else {
