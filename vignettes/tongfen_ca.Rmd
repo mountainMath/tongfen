@@ -35,8 +35,10 @@ library(tongfen)
 ```{r}
 rent_variables <- c(rent_2001="v_CA01_1667",rent_2016="v_CA16_4901",  
                     rent_2011="v_CA11N_2292",rent_2006="v_CA06_2050")
+meta <- meta_for_ca_census_vectors(rent_variables) 
+
 regions=list(CMA="59933")
-rent_data <- get_tongfen_ca_census(regions=regions, vectors=rent_variables, quiet=TRUE,
+rent_data <- get_tongfen_ca_census(regions=regions, meta=meta, quiet=TRUE,
                                    method="estimate", level="CT", base_geo = "CA16")
 ```
 
@@ -87,7 +89,9 @@ Data can also be obtained at dissemination area level. As an example we look at 
 ```{r}
 variables <- c("2016_0-14"="v_CA16_4",
                "2011_0-4"="v_CA11F_8","2011_5-9"="v_CA11F_11","2011_10-14"="v_CA11F_14")
-children_data <- get_tongfen_ca_census(regions = vsb_regions, vectors = variables, 
+meta <- meta_for_ca_census_vectors(variables) %>%
+    bind_rows(meta_for_additive_variables(c("CA11","CA16"),"Population"))
+children_data <- get_tongfen_ca_census(regions = vsb_regions, meta = meta, 
                                        level="DA", quiet = TRUE) %>%
   mutate(`2011_0-14`=purrr::reduce(select(sf::st_set_geometry(.,NULL), starts_with("2011_")), `+`)) %>%
   mutate(change=`2016_0-14`/Population_CA16-`2011_0-14`/Population_CA11)

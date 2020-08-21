@@ -183,11 +183,16 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
 
 rename_with_meta <- function(data,meta,ds=NULL){
   if (is.null(meta)) return(data)
+  is_sf = 'sf' %in% class(data) # workaround for rename issues with sf
   m <- meta %>%
     filter(.data$variable %in% names(data))
   if (!is.null(ds)) m <- m %>% filter(.data$geo_dataset == ds)
   if (duplicated(m$variable) %>% sum > 0) stop("Duplicated variable names in metadata for same dataset.")
-  data %>% rename(!!!setNames(m$variable,m$label))
+  data <- data %>%
+    as_tibble() %>% # workaround for rename issues with sf
+    rename(!!!setNames(m$variable,m$label))
+  if (is_sf) data <- data %>% sf::st_sf()  # workaround for rename issues with sf
+  data
 }
 
 #' Perform tongfen according to correspondence
@@ -216,14 +221,18 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
     lapply(function(ds){
       d <- data[[ds]]
       if (base_geo != ds && ("sf" %in% class(d))) {
-        d <- d %>% sf::st_set_geometry(NULL)
+        d <- d %>% sf::st_drop_geometry()
       }
       match_column <- intersect(names(d),names(correspondence))
       if (length(match_column)==0) stop("Did not found matching geographic identifiers.")
       if (length(match_column)>1) warning(paste0("Matching over several geographic identifiers: ",paste0(match_column,collapse=", ")))
+      c <- correspondence %>%
+        select_at(c(match_column,"TongfenID","TongfenUID")) %>%
+        unique()
+      cd <- c %>% filter(duplicated(!!as.name(match_column))) # sanity check
+      assert(nrow(cd)==0,"Problem in tongfen_aggregate, have more than one TongFenID for some GeoUID")
       d<-d %>%
-        inner_join(correspondence %>%
-                     select_at(c(match_column,"TongfenID","TongfenUID")),
+        inner_join(c,
                    by=match_column) %>%
         group_by(.data$TongfenID,.data$TongfenUID)
       if (!is.null(meta)) {
@@ -383,6 +392,7 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
 
   i1 <- cgeo1 %>%
     st_intersects(geo2,sparse = TRUE) %>%
+    as.data.frame() %>%
     as_tibble() %>%
     rename(id1=.data$row.id,id2=.data$col.id) %>%
     left_join(id1,by="id1") %>%
@@ -390,6 +400,7 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
     select(-id1,-id2)
   i2 <- cgeo2 %>%
     st_intersects(geo1,sparse = TRUE) %>%
+    as.data.frame() %>%
     as_tibble() %>%
     rename(id2=.data$row.id,id1=.data$col.id) %>%
     left_join(id1,by="id1") %>%
