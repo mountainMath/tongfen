@@ -399,7 +399,7 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
 #' Tongfen estimate data for given geometry
 #'
 #' @description
-#' \lifecycle{maturing}
+#' \lifecycle{experimental}
 #'
 #' Estimates values for the given census vectors for the given geometry using
 #' data from the specified level range
@@ -411,7 +411,7 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
 #' by \code{meta_for_ca_census_vectors}.
 #' @param na.rm how to deal with NA values, default is \code{FALSE}.
 #'
-#' @export
+#' @internal
 tongfen_estimate_ca_census <- function(geometry, meta, level,
                                        intersection_level = level,
                                        na.rm=FALSE) {
