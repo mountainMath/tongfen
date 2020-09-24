@@ -248,6 +248,11 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     years<-as.integer(geo_years)
     all_geo_years=seq(min(years),max(years),5)
     all_geo_datasets <- geo_dataset_for_years(all_geo_years)
+    for (g_ds in setdiff(all_geo_datasets,geo_datasets)) {
+      data[[g_ds]] <- cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format='sf',
+                                       labels="short", quiet=quiet, use_cache = use_cache) %>%
+        mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
+    }
     prefix=paste0(statcan_level,"UID")
 
     if (level=="CT") {
