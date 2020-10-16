@@ -5,6 +5,9 @@ articles:
   - title : "General TongFen"
     navbar: ~
     contents: tongfen
+  - title : "TongFen for Polling Districts"
+    navbar: ~
+    contents: polling_districts
   - title : "TongFen for Canadian census data"
     navbar: ~
     contents: tongfen_ca

@@ -85,7 +85,7 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3</span>
       </span>
     </div>
 
@@ -110,6 +110,9 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/polling_districts.html">Polling Districts</a>
+    </li>
     <li>
       <a href="../articles/tongfen_ca.html">TongFen for Canadian census data</a>
     </li>
@@ -149,13 +152,13 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
 <p>Aggregate variables to common CTs, returns data2 on new tiling matching data1 geography</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_ca_census_ct</span>(
-  <span class='no'>data1</span>,
-  <span class='no'>data2</span>,
-  <span class='no'>data2_sum_vars</span>,
-  <span class='kw'>data2_group_vars</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(),
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>tongfen_ca_census_ct</span><span class='op'>(</span>
+  <span class='va'>data1</span>,
+  <span class='va'>data2</span>,
+  <span class='va'>data2_sum_vars</span>,
+  data2_group_vars <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span>,
+  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -198,7 +201,7 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -548,6 +548,38 @@ check_tongfen_areas <- function(data,correspondence) {
 }
 
 
+#' A dataset with polling station votes data from the 2015 federal election in the Vancouver area
+#' @name vancouver_elections_data_2015
+#' @docType data
+#' @author  Elections Canada
+#' @references \url{https://www.elections.ca/content.aspx?section=res&dir=rep/off&document=index&lang=e#42GE}
+#' @keywords data
+NULL
+
+#' A dataset with polling district geographies from the 2015 federal election in the Vancouver area
+#' @name vancouver_elections_geos_2015
+#' @docType data
+#' @author  Elections Canada
+#' @references \url{https://www.elections.ca/content.aspx?section=res&dir=rep/off&document=index&lang=e#42GE}
+#' @keywords data
+NULL
+
+#' A dataset with polling station votes data from the 2019 federal election in the Vancouver area
+#' @name vancouver_elections_data_2019
+#' @docType data
+#' @author Elections Canada
+#' @references \url{https://www.elections.ca/content.aspx?section=res&dir=rep/off&document=index&lang=e#43GE}
+#' @keywords data
+NULL
+
+#' A dataset with polling district geographies from the 2019 federal election in the Vancouver area
+#' @name vancouver_elections_geos_2019
+#' @docType data
+#' @author Elections Canada
+#' @references \url{https://www.elections.ca/content.aspx?section=res&dir=rep/off&document=index&lang=e#43GE}
+#' @keywords data
+NULL
+
 #' @import dplyr
 #' @import rlang
 #' @import sf

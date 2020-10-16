@@ -1,9 +1,10 @@
 pandoc: 2.9.2.1
-pkgdown: 1.5.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  polling_districts: polling_districts.html
   tongfen: tongfen.html
   tongfen_ca: tongfen_ca.html
   tongfen_us: tongfen_us.html
-last_built: 2020-08-21T22:00Z
+last_built: 2020-10-16T01:06Z
 

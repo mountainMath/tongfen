@@ -50,7 +50,7 @@ plot_data <- rent_data %>%
          `2006-2011`=rent_2011/rent_2006-1,
          `2011-2016`=rent_2016/rent_2011-1,
          `2001-2016`=rent_2016/rent_2001-1) %>%
-  pivot_longer(cols = periods,
+  pivot_longer(cols = all_of(periods),
                names_to="Period",values_to="Change") %>%
   mutate(Period=factor(Period,level=periods)) %>%
   st_sf()
