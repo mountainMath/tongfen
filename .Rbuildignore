@@ -6,6 +6,7 @@
 ^pkgdown$
 .*data_cache/
 R/hex_sticker.R
+R/tongfen_ca_estimate.R
 ^Meta$
 images
 images/*

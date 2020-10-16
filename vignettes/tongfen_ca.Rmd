@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE,
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 ```
 
 
-```{r setup}
+```{r}
 library(dplyr)
 library(ggplot2)
 library(tidyr)
@@ -80,7 +80,7 @@ vsb <- aggregate_data_with_meta(vsb, meta) %>%
   mutate(rent_share=Renters/Total)
 ```
 
-`r scales::percent(vsb$rent_share)` of Vancouver School District households rent, `r scales::percent(vsb$rent_poor)` of which are shelter cost burdened.
+`r scales::percent(0.5306)` of Vancouver School District households rent, `r scales::percent(0.4475652)` of which are shelter cost burdened.
 
 
 ## Change in Vancouver children
