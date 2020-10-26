@@ -36,11 +36,11 @@ vsb_regions <- list(CSD=c("5915022","5915803"),
 
 geo_identifiers <- c()
 years <- seq(2001,2016,5)
+geo_identifiers <- paste0("GeoUIDCA",substr(as.character(years),3,4))
 data <- years %>% 
   lapply(function(year){
   dataset <- paste0("CA",substr(as.character(year),3,4))
   uid_label <- paste0("GeoUID",dataset)
-  geo_identifiers <<- c(geo_identifiers,uid_label)
   get_census(dataset, regions=vsb_regions, geo_format = 'sf', level="CT", quiet=TRUE) %>%
     sf::st_sf() %>%
     rename(!!as.name(uid_label):=GeoUID) %>%

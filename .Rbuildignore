@@ -14,3 +14,4 @@ card_fix.sh
 ^doc$
 ^LICENSE\.md$
 ^data-raw$
+^CRAN-RELEASE$

@@ -32,8 +32,6 @@ get_canada_federal_election_polling_division_votes <- function(year=2019){
   } else if (year==2015) {
     url="https://www.elections.ca/res/rep/off/ovr2015app/41/data_donnees/pollresults_resultatsbureauCanada.zip"
   }
-  #url="https://www.elections.ca/res/rep/off/ovr2019app/51/data_donnees/pollresults_resultatsbureauCanada.zip"
-  #url="https://www.elections.ca/res/rep/off/ovr2019app/51/data_donnees/polldayregistrations_enregistjourduscrutinCanada.zip"
   if (!dir.exists(base_path)) {
     tmp=tempfile()
     utils::download.file(url,tmp)

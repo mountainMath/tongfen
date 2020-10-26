@@ -43,6 +43,9 @@ A convenience function to validate geographic TongFen fit via area comparison is
 ### Aggregation of variables
 Finding a common tiling of several different yet congruent geographies is only one part of the problem TongFen addresses, aggregating up the variables is the other part. The `tongfen` package deals with this using a *metadata* table that specifies how variables should be aggregated. In it's simplest form values are simply added up. The `meta_for_additive_variables` convenience function builds the metadata for additive variables. Metadata for non-additive variables like averages, ratios or percentages needs more care to build, it requires additional information on the **parent variable** that specifies the denominator of the average, ratio or percentage. Other data, like medians, can't be aggregated up, although `tongfen` can provide estimates of medians on aggregated geographies by treating them as averages.
 
+### Packaged data
+The package ships with a subset of [voting data from Elections Canada](https://www.elections.ca/content.aspx?section=ele&dir=pas&document=index&lang=e) for the 42nd and 43rd federal elections as well as the polling district geographies for the [42nd](https://open.canada.ca/data/en/dataset/6a78ccfd-6bba-4109-b040-87cb8c71ec35) and [43rd](https://open.canada.ca/data/en/dataset/e70e3263-8584-4f22-94cb-8c15b616cbfc). This facilitates running the example vignette on polling districts without having to download external data. Both are available as open data covered under the [Open Government Licence - Canda](https://open.canada.ca/en/open-government-licence-canada).
+
 ## Data-specific implementations
 The need for TongFen comes up frequently with certain types of geographies. Census geographies is one such example. In some cases these data sources come with their own correspondence files that go beyond geographic matchup but also join regions to alleviate data integrity problems like geocoding issues. 
 

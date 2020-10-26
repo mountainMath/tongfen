@@ -37,3 +37,19 @@ Get correspondence data for arbitrary congruent geometries. Congruent means that
 tiling by aggregating several sub-geometries in each of the two input geo data. Worst case scenario the
 only common tiling is given by unioning all sub-geometries and there is no finer common tiling.
 }
+\examples{
+# Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver
+# based on the geographic data.
+\dontrun{
+regions <- list(CSD="5915022")
+
+data_06 <- cancensus::get_census("CA06",regions=regions,geo_format='sf',level="DA") \%>\%
+ rename(GeoUID_06=GeoUID)
+data_16 <- cancensus::get_census("CA16",regions=regions,geo_format="sf",level="DA") \%>\%
+  rename(GeoUID_16=GeoUID)
+
+correspondence <- estimate_tongfen_correspondence(list(data_06, data_16),
+                                                  c("GeoUID_06","GeoUID_16"))
+
+}
+}

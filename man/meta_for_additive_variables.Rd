@@ -19,3 +19,9 @@ a tibble to be used in tongfen_aggregate
 
 Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.
 }
+\examples{
+# Get metadata for additive variable Population for the CA16 and CA06 datasets
+\dontrun{
+meta <- meta_for_additive_variables(c("CA06","CA16"),"Population")
+}
+}

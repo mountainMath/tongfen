@@ -36,6 +36,23 @@ Data at lower aggregation levels may not add up to the more accurate aggregate c
 This function distributes the aggregate level counts proportionally (by population) to the containing lower
 level geographic regions.
 }
+\examples{
+# Proportionally reaggregate visible minority data from dissemination area 2016
+# census data to dissemination block geography, proportionally based on dissemination
+# block population
+\dontrun{
+regions <- list(CSD="5915022")
+variables <- cancensus::child_census_vectors("v_CA16_3954")
+
+da_data <- cancensus::get_census("CA16",regions=regions,
+                                 vectors=setNames(variables$vector,variables$label),
+                                 level="DA")
+geo_data <- cancensus::get_census("CA16",regions=regions,geo_format="sf",level="DB")
+
+db_data <- geo_data \%>\% proportional_reaggregate(da_data,c("DA_UID"="GeoUID"),variables$label)
+
+}
+}
 \keyword{base}
 \keyword{proportionally}
 \keyword{reaggregate}

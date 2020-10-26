@@ -57,3 +57,16 @@ dataframe with variables on common geography
 
 Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
 }
+\examples{
+# Get rent data for census years 2001 through 2016
+\dontrun{
+rent_variables <- c(rent_2001="v_CA01_1667",rent_2016="v_CA16_4901",
+                    rent_2011="v_CA11N_2292",rent_2006="v_CA06_2050")
+meta <- meta_for_ca_census_vectors(rent_variables)
+
+regions=list(CMA="59933")
+rent_data <- get_tongfen_ca_census(regions=regions, meta=meta, quiet=TRUE,
+                                   method="estimate", level="CT", base_geo = "CA16")
+
+}
+}

@@ -44,3 +44,10 @@ dataframe with the multi-census correspondence file
 
 Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available
 }
+\examples{
+# Get correspondance files between CTs in 2006 and 2016 censuses in Vancouver CMA
+\dontrun{
+correspondence <- get_tongfen_correspondence_ca_census(geo_datasets=c('CA06','CA16'),
+                                                       regions=list(CMA="59933"),level='CT')
+}
+}

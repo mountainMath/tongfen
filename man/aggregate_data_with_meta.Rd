@@ -26,3 +26,11 @@ data frame with variables aggregated to new common geography
 Aggregate census data up, assumes data is grouped for aggregation
 Uses data from meta to determine how to aggregate up
 }
+\examples{
+# Aggregate population from DA level to grouped by CT_UID
+\dontrun{
+geo <- cancensus::get_census("CA06",regions=list(CSD="5915022"),level='DA')
+meta <- meta_for_additive_variables("CA06","Population")
+result <- aggregate_data_with_meta(geo \%>\% group_by(CT_UID),meta)
+}
+}

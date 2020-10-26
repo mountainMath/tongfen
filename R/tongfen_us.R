@@ -74,6 +74,23 @@ valid_datasets <- c(
 #' @param base_geo census year to use as base geography, default is `2010`.
 #' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
 #' @export
+#'
+#' @examples
+#' # Get US census data on population and households for 2000 and 2010 censuses on a uniform geography
+#' # based on census tracts.
+#' \dontrun{
+#' variables=c(population="H011001",households="H013001")
+#'
+#' meta <- c(2000,2010) %>%
+#'   lapply(function(year){
+#'     v <- variables %>% setNames(paste0(names(.),"_",year))
+#'     meta_for_additive_variables(paste0("dec",year),v)
+#'   }) %>%
+#'   bind_rows()
+#' census_data <- get_tongfen_us_census(regions = list(state="CA"), meta=meta, level="tract") %>%
+#'   mutate(change=population_2010/households_2010-population_2000/households_2000)
+#'
+#'}
 get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
                                   base_geo = NULL){
 

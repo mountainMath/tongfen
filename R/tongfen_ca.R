@@ -82,6 +82,12 @@ geo_dataset_from_dataset <- function(datasets){
 #' @return tidy dataframe with metadata information for requested variables and additional variables
 #' needed for tongfen operations
 #' @export
+#'
+#' @examples
+#' # Build metadata for vectors
+#' \dontrun{
+#' meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+#'}
 meta_for_ca_census_vectors <- function(vectors){
   nn <- names(vectors)
   vectors <- as.character(vectors) ## strip names just in case
@@ -219,6 +225,13 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
 #' @return dataframe with the multi-census correspondence file
 #' @export
+#'
+#' @examples
+#' # Get correspondance files between CTs in 2006 and 2016 censuses in Vancouver CMA
+#' \dontrun{
+#' correspondence <- get_tongfen_correspondence_ca_census(geo_datasets=c('CA06','CA16'),
+#'                                                        regions=list(CMA="59933"),level='CT')
+#'}
 get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="CT", method="statcan",
                                                  tolerance = 50, area_mismatch_cutoff = 0.1,
                                                  quiet = FALSE, refresh = FALSE) {
@@ -358,6 +371,19 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' @param data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
+#'
+#' @examples
+#' # Get rent data for census years 2001 through 2016
+#' \dontrun{
+#' rent_variables <- c(rent_2001="v_CA01_1667",rent_2016="v_CA16_4901",
+#'                     rent_2011="v_CA11N_2292",rent_2006="v_CA06_2050")
+#' meta <- meta_for_ca_census_vectors(rent_variables)
+#'
+#' regions=list(CMA="59933")
+#' rent_data <- get_tongfen_ca_census(regions=regions, meta=meta, quiet=TRUE,
+#'                                    method="estimate", level="CT", base_geo = "CA16")
+#'
+#'}
 get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                   base_geo=NULL,na.rm=FALSE,
                                   tolerance = 50,

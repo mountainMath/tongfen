@@ -9,6 +9,12 @@
 #' @param variables (named) vecotor with additive variables
 #' @return a tibble to be used in tongfen_aggregate
 #' @export
+#'
+#' @examples
+#' # Get metadata for additive variable Population for the CA16 and CA06 datasets
+#' \dontrun{
+#' meta <- meta_for_additive_variables(c("CA06","CA16"),"Population")
+#' }
 meta_for_additive_variables <- function(dataset,variables){
   nn <- names(variables)
   variables <- as.character(variables)
@@ -34,6 +40,15 @@ meta_for_additive_variables <- function(dataset,variables){
 #' @param source input geography with values
 #' @param meta metadata for variable aggregation
 #' @export
+#'
+#' @examples
+#' # Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies
+#' \dontrun{
+#' geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='DA')
+#' geo2 <- cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format='sf',level='DA')
+#' meta <- meta_for_additive_variables("CA06","Population")
+#' result <- tongfen_estimate(geo2 %>% rename(Population_2016=Population),geo1,meta)
+#'}
 tongfen_estimate <- function(target,source,meta) {
 
   unique_key="tongfen_row_number"
@@ -118,6 +133,14 @@ post_scale <- function(data,meta,meta_var="data_var") {
 #' @param quiet logical, don't emit messages if set to `TRUE`
 #' @return data frame with variables aggregated to new common geography
 #' @export
+#'
+#' @examples
+#' # Aggregate population from DA level to grouped by CT_UID
+#' \dontrun{
+#' geo <- cancensus::get_census("CA06",regions=list(CSD="5915022"),level='DA')
+#' meta <- meta_for_additive_variables("CA06","Population")
+#' result <- aggregate_data_with_meta(geo %>% group_by(CT_UID),meta)
+#'}
 aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE){
   meta <- meta %>% filter(.data$variable %in% names(data))
   grouping_var=groups(data) %>% as.character
@@ -210,6 +233,20 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' expects that `base_geo` is an element of `names(data)`.
 #' @return aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.
 #' @export
+#'
+#' @examples
+#' # aggregate census tract level 2006 population data on common gepgraphy build through
+#' # correspondence from 2006 and 2016 census tracts in the City of Vancouver.
+#' \dontrun{
+#' regions <- list(CSD="5915022")
+#' geo1 <- cancensus::get_census("CA06",regions=regions,geo_format='sf',level='CT')
+#' geo2 <- cancensus::get_census("CA16",regions=regions,geo_format='sf',level='CT')
+#' meta <- meta_for_additive_variables("CA06","Population")
+#' correspondence <- get_tongfen_correspondence_ca_census(geo_datasets=c('CA06','CA16'),
+#'                                                        regions=regions,level='CT')
+#' result <- tongfen_aggregate(list(geo1 %>% rename(GeoUIDCA06=GeoUID),
+#'                                  geo2 %>% rename(GeoUIDCA16=GeoUID)),correspondence,meta)
+#'}
 tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
   data <- ensure_names(data)
   nn <- names(data)
@@ -287,6 +324,23 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
 #' @return dataframe with downsampled variables from parent_data
 #' @keywords reaggregate proportionally wrt base variable
 #' @export
+#'
+#' @examples
+#' # Proportionally reaggregate visible minority data from dissemination area 2016
+#' # census data to dissemination block geography, proportionally based on dissemination
+#' # block population
+#' \dontrun{
+#' regions <- list(CSD="5915022")
+#' variables <- cancensus::child_census_vectors("v_CA16_3954")
+#'
+#' da_data <- cancensus::get_census("CA16",regions=regions,
+#'                                  vectors=setNames(variables$vector,variables$label),
+#'                                  level="DA")
+#' geo_data <- cancensus::get_census("CA16",regions=regions,geo_format="sf",level="DB")
+#'
+#' db_data <- geo_data %>% proportional_reaggregate(da_data,c("DA_UID"="GeoUID"),variables$label)
+#'
+#'}
 proportional_reaggregate <- function(data,parent_data,geo_match,categories,base="Population"){
   # create zero categories if we don't have them on base (for example DB geo)
   for (v in setdiff(categories,names(data))) {
@@ -434,6 +488,22 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
 #' @return A correspondence table linking geo1_uid and geo2_uid with unique TongfenID and TongfenUID columns
 #' that enumerate the common geometry.
 #' @export
+#'
+#' @examples
+#' # Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver
+#' # based on the geographic data.
+#' \dontrun{
+#' regions <- list(CSD="5915022")
+#'
+#' data_06 <- cancensus::get_census("CA06",regions=regions,geo_format='sf',level="DA") %>%
+#'  rename(GeoUID_06=GeoUID)
+#' data_16 <- cancensus::get_census("CA16",regions=regions,geo_format="sf",level="DA") %>%
+#'   rename(GeoUID_16=GeoUID)
+#'
+#' correspondence <- estimate_tongfen_correspondence(list(data_06, data_16),
+#'                                                   c("GeoUID_06","GeoUID_16"))
+#'
+#'}
 estimate_tongfen_correspondence <- function(data,
                                             geo_identifiers,
                                             method = "estimate",
@@ -509,6 +579,23 @@ estimate_tongfen_correspondence <- function(data,
 #' corresponding to each geographic identifier column, the tongfen estimation method and the maximum log ratio
 #' of the areas.
 #' @export
+#'
+#' @examples
+#' # Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver
+#' # based on the geographic data and check estimation errors
+#' \dontrun{
+#' regions <- list(CSD="5915022")
+#'
+#' data_06 <- cancensus::get_census("CA06",regions=regions,geo_format='sf',level="DA") %>%
+#'   rename(GeoUID_06=GeoUID)
+#' data_16 <- cancensus::get_census("CA16",regions=regions,geo_format="sf",level="DA") %>%
+#'   rename(GeoUID_16=GeoUID)
+#'
+#' correspondence <- estimate_tongfen_correspondence(list(data_06, data_16),
+#'                                                   c("GeoUID_06","GeoUID_16"))
+#'
+#' area_check <- check_tongfen_areas(list(data_06, data_16),correspondence)
+#'}
 check_tongfen_areas <- function(data,correspondence) {
   if (!("TongfenMethod" %in% names(correspondence))) {
     correspondence$TongfenMethod <- "unknown"

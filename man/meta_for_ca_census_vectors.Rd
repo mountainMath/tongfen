@@ -19,3 +19,9 @@ needed for tongfen operations
 Build tibble with information on how to aggregate variables given vectors
 Queries list_census_variables to obtain needed information and add in vectors needed for aggregation
 }
+\examples{
+# Build metadata for vectors
+\dontrun{
+meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+}
+}

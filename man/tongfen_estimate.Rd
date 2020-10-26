@@ -18,3 +18,12 @@ tongfen_estimate(target, source, meta)
 
 Estimates data from source geometry onto target geometry
 }
+\examples{
+# Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies
+\dontrun{
+geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='DA')
+geo2 <- cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format='sf',level='DA')
+meta <- meta_for_additive_variables("CA06","Population")
+result <- tongfen_estimate(geo2 \%>\% rename(Population_2016=Population),geo1,meta)
+}
+}
