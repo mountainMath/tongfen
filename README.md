@@ -1,6 +1,8 @@
 # tongfen
 
 [![Build Status](https://travis-ci.org/mountainMath/tongfen.svg?branch=master)](https://travis-ci.org/mountainMath/tongfen)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tongfen)](https://cran.r-project.org/package=tongfen)
+[![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/tongfen)](https://cranlogs.r-pkg.org/badges/tongfen)
 
 <a href="https://mountainmath.github.io/tongfen/index.html"><img src="https://raw.githubusercontent.com/mountainMath/tongfen/master/images/tongfen-sticker.png" alt="tongfen logo" align="right" width = "25%" height = "25%"/></a>
 TongFen (通分) means to convert two fractions to the least common denominator, typically in preparation for further manipulation like addition or subtraction. In English, that's a mouthful and sounds complicated. But in Chinese there is a word for this, TongFen, which makes this process appear very simple.
@@ -13,9 +15,13 @@ When working with geospatial datasets we often want to compare data that is give
 
 ### Installing the package
 
-The package can be installed from GitHub.
 ```
-devtools::install_github("mountainmath/tongfen")
+install.packages("tongfen")
+```
+
+The latest development version can be installed from GitHub.
+```
+remotes::install_github("mountainmath/tongfen")
 library(tongfen)
 ```
 

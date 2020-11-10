@@ -115,8 +115,9 @@
 <div id="installing-the-package" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installing-the-package" class="anchor"></a>Installing the package</h3>
-<p>The package can be installed from GitHub.</p>
-<pre><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("mountainmath/tongfen")
+<pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("tongfen")</a></code></pre>
+<p>The latest development version can be installed from GitHub.</p>
+<pre><code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("mountainmath/tongfen")
 library(tongfen)</a></code></pre>
 </div>
 <div id="caching-correspondence-files" class="section level3">
@@ -145,6 +146,11 @@ library(tongfen)</a></code></pre>
 <h3 class="hasAnchor">
 <a href="#aggregation-of-variables" class="anchor"></a>Aggregation of variables</h3>
 <p>Finding a common tiling of several different yet congruent geographies is only one part of the problem TongFen addresses, aggregating up the variables is the other part. The <code>tongfen</code> package deals with this using a <em>metadata</em> table that specifies how variables should be aggregated. In it’s simplest form values are simply added up. The <code>meta_for_additive_variables</code> convenience function builds the metadata for additive variables. Metadata for non-additive variables like averages, ratios or percentages needs more care to build, it requires additional information on the <strong>parent variable</strong> that specifies the denominator of the average, ratio or percentage. Other data, like medians, can’t be aggregated up, although <code>tongfen</code> can provide estimates of medians on aggregated geographies by treating them as averages.</p>
+</div>
+<div id="packaged-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#packaged-data" class="anchor"></a>Packaged data</h3>
+<p>The package ships with a subset of <a href="https://www.elections.ca/content.aspx?section=ele&amp;dir=pas&amp;document=index&amp;lang=e">voting data from Elections Canada</a> for the 42nd and 43rd federal elections as well as the polling district geographies for the <a href="https://open.canada.ca/data/en/dataset/6a78ccfd-6bba-4109-b040-87cb8c71ec35">42nd</a> and <a href="https://open.canada.ca/data/en/dataset/e70e3263-8584-4f22-94cb-8c15b616cbfc">43rd</a>. This facilitates running the example vignette on polling districts without having to download external data. Both are available as open data covered under the <a href="https://open.canada.ca/en/open-government-licence-canada">Open Government Licence - Canda</a>.</p>
 </div>
 </div>
 <div id="data-specific-implementations" class="section level2">
@@ -192,6 +198,8 @@ library(tongfen)</a></code></pre>
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=tongfen">https://​cloud.r-project.org/​package=tongfen</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/mountainMath/tongfen/">https://​github.com/​mountainMath/​tongfen/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/mountainMath/tongfen/issues">https://​github.com/​mountainMath/​tongfen/​issues</a>
@@ -218,6 +226,8 @@ library(tongfen)</a></code></pre>
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://travis-ci.org/mountainMath/tongfen"><img src="https://travis-ci.org/mountainMath/tongfen.svg?branch=master" alt="Build Status"></a></li>
+<li><a href="https://cran.r-project.org/package=tongfen"><img src="http://www.r-pkg.org/badges/version/tongfen" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://cranlogs.r-pkg.org/badges/tongfen"><img src="https://cranlogs.r-pkg.org/badges/tongfen" alt="CRAN_Downloads_Badge"></a></li>
 </ul>
 </div>
 </div>

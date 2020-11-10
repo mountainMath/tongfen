@@ -53,7 +53,7 @@ get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongf
 }
 
 
-valid_datasets <- c(
+valid_us_census_datasets <- c(
   dec2000 = "US decentennial census 2000",
   dec2010 = "US decentennial census 2010"
 )
@@ -97,7 +97,7 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
   datasets <- meta$dataset %>% unique
   if (is.null(base_geo)) base_geo=datasets[1]
   assert(base_geo %in% datasets,paste0("base_geo has to be one of the datasets ",paste0(datasets,collapse=", ")))
-  invalid_datasets <- setdiff(datasets,names(valid_datasets))
+  invalid_datasets <- setdiff(datasets,names(valid_us_census_datasets))
   assert(length(invalid_datasets)==0, paste0("Invalid datasets :",paste0(invalid_datasets,collapse = ", ")))
   assert(level %in% c('tract','county subdivision'),"Only census tracts and counties are supported right now.")
   assert(survey %in% c('census'),"Only census surveys are supported right now.")
