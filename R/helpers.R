@@ -71,7 +71,7 @@ aggregate_correspondences <- function(correspondences){
   }
   # compute full correspondence
   # order by length to speed up the process
-  lengths <- correspondences %>% lapply(nrow) %>% unlist %>% rank
+  lengths <- correspondences %>% lapply(nrow) %>% unlist %>% rank(ties.method = "first")
 
   correspondence <- correspondences[[lengths[1]]] %>%
     clean_correspondence_names()
