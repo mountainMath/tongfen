@@ -17,6 +17,9 @@ jobs:
     runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+      CM_API_KEY: ${{ secrets.CM_API_KEY }}
+      COMPILE_VIG: ${{ secrets.COMPILE_VIG }}
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
