@@ -199,8 +199,7 @@
 <span class="va">base_geo</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">correspondence</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PD_2019"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">TongfenID</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="op">)</span> 
-<span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span></pre></div>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="op">)</span> </pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="va">focus_area</span> <span class="op">&lt;-</span> <span class="va">base_geo</span><span class="op">[</span><span class="va">base_geo</span><span class="op">$</span><span class="va">TongfenID</span><span class="op">==</span><span class="st">"59039_51"</span>,<span class="op">]</span>
 
@@ -212,8 +211,7 @@
 
 <span class="va">ridings</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">FED_NUM</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span><span class="op">)</span> 
-<span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span>.groups<span class="op">=</span><span class="st">"drop"</span><span class="op">)</span> 
 
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">compare_geos</span><span class="op">)</span> <span class="op">+</span>
@@ -248,8 +246,7 @@
 
 <span class="va">plot_data2</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">FED_NUM</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span><span class="op">)</span> 
-<span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span>.groups<span class="op">=</span><span class="st">"drop"</span><span class="op">)</span> 
 
 <span class="va">plot_data</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">Share_2019</span><span class="op">-</span><span class="va">Share_2015</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -287,7 +284,6 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">correspondence2</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"AP_2019"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">TongfenID</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="va">plot_data</span> <span class="op">&lt;-</span> <span class="va">advanced_base_geo</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">advance_votes_data</span> <span class="op">%&gt;%</span> 

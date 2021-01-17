@@ -51,7 +51,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
     unique %>%
     as.list()
 
-  # This has issues, this is missing tongen regions. Possibly a better approach would be to only
+  # This has issues, this is missing tongfen regions. Possibly a better approach would be to only
   # call get_intersecting_geometries on one of the datasets and then use the statcan correspondence
   # files to determine the full extent of the geometries needed for all levels based on that.
 
