@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -99,14 +99,14 @@
 
       
 
-      </header><script src="tongfen_ca_files/header-attrs-2.5/header-attrs.js"></script><script src="tongfen_ca_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="tongfen_ca_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+      </header><script src="tongfen_ca_files/header-attrs-2.5/header-attrs.js"></script><link href="tongfen_ca_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
 <script src="tongfen_ca_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>TongFen for Canadian census data</h1>
                         <h4 class="author">Jens von Bergmann</h4>
             
-            <h4 class="date">2020-12-13</h4>
+            <h4 class="date">2021-01-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mountainMath/tongfen/blob/master/vignettes/tongfen_ca.Rmd"><code>vignettes/tongfen_ca.Rmd</code></a></small>
       <div class="hidden name"><code>tongfen_ca.Rmd</code></div>
@@ -153,22 +153,22 @@
 <h1 class="hasAnchor">
 <a href="#aggregating-up-data-across-regions" class="anchor"></a>Aggregating up data across regions</h1>
 <p>Another application is simply aggregating up variables for a selection of regions from a single census. Suppose we want to understand the share of renters in the Vancouver School District, as well as the share of renter households spending more than 30% of income on housing.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>vectors &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"v_CA16_4836"</span>,<span class="st">"v_CA16_4838"</span>,<span class="st">"v_CA16_4899"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a>meta=<span class="kw">meta_for_ca_census_vectors</span>(vectors) <span class="op">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">meta_for_additive_variables</span>(<span class="st">"CA16"</span>,<span class="kw">c</span>(<span class="st">"Population"</span>,<span class="st">"Dwellings"</span>,<span class="st">"Households"</span>)))</span>
-<span id="cb4-4"><a href="#cb4-4"></a>vsb_regions &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">CSD=</span><span class="kw">c</span>(<span class="st">"5915022"</span>,<span class="st">"5915803"</span>),</span>
-<span id="cb4-5"><a href="#cb4-5"></a>                    <span class="dt">CT=</span><span class="kw">c</span>(<span class="st">"9330069.01"</span>,<span class="st">"9330069.02"</span>,<span class="st">"9330069.00"</span>))</span>
-<span id="cb4-6"><a href="#cb4-6"></a>vsb &lt;-<span class="st"> </span><span class="kw">get_census</span>(<span class="st">"CA16"</span>,<span class="dt">regions=</span>vsb_regions,<span class="dt">vectors=</span>meta<span class="op">$</span>variable,<span class="dt">labels=</span><span class="st">"short"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#&gt; </span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>Downloading<span class="op">:</span><span class="st"> </span><span class="dv">440</span> B     </span>
-<span id="cb4-9"><a href="#cb4-9"></a>Downloading<span class="op">:</span><span class="st"> </span><span class="dv">440</span> B     </span>
-<span id="cb4-10"><a href="#cb4-10"></a>Downloading<span class="op">:</span><span class="st"> </span><span class="dv">440</span> B     </span>
-<span id="cb4-11"><a href="#cb4-11"></a>Downloading<span class="op">:</span><span class="st"> </span><span class="dv">440</span> B     </span>
-<span id="cb4-12"><a href="#cb4-12"></a>Downloading<span class="op">:</span><span class="st"> </span><span class="dv">440</span> B     </span>
-<span id="cb4-13"><a href="#cb4-13"></a>Downloading<span class="op">:</span><span class="st"> </span><span class="dv">440</span> B</span>
-<span id="cb4-14"><a href="#cb4-14"></a>vsb &lt;-<span class="st"> </span><span class="kw">aggregate_data_with_meta</span>(vsb, meta) <span class="op">%&gt;%</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Total=</span>v_CA16_<span class="dv">4836</span>,<span class="dt">Renters=</span>v_CA16_<span class="dv">4838</span>,<span class="dt">rent_poor=</span>v_CA16_<span class="dv">4899</span><span class="op">/</span><span class="dv">100</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rent_share=</span>Renters<span class="op">/</span>Total)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>vectors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"v_CA16_4836"</span>,<span class="st">"v_CA16_4838"</span>,<span class="st">"v_CA16_4899"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>meta<span class="ot">=</span><span class="fu">meta_for_ca_census_vectors</span>(vectors) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(<span class="fu">meta_for_additive_variables</span>(<span class="st">"CA16"</span>,<span class="fu">c</span>(<span class="st">"Population"</span>,<span class="st">"Dwellings"</span>,<span class="st">"Households"</span>)))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>vsb_regions <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">CSD=</span><span class="fu">c</span>(<span class="st">"5915022"</span>,<span class="st">"5915803"</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">CT=</span><span class="fu">c</span>(<span class="st">"9330069.01"</span>,<span class="st">"9330069.02"</span>,<span class="st">"9330069.00"</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>vsb <span class="ot">&lt;-</span> <span class="fu">get_census</span>(<span class="st">"CA16"</span>,<span class="at">regions=</span>vsb_regions,<span class="at">vectors=</span>meta<span class="sc">$</span>variable,<span class="at">labels=</span><span class="st">"short"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>Downloading<span class="sc">:</span> <span class="dv">440</span> B     </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Downloading<span class="sc">:</span> <span class="dv">440</span> B     </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>Downloading<span class="sc">:</span> <span class="dv">440</span> B     </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>Downloading<span class="sc">:</span> <span class="dv">440</span> B     </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>Downloading<span class="sc">:</span> <span class="dv">440</span> B     </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>Downloading<span class="sc">:</span> <span class="dv">440</span> B</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>vsb <span class="ot">&lt;-</span> <span class="fu">aggregate_data_with_meta</span>(vsb, meta) <span class="sc">%&gt;%</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Total=</span>v_CA16_4836,<span class="at">Renters=</span>v_CA16_4838,<span class="at">rent_poor=</span>v_CA16_4899<span class="sc">/</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rent_share=</span>Renters<span class="sc">/</span>Total)</span></code></pre></div>
 <p>53% of Vancouver School District households rent, 45% of which are shelter cost burdened.</p>
 <div id="change-in-vancouver-children" class="section level2">
 <h2 class="hasAnchor">

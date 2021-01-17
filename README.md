@@ -81,3 +81,21 @@ This method has the example that it works independent of the nature of the under
 
 Methods to facilitate this are still under active development. 
 
+### Cite **cancensus**
+
+If you wish to cite cancensus:
+
+  von Bergmann, J. (2021). tongfen: R package to
+  Make Data Based on Different Geographies Comparable. v0.3.2.
+
+
+A BibTeX entry for LaTeX users is
+```
+  @Manual{,
+    author = {Jens {von Bergmann}},
+    title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
+    year = {2021},
+    note = {R package version 0.3.2},
+    url = {https://mountainmath.github.io/tongfen/},
+  }
+```

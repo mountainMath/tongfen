@@ -1,3 +1,7 @@
+## Update v.0.3.2
+
+- Added `tongfen_estimate_ca_census` function for new CensusMapper endpoint, tying into new {cancensus} functionality.
+
 ## Submission - v.0.3
 
 ## Test environments

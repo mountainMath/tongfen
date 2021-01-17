@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -191,6 +191,21 @@ library(tongfen)</a></code></pre>
 <p>When geographies aren’t sufficiently congruent or the target geography is fixed, we won’t be able to use the <code>tongfen</code> methods to compute the data on a common geography but have to instead rely on estimates. The <code>tongfen_estimate</code> makes no assumption on the underlying geographies and returns estimates of the data on the target geography. It uses area-weighted interpolation to achieve this, and can be refined to dasymmetric estimates using the <code>proportional_reaggregate</code> function.</p>
 <p>This method has the example that it works independent of the nature of the underlying geographies, but comes at the heavy price of only being an estimate. To be useful for research purposes we also need methods to estimate the errors this introduces and the effects this has on subsequent analysis results.</p>
 <p>Methods to facilitate this are still under active development.</p>
+<div id="cite-cancensus" class="section level3">
+<h3 class="hasAnchor">
+<a href="#cite-cancensus" class="anchor"></a>Cite <strong>cancensus</strong>
+</h3>
+<p>If you wish to cite cancensus:</p>
+<p>von Bergmann, J. (2021). tongfen: R package to Make Data Based on Different Geographies Comparable. v0.3.2.</p>
+<p>A BibTeX entry for LaTeX users is</p>
+<pre><code>  @Manual{,
+    author = {Jens {von Bergmann}},
+    title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
+    year = {2021},
+    note = {R package version 0.3.2},
+    url = {https://mountainmath.github.io/tongfen/},
+  }</code></pre>
+</div>
 </div>
 </div>
   </div>
