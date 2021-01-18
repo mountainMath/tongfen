@@ -162,7 +162,9 @@ data from the specified level range</p>
   <span class='va'>meta</span>,
   <span class='va'>level</span>,
   intersection_level <span class='op'>=</span> <span class='va'>level</span>,
-  na.rm <span class='op'>=</span> <span class='cn'>FALSE</span>
+  downsample_level <span class='op'>=</span> <span class='cn'>NULL</span>,
+  na.rm <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  quiet <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -191,8 +193,20 @@ by <code>meta_for_ca_census_vectors</code>. This can be set at a higher aggregat
 for the `get_intersecting_geometries` call.</p></td>
     </tr>
     <tr>
+      <th>downsample_level</th>
+      <td><p>default `NULL`, can be a geographic level lower than `level`, in which case the data is downsamples
+to that geography level proportionally using the value of the `downsample` column (must be supplied) in the `meta`
+argument before intersecting the geometries. This can lead to more accurate results. At this point the only allowed
+variables for the `downsample` column in `meta` are "Population", "Households" or "Dwellings", and it can only be
+one of these for all variables.</p></td>
+    </tr>
+    <tr>
       <th>na.rm</th>
       <td><p>how to deal with NA values, default is <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>suppress progress messages</p></td>
     </tr>
     </table>
 

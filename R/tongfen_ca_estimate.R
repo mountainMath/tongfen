@@ -16,7 +16,13 @@
 #' @param intersection_level level to use for geometry intersection, if different from tongfen level
 #' by \code{meta_for_ca_census_vectors}. This can be set at a higher aggregation level to conserve API points
 #' for the `get_intersecting_geometries` call.
+#' @param downsample_level default `NULL`, can be a geographic level lower than `level`, in which case the data is downsamples
+#' to that geography level proportionally using the value of the `downsample` column (must be supplied) in the `meta`
+#' argument before intersecting the geometries. This can lead to more accurate results. At this point the only allowed
+#' variables for the `downsample` column in `meta` are "Population", "Households" or "Dwellings", and it can only be
+#' one of these for all variables.
 #' @param na.rm how to deal with NA values, default is \code{FALSE}.
+#' @param quiet suppress progress messages
 #' @export
 #'
 #' @examples
@@ -39,12 +45,14 @@
 #'}
 tongfen_estimate_ca_census <- function(geometry, meta, level,
                                        intersection_level = level,
-                                       na.rm=FALSE) {
+                                       downsample_level = NULL,
+                                       na.rm=FALSE,
+                                       quiet=FALSE) {
   datasets <- meta$geo_dataset %>% unique()
   if (length(datasets)!=1) stop("At this point tongfen_estimate_ca_census can only handle data for a single census geography year")
   regions <- datasets %>%
     lapply(function(ds){
-      cancensus::get_intersecting_geometries(dataset=ds, level=intersection_level, geometry=geometry)
+      cancensus::get_intersecting_geometries(dataset=ds, level=intersection_level, geometry=geometry, quiet - quiet)
     }) %>%
     lapply(as_tibble) %>%
     bind_rows() %>%
@@ -57,8 +65,23 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
 
   # So maybe a function like get_tongfen_correspondence_from_seed
   census_data <- get_tongfen_ca_census(regions = regions, meta = meta,
-                                       level = level, na.rm = na.rm) %>%
+                                       level = level, na.rm = na.rm, quiet = quiet) %>%
     sf::st_transform(st_crs(geometry))
+
+  if (!is.null(downsample_level)){
+    if (!("downsample" %in% names(meta))) stop("The downsample column in meta needs to be set")
+    base_vars <- meta %>% pull(downsample) %>% na.omit() %>% unique()
+    if (length(base_vars)==0) stop("The downsample column in meta needs to be set")
+    if (length(base_vars)!=1) stop(paste0("The downsample column has to have a unique variable, you provided ",paste0(base_vars, collapse = ", ")))
+    dg <- cancensus::get_census(dataset=datasets,regions = regions,
+                                level = downsample_level, quiet = quiet, geo_format = "sf") %>%
+      sf::st_transform(st_crs(geometry))
+
+    g <- proportional_reaggregate(dg, census_data,
+                                  geo_match = setNames("GeoUID",paste0(level,"_UID")),
+                                  categories=meta$label, base=base_vars)
+    census_data <- g
+  }
 
   result <- tongfen_estimate(target = geometry, source = census_data, meta = meta)
 }

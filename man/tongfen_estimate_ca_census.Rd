@@ -9,7 +9,9 @@ tongfen_estimate_ca_census(
   meta,
   level,
   intersection_level = level,
-  na.rm = FALSE
+  downsample_level = NULL,
+  na.rm = FALSE,
+  quiet = FALSE
 )
 }
 \arguments{
@@ -27,7 +29,15 @@ the purpose of comparing data across time as a naive application can lead to sys
 by \code{meta_for_ca_census_vectors}. This can be set at a higher aggregation level to conserve API points
 for the `get_intersecting_geometries` call.}
 
+\item{downsample_level}{default `NULL`, can be a geographic level lower than `level`, in which case the data is downsamples
+to that geography level proportionally using the value of the `downsample` column (must be supplied) in the `meta`
+argument before intersecting the geometries. This can lead to more accurate results. At this point the only allowed
+variables for the `downsample` column in `meta` are "Population", "Households" or "Dwellings", and it can only be
+one of these for all variables.}
+
 \item{na.rm}{how to deal with NA values, default is \code{FALSE}.}
+
+\item{quiet}{suppress progress messages}
 }
 \description{
 \lifecycle{maturing}
