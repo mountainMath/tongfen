@@ -80,9 +80,9 @@ This method has the example that it works independent of the nature of the under
 
 Methods to facilitate this are still under active development. 
 
-### Cite **cancensus**
+### Cite **tongfen**
 
-If you wish to cite cancensus:
+If you wish to cite tongfen:
 
   von Bergmann, J. (2021). tongfen: R package to
   Make Data Based on Different Geographies Comparable. v0.3.2.

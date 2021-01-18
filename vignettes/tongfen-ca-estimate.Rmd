@@ -9,8 +9,11 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+	message = FALSE,
+	warning = FALSE,
+	collapse = TRUE,
+  eval = nzchar(Sys.getenv("COMPILE_VIG")),
+	comment = "#>"
 )
 ```
 
@@ -33,14 +36,16 @@ Next we assemble the required metadata for the share of people in LIM-AT and est
 
 ```{r}
 meta <- meta_for_ca_census_vectors(c(limat = "v_CA16_2540"))
-station_data <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT")
+station_data <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT", quiet=TRUE)
 ```
 
 The result is a dataframe with estimates of the share of the population in LIM-AT for each buffered station, which we can plot or use otherwise for further analysis.
 
 ```{r}
+cov_background <- cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format = "sf", quiet=TRUE)
+
 ggplot(station_data) +
-  geom_sf(data=cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format = "sf")) +
+  geom_sf(data=cov_background) +
   geom_sf(aes(fill=limat/100),alpha=0.7) +
   scale_fill_viridis_c(labels=scales::percent) +
   coord_sf(datum=NA) +

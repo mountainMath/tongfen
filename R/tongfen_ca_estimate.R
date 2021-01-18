@@ -52,7 +52,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
   if (length(datasets)!=1) stop("At this point tongfen_estimate_ca_census can only handle data for a single census geography year")
   regions <- datasets %>%
     lapply(function(ds){
-      cancensus::get_intersecting_geometries(dataset=ds, level=intersection_level, geometry=geometry, quiet - quiet)
+      cancensus::get_intersecting_geometries(dataset=ds, level=intersection_level, geometry=geometry, quiet = quiet)
     }) %>%
     lapply(as_tibble) %>%
     bind_rows() %>%
