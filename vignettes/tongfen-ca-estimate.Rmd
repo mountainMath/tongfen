@@ -20,8 +20,6 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(tongfen)
 library(ggplot2)
-library(dplyr)
-library(sf)
 ```
 
 The `tongfen_estimate_ca_census` function implements the full pipeline to estimate census data on custom geographies.
