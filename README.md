@@ -13,7 +13,7 @@ When working with geospatial datasets we often want to compare data that is give
 
 ### Reference
 
-[**TongFen home page and reference guide**](https://mountainmath.github.io/tongfen/index.html)
+[**TongFen home page and reference guide**](https://mountainmath.github.io/tongfen/)
 
 ### Installing the package
 
