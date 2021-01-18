@@ -65,10 +65,11 @@ tongfen_estimate <- function(target,source,meta) {
                                     select(meta$data_var) %>%
                                     rename(!!!safe_rename_vars) %>%
                                     mutate_all(function(x)tidyr::replace_na(x,0)) %>%
-                                    pre_scale(meta,meta_var = "var_name"),
+                                    pre_scale(meta,meta_var = "var_name") ,
                                   target,
                                   extensive = TRUE) %>%
-    rename(!!unique_key:=.data$Group.1) %>%
+    mutate(!!unique_key:=target %>% pull(unique_key)) %>%
+    #rename(!!unique_key:=.data$Group.1) %>%
     post_scale(meta,meta_var = "var_name") %>%
     left_join(target %>% sf::st_set_geometry(NULL),
               by=unique_key) %>%
