@@ -49,21 +49,3 @@ ggplot(station_data) +
        caption="StatCan Census 2016")
 ```
 
-If needed, we can refine the estimates by first downsampling the results to DB level before esimating the census data on our custom geometry. To do this we need to specify the base unit used for proportional downsampling of the data down to census blocks, which is `Population` as our counts are based on population. (There is a slight mismatch as the LIM-AT data is based in population in private households only.) Then we specify `DB` as the geography level to be used for the downsampling.
-
-```{r}
-meta$downsample <- "Population"
-station_data_db <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT",
-                                           downsample_level = "DB")
-
-ggplot(station_data_db) +
-  geom_sf(data=cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format = "sf")) +
-  geom_sf(aes(fill=limat/100),alpha=0.7) +
-  scale_fill_viridis_c(labels=scales::percent) +
-  coord_sf(datum=NA) +
-  labs(title="Share of people in low icome in Vancouver Skytrain station neighbourhoods",
-       fill="Share of people\nin LIM-AT",
-       caption="StatCan Census 2016")
-```
-The result is slightly more accurate estimates, which in particular make a difference at stations near pars or commercial areas that don't contain population or where population density varies greatly for other reasons.
-
