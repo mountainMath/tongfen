@@ -65,11 +65,11 @@ tongfen_estimate <- function(target,source,meta) {
                                     select(meta$data_var) %>%
                                     rename(!!!safe_rename_vars) %>%
                                     mutate_all(function(x)tidyr::replace_na(x,0)) %>%
-                                    pre_scale(meta,meta_var = "data_var"),
+                                    pre_scale(meta,meta_var = "var_name"),
                                   target,
                                   extensive = TRUE) %>%
     rename(!!unique_key:=.data$Group.1) %>%
-    post_scale(meta,meta_var = "data_var") %>%
+    post_scale(meta,meta_var = "var_name") %>%
     left_join(target %>% sf::st_set_geometry(NULL),
               by=unique_key) %>%
     select(-one_of(unique_key)) %>%
@@ -85,7 +85,9 @@ cut_meta <- function(data,meta){
 }
 
 pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
-  parent_lookup <- setNames(meta$parent,meta %>% pull(meta_var))
+  meta_name_lookup <- setNames(meta %>% pull(meta_var),meta$variable)
+  meta$parent_name <- meta_name_lookup[meta$parent]
+  parent_lookup <- setNames(meta$parent_name,meta %>% pull(meta_var))
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
   not_additive <- filter(meta,.data$rule == "Not additive") %>% pull(meta_var)
   median_vars <- filter(meta,.data$rule %in% c("Median")) %>% pull(meta_var)
@@ -106,7 +108,9 @@ pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
 }
 
 post_scale <- function(data,meta,meta_var="data_var") {
-  parent_lookup <- setNames(meta$parent,meta %>% pull(meta_var))
+  meta_name_lookup <- setNames(meta %>% pull(meta_var),meta$variable)
+  meta$parent_name <- meta_name_lookup[meta$parent]
+  parent_lookup <- setNames(meta$parent_name,meta %>% pull(meta_var))
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
 
   for (x in to_scale) {

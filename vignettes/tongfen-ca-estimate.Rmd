@@ -1,0 +1,69 @@
+---
+title: "Estimating Canadian data on custom geographies"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Estimating Canadian data on custom geographies}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tongfen)
+library(ggplot2)
+library(dplyr)
+library(sf)
+```
+
+The `tongfen_estimate_ca_census` function implements the full pipeline to estimate census data on custom geographies.
+
+As an example, we estimate the share of people in low income in Vancouver's skytrain station neighbourhoods. The station neighbourhoods are available as part of the `cancenus` package.
+
+```{r}
+station_buffers <- cancensus::COV_SKYTRAIN_STATIONS
+```
+
+Next we assemble the required metadata for the share of people in LIM-AT and estimate the share on our custom geography using DA level census data. Here we pull the census data based on CT level intersections to preserve API points.
+
+```{r}
+meta <- meta_for_ca_census_vectors(c(limat = "v_CA16_2540"))
+station_data <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT")
+```
+
+The result is a dataframe with estimates of the share of the population in LIM-AT for each buffered station, which we can plot or use otherwise for further analysis.
+
+```{r}
+ggplot(station_data) +
+  geom_sf(data=cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format = "sf")) +
+  geom_sf(aes(fill=limat/100),alpha=0.7) +
+  scale_fill_viridis_c(labels=scales::percent) +
+  coord_sf(datum=NA) +
+  labs(title="Share of people in low icome in Vancouver Skytrain station neighbourhoods",
+       fill="Share of people\nin LIM-AT",
+       caption="StatCan Census 2016")
+```
+
+If needed, we can refine the estimates by first downsampling the results to DB level before esimating the census data on our custom geometry. To do this we need to specify the base unit used for proportional downsampling of the data down to census blocks, which is `Population` as our counts are based on population. (There is a slight mismatch as the LIM-AT data is based in population in private households only.) Then we specify `DB` as the geography level to be used for the downsampling.
+
+```{r}
+meta$downsample <- "Population"
+station_data_db <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT",
+                                           downsample_level = "DB")
+
+ggplot(station_data_db) +
+  geom_sf(data=cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format = "sf")) +
+  geom_sf(aes(fill=limat/100),alpha=0.7) +
+  scale_fill_viridis_c(labels=scales::percent) +
+  coord_sf(datum=NA) +
+  labs(title="Share of people in low icome in Vancouver Skytrain station neighbourhoods",
+       fill="Share of people\nin LIM-AT",
+       caption="StatCan Census 2016")
+```
+The result is slightly more accurate estimates, which in particular make a difference at stations near pars or commercial areas that don't contain population or where population density varies greatly for other reasons.
+
