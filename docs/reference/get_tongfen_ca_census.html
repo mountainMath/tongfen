@@ -169,6 +169,7 @@ Get data from several Candian censuses on a common geography. Requires sf and ca
   area_mismatch_cutoff <span class='op'>=</span> <span class='fl'>0.1</span>,
   quiet <span class='op'>=</span> <span class='cn'>FALSE</span>,
   refresh <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  crs <span class='op'>=</span> <span class='cn'>NULL</span>,
   data_transform <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>d</span><span class='op'>)</span> <span class='va'>d</span>
 <span class='op'>)</span></pre>
 
@@ -222,6 +223,11 @@ only used when method is 'estimate' or 'identifier'</p></td>
     <tr>
       <th>refresh</th>
       <td><p>optional character, refresh data cache for this call, (default `FALSE`)</p></td>
+    </tr>
+    <tr>
+      <th>crs</th>
+      <td><p>optional CRS to transform data to, and use for spatial intersections if method is
+'identifier' or 'estimate'</p></td>
     </tr>
     <tr>
       <th>data_transform</th>

@@ -15,6 +15,7 @@ get_tongfen_ca_census(
   area_mismatch_cutoff = 0.1,
   quiet = FALSE,
   refresh = FALSE,
+  crs = NULL,
   data_transform = function(d) d
 )
 }
@@ -46,6 +47,9 @@ only used when method is 'estimate' or 'identifier'}
 \item{quiet}{suppress download progress output, default is `FALSE`}
 
 \item{refresh}{optional character, refresh data cache for this call, (default `FALSE`)}
+
+\item{crs}{optional CRS to transform data to, and use for spatial intersections if method is
+'identifier' or 'estimate'}
 
 \item{data_transform}{optional transform function to be applied to census data after being returned from cancensus}
 }

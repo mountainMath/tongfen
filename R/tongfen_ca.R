@@ -368,6 +368,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
+#' @param crs optional CRS to transform data to, and use for spatial intersections if method is
+#' 'identifier' or 'estimate'
 #' @param data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
@@ -390,6 +392,7 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                   area_mismatch_cutoff = 0.1,
                                   quiet=FALSE,
                                   refresh=FALSE,
+                                  crs=NULL,
                                   data_transform=function(d)d) {
   use_cache <- !refresh
 
@@ -406,6 +409,8 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                level=level, geo_format='sf',
                                labels="short", quiet=quiet, use_cache = use_cache) %>%
       mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
+    if (!is.null(crs)) c <- c %>% sf::st_transform(crs)
+    c
   }) %>%
     setNames(geo_datasets)
 
