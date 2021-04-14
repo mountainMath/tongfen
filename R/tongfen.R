@@ -39,7 +39,7 @@ meta_for_additive_variables <- function(dataset,variables){
 #' @param target custom geography to estimate values for
 #' @param source input geography with values
 #' @param meta metadata for variable aggregation
-#' @param naive_CI naive confidence intervals for variable estimates
+#' @param na.rm remove NA values when aggregating, default is FALSE
 #' @export
 #'
 #' @examples
@@ -50,7 +50,7 @@ meta_for_additive_variables <- function(dataset,variables){
 #' meta <- meta_for_additive_variables("CA06","Population")
 #' result <- tongfen_estimate(geo2 %>% rename(Population_2016=Population),geo1,meta)
 #'}
-tongfen_estimate <- function(target,source,meta,naive_CI=c()) {
+tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
 
   unique_key="tongfen_row_number"
   target <- target %>% mutate(!!unique_key:=row_number())
@@ -64,7 +64,7 @@ tongfen_estimate <- function(target,source,meta,naive_CI=c()) {
   safe_rename_back <- setNames(meta$var_name,meta$data_var)
 
   # do this manually for better control
-  i = st_intersection(st_geometry(source), st_geometry(target))
+  i = suppressMessages(st_intersection(st_geometry(source), st_geometry(target)))
   idx = attr(i, "idx")
 
   gc = which(st_is(i, "GEOMETRYCOLLECTION"))
@@ -72,47 +72,60 @@ tongfen_estimate <- function(target,source,meta,naive_CI=c()) {
   two_d = which(st_dimension(i) == 2)
   i[two_d] = st_cast(i[two_d], "MULTIPOLYGON")
 
+  source <- source %>% rename(!!!safe_rename_vars)
 
   x_st <- source[idx[,1],, drop=FALSE] %>%
-    select(meta$data_var) %>%
-    pre_scale(meta,meta_var = "label") %>%
+    select(names(safe_rename_vars)) %>%
+    pre_scale(meta,meta_var = "var_name") %>%
     mutate(...area_st = st_area(i) %>% unclass,
            ...area_s = unclass(st_area(.))) %>%
     mutate(...factor = .data$...area_st/.data$...area_s) %>%
-    mutate(...partial = .data$...factor < 0.99)
+    mutate(...partial = .data$...factor < 0.99) %>%
+    st_drop_geometry()
 
 
-  for (ci in naive_CI) {
-    c <- ci/100
-    for (var in meta$data_var) {
-      x_st <- x_st %>%
-        mutate(!!paste0(var,"_lower_",ci) := !!as.name(var) * ifelse(.data$...partial,(1-c) * .data$...factor, 1),
-               !!paste0(var,"_upper_",ci) := !!as.name(var) * ifelse(.data$...partial,(1-c) * .data$...factor + c, 1))
-    }
+  for (var in meta$var_name) {
+    # for (ci in naive_CI) {
+    #   c <- ci/100
+    #   x_st <- x_st %>%
+    #     mutate(!!paste0(var,"_lower_",ci) := !!as.name(var) * ifelse(.data$...partial,(1-c) * .data$...factor, 1),
+    #            !!paste0(var,"_upper_",ci) := !!as.name(var) * ifelse(.data$...partial,(1-c) * .data$...factor + c, 1))
+    #
+    # }
+    x_st <- x_st %>%
+      mutate(!!var:=!!as.name(var) * .data$...factor)
   }
-  x_st <- lapply(x_st, function(v) v * x_st$...area_st / x_st$...area_s) %>%
-    st_sf()
 
-  x_st <- stats::aggregate(x_st, list(idx[,2]), sum)
+  x_st <- stats::aggregate(x_st, list(idx[,2]), sum, na.rm=na.rm)
 
-  df = st_sf(x_st, geometry = st_geometry(target)[x_st$Group.1]) %>%
-    select(-.data$...factor,-.data$...partial,-.data$...area_s,-.data$...area_st,-.data$Group.1) %>%
-    st_set_agr("aggregate")
-
-  result <- sf::st_interpolate_aw(source %>%
-                                    select(meta$data_var) %>%
-                                    rename(!!!safe_rename_vars) %>%
-                                    mutate_all(function(x)tidyr::replace_na(x,0)) %>%
-                                    pre_scale(meta,meta_var = "var_name") ,
-                                  target,
-                                  extensive = TRUE) %>%
-    mutate(!!unique_key:=target %>% pull(unique_key)) %>%
-    #rename(!!unique_key:=.data$Group.1) %>%
-    post_scale(meta,meta_var = "var_name") %>%
-    left_join(target %>% sf::st_set_geometry(NULL),
+  result <- target %>%
+    left_join(x_st %>%
+                select(-.data$...factor,-.data$...partial,-.data$...area_s,-.data$...area_st) %>%
+                rename(!!unique_key:="Group.1"),
               by=unique_key) %>%
-    select(-one_of(unique_key)) %>%
+    select(-all_of(unique_key)) %>%
+    post_scale(meta,meta_var = "var_name") %>%
     rename(!!!safe_rename_back)
+
+  # df = st_sf(x_st, geometry = st_geometry(target)[x_st$Group.1]) %>%
+  #   select(-.data$...factor,-.data$...partial,-.data$...area_s,-.data$...area_st,-.data$Group.1) %>%
+  #   st_set_agr("aggregate")
+
+  # result <- sf::st_interpolate_aw(source %>%
+  #                                   select(meta$data_var) %>%
+  #                                   rename(!!!safe_rename_vars) %>%
+  #                                   mutate_all(function(x)tidyr::replace_na(x,0)) %>%
+  #                                   pre_scale(meta,meta_var = "var_name") ,
+  #                                 target,
+  #                                 extensive = TRUE) %>%
+  #   mutate(!!unique_key:=target %>% pull(unique_key)) %>%
+  #   #rename(!!unique_key:=.data$Group.1) %>%
+  #   post_scale(meta,meta_var = "var_name") %>%
+  #   left_join(target %>% sf::st_set_geometry(NULL),
+  #             by=unique_key) %>%
+  #   select(-one_of(unique_key)) %>%
+  #   rename(!!!safe_rename_back)
+
 
   result
 }

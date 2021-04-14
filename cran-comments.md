@@ -1,7 +1,7 @@
 ## Update v.0.3.2
 
 - Added `tongfen_estimate_ca_census` function for new CensusMapper endpoint, tying into new {cancensus} functionality.
-- Added ability to estimate naive confidence intervals in `tongfen_etimate`
+- Custom impelementation of `tongfen_etimate` for finer control
 - Fix compatibility issue with changes in {sf} package
 
 ## Submission - v.0.3

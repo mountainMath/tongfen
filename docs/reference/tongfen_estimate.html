@@ -158,7 +158,7 @@ Estimates data from source geometry onto target geometry" />
 <p>Estimates data from source geometry onto target geometry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tongfen_estimate</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>source</span>, <span class='va'>meta</span>, naive_CI <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>tongfen_estimate</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>source</span>, <span class='va'>meta</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,8 +176,8 @@ Estimates data from source geometry onto target geometry" />
       <td><p>metadata for variable aggregation</p></td>
     </tr>
     <tr>
-      <th>naive_CI</th>
-      <td><p>naive confidence intervals for variable estimates</p></td>
+      <th>na.rm</th>
+      <td><p>remove NA values when aggregating, default is FALSE</p></td>
     </tr>
     </table>
 

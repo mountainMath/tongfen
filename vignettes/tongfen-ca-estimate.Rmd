@@ -34,7 +34,8 @@ Next we assemble the required metadata for the share of people in LIM-AT and est
 
 ```{r}
 meta <- meta_for_ca_census_vectors(c(limat = "v_CA16_2540"))
-station_data <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT", quiet=TRUE)
+station_data <- tongfen_estimate_ca_census(station_buffers,meta,level = "DA",intersection_level = "CT", 
+                                           quiet=TRUE, na.rm = TRUE)
 ```
 
 The result is a dataframe with estimates of the share of the population in LIM-AT for each buffered station, which we can plot or use otherwise for further analysis.

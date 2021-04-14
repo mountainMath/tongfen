@@ -83,7 +83,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
     census_data <- g
   }
 
-  result <- tongfen_estimate(target = geometry, source = census_data, meta = meta)
+  result <- tongfen_estimate(target = geometry, source = census_data, meta = meta,na.rm = na.rm)
 }
 
 
