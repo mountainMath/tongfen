@@ -1,4 +1,4 @@
-pandoc: 2.11.3.2
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
@@ -7,7 +7,7 @@ articles:
   tongfen: tongfen.html
   tongfen_ca: tongfen_ca.html
   tongfen_us: tongfen_us.html
-last_built: 2021-01-19T16:46Z
+last_built: 2021-04-14T05:03Z
 urls:
   reference: https://mountainmath.github.io/tongfen//reference
   article: https://mountainmath.github.io/tongfen//articles

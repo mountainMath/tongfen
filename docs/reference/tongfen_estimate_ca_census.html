@@ -94,7 +94,7 @@ data from the specified level range" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -132,7 +132,7 @@ data from the specified level range" />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/mountainMath/tongfen/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -155,7 +155,7 @@ data from the specified level range" />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
 <p>Estimates values for the given census vectors for the given geometry using
 data from the specified level range</p>
     </div>
@@ -228,7 +228,7 @@ one of these for all variables.</p></td>
 
 <span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>tongfen_estimate_ca_census</span><span class='op'>(</span><span class='va'>toronto_city_hall</span>,<span class='va'>meta</span>,level<span class='op'>=</span><span class='st'>"DA"</span>,intersection_level<span class='op'>=</span><span class='st'>"CT"</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"Approximately "</span>,<span class='fu'>scales</span><span class='fu'>::</span><span class='fu'><a href='https://scales.r-lib.org//reference/label_number.html'>comma</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>Population</span>,accuracy<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>,
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"Approximately "</span>,<span class='fu'>scales</span><span class='fu'>::</span><span class='fu'><a href='https://scales.r-lib.org/reference/label_number.html'>comma</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>Population</span>,accuracy<span class='op'>=</span><span class='fl'>100</span><span class='op'>)</span>,
              <span class='st'>" people live within a 1 km radius of Toronto City."</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='op'>}</span>

@@ -4,7 +4,7 @@
 \alias{tongfen_estimate}
 \title{Estimate variable values for custom geography}
 \usage{
-tongfen_estimate(target, source, meta)
+tongfen_estimate(target, source, meta, naive_CI = c())
 }
 \arguments{
 \item{target}{custom geography to estimate values for}
@@ -12,6 +12,8 @@ tongfen_estimate(target, source, meta)
 \item{source}{input geography with values}
 
 \item{meta}{metadata for variable aggregation}
+
+\item{naive_CI}{naive confidence intervals for variable estimates}
 }
 \description{
 \lifecycle{maturing}
