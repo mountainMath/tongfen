@@ -108,7 +108,7 @@
       <h1 data-toc-skip>TongFen for Canadian census data</h1>
                         <h4 class="author">Jens von Bergmann</h4>
             
-            <h4 class="date">2021-04-13</h4>
+            <h4 class="date">2021-04-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mountainMath/tongfen/blob/master/vignettes/tongfen_ca.Rmd"><code>vignettes/tongfen_ca.Rmd</code></a></small>
       <div class="hidden name"><code>tongfen_ca.Rmd</code></div>
@@ -117,24 +117,24 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/cancensus">cancensus</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/tongfen">tongfen</a></span><span class="op">)</span>
-<span class="co">#Sys.setenv(CM_API_KEY = getOption("cancensus.api_key"))</span></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="va">rent_variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>rent_2001<span class="op">=</span><span class="st">"v_CA01_1667"</span>,rent_2016<span class="op">=</span><span class="st">"v_CA16_4901"</span>,  
+<span class="co"># cancensus::set_api_key("&lt;your cancensus API key&gt;")</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rent_variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>rent_2001<span class="op">=</span><span class="st">"v_CA01_1667"</span>,rent_2016<span class="op">=</span><span class="st">"v_CA16_4901"</span>,  
                     rent_2011<span class="op">=</span><span class="st">"v_CA11N_2292"</span>,rent_2006<span class="op">=</span><span class="st">"v_CA06_2050"</span><span class="op">)</span>
 <span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_ca_census_vectors.html">meta_for_ca_census_vectors</a></span><span class="op">(</span><span class="va">rent_variables</span><span class="op">)</span> 
 
 <span class="va">regions</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>CMA<span class="op">=</span><span class="st">"59933"</span><span class="op">)</span>
 <span class="va">rent_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_ca_census.html">get_tongfen_ca_census</a></span><span class="op">(</span>regions<span class="op">=</span><span class="va">regions</span>, meta<span class="op">=</span><span class="va">meta</span>, quiet<span class="op">=</span><span class="cn">TRUE</span>,
-                                   method<span class="op">=</span><span class="st">"estimate"</span>, level<span class="op">=</span><span class="st">"CT"</span>, base_geo <span class="op">=</span> <span class="st">"CA16"</span><span class="op">)</span></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="va">periods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2001-2006"</span>,<span class="st">"2006-2011"</span>,<span class="st">"2011-2016"</span>,<span class="st">"2001-2016"</span><span class="op">)</span>
+                                   method<span class="op">=</span><span class="st">"estimate"</span>, level<span class="op">=</span><span class="st">"CT"</span>, base_geo <span class="op">=</span> <span class="st">"CA16"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">periods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2001-2006"</span>,<span class="st">"2006-2011"</span>,<span class="st">"2011-2016"</span>,<span class="st">"2001-2016"</span><span class="op">)</span>
 <span class="va">plot_data</span> <span class="op">&lt;-</span> <span class="va">rent_data</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>`2001-2006`<span class="op">=</span><span class="va">rent_2006</span><span class="op">/</span><span class="va">rent_2001</span><span class="op">-</span><span class="fl">1</span>,
          `2006-2011`<span class="op">=</span><span class="va">rent_2011</span><span class="op">/</span><span class="va">rent_2006</span><span class="op">-</span><span class="fl">1</span>,
@@ -149,14 +149,14 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html">scale_fill_gradient2</a></span><span class="op">(</span>labels<span class="op">=</span><span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/label_percent.html">percent</a></span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span>,xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">123.3</span>,<span class="op">-</span><span class="fl">122.5</span><span class="op">)</span>,ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">49</span>,<span class="fl">49.42</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="st">"Period"</span>,ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Change in average gross rent"</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Change in average gross rent"</span><span class="op">)</span></code></pre></div>
 <p><img src="tongfen_ca_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <div id="aggregating-up-data-across-regions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#aggregating-up-data-across-regions" class="anchor"></a>Aggregating up data across regions</h1>
 <p>Another application is simply aggregating up variables for a selection of regions from a single census. Suppose we want to understand the share of renters in the Vancouver School District, as well as the share of renter households spending more than 30% of income on housing.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="va">vectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"v_CA16_4836"</span>,<span class="st">"v_CA16_4838"</span>,<span class="st">"v_CA16_4899"</span><span class="op">)</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"v_CA16_4836"</span>,<span class="st">"v_CA16_4838"</span>,<span class="st">"v_CA16_4899"</span><span class="op">)</span>
 <span class="va">meta</span><span class="op">=</span><span class="fu"><a href="../reference/meta_for_ca_census_vectors.html">meta_for_ca_census_vectors</a></span><span class="op">(</span><span class="va">vectors</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="../reference/meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="st">"CA16"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Population"</span>,<span class="st">"Dwellings"</span>,<span class="st">"Households"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">vsb_regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"5915022"</span>,<span class="st">"5915803"</span><span class="op">)</span>,
@@ -164,14 +164,14 @@
 <span class="va">vsb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="va">vsb_regions</span>,vectors<span class="op">=</span><span class="va">meta</span><span class="op">$</span><span class="va">variable</span>,labels<span class="op">=</span><span class="st">"short"</span><span class="op">)</span>
 <span class="va">vsb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_data_with_meta.html">aggregate_data_with_meta</a></span><span class="op">(</span><span class="va">vsb</span>, <span class="va">meta</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Total<span class="op">=</span><span class="va">v_CA16_4836</span>,Renters<span class="op">=</span><span class="va">v_CA16_4838</span>,rent_poor<span class="op">=</span><span class="va">v_CA16_4899</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>rent_share<span class="op">=</span><span class="va">Renters</span><span class="op">/</span><span class="va">Total</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>rent_share<span class="op">=</span><span class="va">Renters</span><span class="op">/</span><span class="va">Total</span><span class="op">)</span></code></pre></div>
 <p>53% of Vancouver School District households rent, 45% of which are shelter cost burdened.</p>
 <div id="change-in-vancouver-children" class="section level2">
 <h2 class="hasAnchor">
 <a href="#change-in-vancouver-children" class="anchor"></a>Change in Vancouver children</h2>
 <p>Data can also be obtained at dissemination area level. As an example we look at the change in children aged 0 to 14 in the Vancouver School District.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2016_0-14"</span><span class="op">=</span><span class="st">"v_CA16_4"</span>,
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2016_0-14"</span><span class="op">=</span><span class="st">"v_CA16_4"</span>,
                <span class="st">"2011_0-4"</span><span class="op">=</span><span class="st">"v_CA11F_8"</span>,<span class="st">"2011_5-9"</span><span class="op">=</span><span class="st">"v_CA11F_11"</span>,<span class="st">"2011_10-14"</span><span class="op">=</span><span class="st">"v_CA11F_14"</span><span class="op">)</span>
 <span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_ca_census_vectors.html">meta_for_ca_census_vectors</a></span><span class="op">(</span><span class="va">variables</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="../reference/meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CA11"</span>,<span class="st">"CA16"</span><span class="op">)</span>,<span class="st">"Population"</span><span class="op">)</span><span class="op">)</span>
@@ -184,7 +184,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html">scale_fill_gradient2</a></span><span class="op">(</span>labels<span class="op">=</span><span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/label_percent.html">percent</a></span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Percentage point change in share of children aged 0-14 between 2011 and 2016"</span>,fill<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Percentage point change in share of children aged 0-14 between 2011 and 2016"</span>,fill<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></code></pre></div>
 <p><img src="tongfen_ca_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
 </div>

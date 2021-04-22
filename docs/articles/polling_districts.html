@@ -115,8 +115,8 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Attaching package: 'dplyr'</span>
 <span class="co">#&gt; The following objects are masked from 'package:stats':</span>
@@ -129,19 +129,19 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/tongfen">tongfen</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="co">#&gt; Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.1</span></pre></div>
+<span class="co">#&gt; Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.1</span></code></pre></div>
 <p>A common example where tongfen is useful is polling district level elections data. Polling district boundaries change over time depending on the number of registered voters in each polling district and other factors, but the geographic changes generally occur in a way that keeps districts roughly comparable. To compare data across elections we need to create a common geography. Semi-custom cross-tabulations to generate data on a common geography aren’t available for elections data for obvious reasons.</p>
 <p>TongFen creates a common geography to make the voting data comparable through time on a common geography based on polling districts.</p>
 <p>An alternative method to make data comparable is to use the <code>tongfen_estimate</code> method to generate (dasymetric) area-weighted interpolations of polling data on a common geography, but that is likely to introduce systematic biases as density is a common confounding factor of both, voting patterns and changes in polling district geographies.</p>
 <p>As an example we take data from the 2015 and 2019 Canadian federal elections in the Vancouver area. The package ships with the geographic and voting data.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vancouver_elections_data_2015"</span>,package<span class="op">=</span><span class="st">"tongfen"</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vancouver_elections_data_2015"</span>,package<span class="op">=</span><span class="st">"tongfen"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vancouver_elections_data_2019"</span>,package<span class="op">=</span><span class="st">"tongfen"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vancouver_elections_geos_2015"</span>,package<span class="op">=</span><span class="st">"tongfen"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vancouver_elections_geos_2019"</span>,package<span class="op">=</span><span class="st">"tongfen"</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vancouver_elections_geos_2019"</span>,package<span class="op">=</span><span class="st">"tongfen"</span><span class="op">)</span></code></pre></div>
 <p>To start out we map the polling districts for the two years, coloured by the winning candidate’s party.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="va">party_colours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">party_colours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
   <span class="st">"People's Party"</span><span class="op">=</span><span class="st">"#4a3389"</span>,
   Conservative<span class="op">=</span><span class="st">"#0C499C"</span>,
   <span class="st">"Bloc Québécois"</span><span class="op">=</span><span class="st">"#02819E"</span>,
@@ -175,12 +175,12 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Canada federal election winning candidate party by polling district"</span>, 
-       caption <span class="op">=</span> <span class="st">"Data: Elections Canada"</span><span class="op">)</span></pre></div>
+       caption <span class="op">=</span> <span class="st">"Data: Elections Canada"</span><span class="op">)</span></code></pre></div>
 <p><img src="polling_districts_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <p>On inspection we notice that a lot of the voting district boundaries match up, but there are also clear differences, especially toward the west side of Vancouver. That makes it difficult to directly compare data and for example look at voter shift at fine geographies. To overcome this we compute the correspondence between the two geographies.</p>
 <p>We need to specify the <strong>tolerance</strong>, in units of the projected data (metres in our case), up to which we want to call two geographic regions to be the same. Geographic data is messy, boundaries get refined over time, and it is not uncommon to see boundary shifts of a couple of metres that have little or no material effect on the data. Polling districts generally follow blocks, and we consider changes by 30 metres or less as insignificant.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="va">correspondence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_tongfen_correspondence.html">estimate_tongfen_correspondence</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">correspondence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_tongfen_correspondence.html">estimate_tongfen_correspondence</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">vancouver_elections_geos_2015</span>,<span class="va">vancouver_elections_geos_2019</span><span class="op">)</span>,
   geo_identifiers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PD_2015"</span>,<span class="st">"PD_2019"</span><span class="op">)</span>,
   method <span class="op">=</span> <span class="st">"estimate"</span>,
@@ -196,14 +196,14 @@
          Total_2015<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">Votes_2015</span>,na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Share_2015<span class="op">=</span><span class="va">Votes_2015</span><span class="op">/</span><span class="va">Total_2015</span>,
          Share_2019<span class="op">=</span><span class="va">Votes_2019</span><span class="op">/</span><span class="va">Total_2019</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> </pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="va">base_geo</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> </code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">base_geo</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">correspondence</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PD_2019"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">TongfenID</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="op">)</span> </pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="va">focus_area</span> <span class="op">&lt;-</span> <span class="va">base_geo</span><span class="op">[</span><span class="va">base_geo</span><span class="op">$</span><span class="va">TongfenID</span><span class="op">==</span><span class="st">"59039_51"</span>,<span class="op">]</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="op">)</span> </code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">focus_area</span> <span class="op">&lt;-</span> <span class="va">base_geo</span><span class="op">[</span><span class="va">base_geo</span><span class="op">$</span><span class="va">TongfenID</span><span class="op">==</span><span class="st">"59039_51"</span>,<span class="op">]</span>
 
 <span class="va">bbox</span> <span class="op">&lt;-</span> <span class="va">focus_area</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_buffer</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span>
 
@@ -222,23 +222,23 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">ridings</span>,size<span class="op">=</span><span class="fl">0.75</span>,fill<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">bbox</span>,color<span class="op">=</span><span class="st">"red"</span>,fill<span class="op">=</span><span class="cn">NA</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Federal electoral poll district boundaries TongFen"</span>,caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Federal electoral poll district boundaries TongFen"</span>,caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></code></pre></div>
 <p><img src="polling_districts_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>We notice that the TongFen geometry results in a fairly granular tiling on the east side, and a very coarse geometry on the west. This could likely be improved by cutting out park areas and other areas known not to contain population, just like one would do when using dasymetric area-weighted interpolation. Another option is to check if larger <em>tolerance</em> would still result in satisfactory identification of geographies that haven’t had substantial changes.</p>
 <p>To better understand TongFen works we can zoom into the red rectangle and investigate how areas are joined up in the process.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="va">bb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="va">bbox</span><span class="op">)</span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">bb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="va">bbox</span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">compare_geos</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="st">"type"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">0.25</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">ridings</span>,size<span class="op">=</span><span class="fl">0.75</span>,fill<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">bbox</span>,color<span class="op">=</span><span class="st">"red"</span>,fill<span class="op">=</span><span class="cn">NA</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">bb</span><span class="op">$</span><span class="va">xmin</span>,<span class="va">bb</span><span class="op">$</span><span class="va">xmax</span><span class="op">)</span>,ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">bb</span><span class="op">$</span><span class="va">ymin</span>,<span class="va">bb</span><span class="op">$</span><span class="va">ymax</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Federal electoral poll district boundaries TongFen"</span>,caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Federal electoral poll district boundaries TongFen"</span>,caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></code></pre></div>
 <p><img src="polling_districts_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>Armed with this data we can now easily compute vote change patterns at the harmonized polling district level.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="va">main_parties</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Liberal"</span>,<span class="st">"Conservative"</span>,<span class="st">"Green Party"</span>,<span class="st">"NDP-New Democratic Party"</span><span class="op">)</span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">main_parties</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Liberal"</span>,<span class="st">"Conservative"</span>,<span class="st">"Green Party"</span>,<span class="st">"NDP-New Democratic Party"</span><span class="op">)</span>
 
 <span class="va">plot_data</span> <span class="op">&lt;-</span> <span class="va">base_geo</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">vote_data</span> <span class="op">%&gt;%</span> 
@@ -259,12 +259,12 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="st">"Party"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Percentage point change in share of polling station votes 2015-2019"</span>,
-       fill<span class="op">=</span><span class="st">"Percentage point\nchange 2015-2019"</span>, caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></pre></div>
+       fill<span class="op">=</span><span class="st">"Percentage point\nchange 2015-2019"</span>, caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></code></pre></div>
 <p><img src="polling_districts_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>The information is less informative on the west side, but in the other areas it shows voter shifts to and from each party. Notably, the middle area saw vote losses for all parties, maybe with exception of the Green party. That district saw a former Liberal incumbent candidate run as an independent, taking many Liberal votes with her but likely also attracting votes from former NDP and Conservative supporters. To get more definite estimates we could run an ecological inference model to better understand these vote shifts.</p>
 <p>This data misses the voters voting in advanced polling (and those voting by mail), these should be included in a more thorough analysis. The advanced polling stations do have a geographic component, so we will quickly add these in. Essentially, advanced polling station group a number of electoral districts.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="va">correspondence2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_tongfen_correspondence.html">estimate_tongfen_correspondence</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">correspondence2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_tongfen_correspondence.html">estimate_tongfen_correspondence</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">vancouver_elections_geos_2015</span>,<span class="va">vancouver_elections_geos_2019</span><span class="op">)</span>,
   geo_identifiers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"AP_2015"</span>,<span class="st">"AP_2019"</span><span class="op">)</span>,
   method <span class="op">=</span> <span class="st">"estimate"</span>,
@@ -280,9 +280,9 @@
          Total_2015<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">Votes_2015</span>,na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Share_2015<span class="op">=</span><span class="va">Votes_2015</span><span class="op">/</span><span class="va">Total_2015</span>,
          Share_2019<span class="op">=</span><span class="va">Votes_2019</span><span class="op">/</span><span class="va">Total_2019</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> </pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="va">advanced_base_geo</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> </code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">advanced_base_geo</span> <span class="op">&lt;-</span> <span class="va">vancouver_elections_geos_2019</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">correspondence2</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"AP_2019"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">TongfenID</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="op">)</span>
@@ -307,7 +307,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Percentage point change in share of advance poll votes 2015-2019"</span>,
        fill<span class="op">=</span><span class="st">"Percentage point\nchange 2015-2019"</span>,
-       caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></pre></div>
+       caption<span class="op">=</span><span class="st">"Elections Canada"</span><span class="op">)</span></code></pre></div>
 <p><img src="polling_districts_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
   </div>
 
