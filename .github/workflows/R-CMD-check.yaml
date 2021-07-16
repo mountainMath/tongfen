@@ -11,6 +11,8 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: "30 12 * * 3"
 
 name: R-CMD-check
 
@@ -59,6 +61,9 @@ jobs:
           # rm '/usr/local/bin/gfortran'
           # brew install udunits
           brew install pkg-config gdal proj geos udunits
+      - name: "[Stage] [Linux] Install required system libs"
+        if: runner.os == 'Linux'
+        run: sudo apt install libcurl4-openssl-dev libgit2-dev proj-bin
 
       - name: Query dependencies
         run: |
