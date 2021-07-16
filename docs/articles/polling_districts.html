@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
 
       
 
-      </header><script src="polling_districts_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="polling_districts_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Polling Districts</h1>
@@ -129,7 +129,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/tongfen">tongfen</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="co">#&gt; Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.1</span></code></pre></div>
+<span class="co">#&gt; Linking to GEOS 3.8.1, GDAL 3.2.1, PROJ 7.2.1</span></code></pre></div>
 <p>A common example where tongfen is useful is polling district level elections data. Polling district boundaries change over time depending on the number of registered voters in each polling district and other factors, but the geographic changes generally occur in a way that keeps districts roughly comparable. To compare data across elections we need to create a common geography. Semi-custom cross-tabulations to generate data on a common geography aren’t available for elections data for obvious reasons.</p>
 <p>TongFen creates a common geography to make the voting data comparable through time on a common geography based on polling districts.</p>
 <p>An alternative method to make data comparable is to use the <code>tongfen_estimate</code> method to generate (dasymetric) area-weighted interpolations of polling data on a common geography, but that is likely to introduce systematic biases as density is a common confounding factor of both, voting patterns and changes in polling district geographies.</p>
