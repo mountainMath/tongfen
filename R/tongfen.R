@@ -51,6 +51,19 @@ meta_for_additive_variables <- function(dataset,variables){
 #' result <- tongfen_estimate(geo2 %>% rename(Population_2016=Population),geo1,meta)
 #'}
 tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
+  # make sure we only have polygon type geomtries
+  target_geo_types <- target %>% sf::st_geometry_type() %>% unique
+  source_geo_types <- source %>% sf::st_geometry_type() %>% unique
+  if (length(setdiff(target_geo_types,c("MULTIPOLYGON","POLYGON")))>0) {
+    warning(paste0("Target geometry has to be of type POLYGON or MULTIPOLYGON, but given target has types ",
+                   paste0(target_geo_types,collapse=", "),". Dropping other geometries."))
+    target <- target %>% sf::st_collection_extract("POLYGON")
+  }
+  if (length(setdiff(source_geo_types,c("MULTIPOLYGON","POLYGON")))>0) {
+    warning(paste0("SOURCE geometry has to be of type POLYGON or MULTIPOLYGON, but given SOURCE has types ",
+                   paste0(source_geo_types,collapse=", "),". Dropping other geometries."))
+    source <- source %>% sf::st_collection_extract("POLYGON")
+  }
 
   unique_key="tongfen_row_number"
   target <- target %>% mutate(!!unique_key:=row_number())
@@ -331,7 +344,15 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
       if (!is.null(meta)) {
         d <- d %>%  aggregate_data_with_meta(meta)
       } else {
-        d <- d %>% summarize()
+        if ("sf" %in% class(d)) {
+          geo_column=attr(d,"sf_column")
+          d <- d %>% summarize(!!geo_column:=suppressMessages(sf::st_union(!!as.name(geo_column))) %>%
+                      sf::st_cast("MULTIPOLYGON"),
+                      .groups="drop")
+
+        } else {
+          d <- d %>% summarize(.groups="drop")
+        }
       }
     }) %>%
     setNames(nn)
