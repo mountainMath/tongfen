@@ -176,15 +176,14 @@
 <p>The <code>check_tongfen_areas</code> function does exactly this, and we inspect the list of areas in the common geography with maximum log area ratios greater than 0.1. This corresponds to a difference in area of about 10% or more.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tongfen_area_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_tongfen_areas.html">check_tongfen_areas</a></span><span class="op">(</span><span class="va">data</span>,<span class="va">correspondence</span><span class="op">)</span>
-<span class="co">#&gt; Linking to GEOS 3.8.1, GDAL 3.2.1, PROJ 7.2.1</span>
 
 <span class="va">tongfen_area_check</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">max_log_ratio</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 2 x 7</span>
 <span class="co">#&gt;   TongfenID  area_2001 area_2006 area_2011 area_2016 TongfenMethod max_log_ratio</span>
 <span class="co">#&gt;   &lt;chr&gt;          [m^2]     [m^2]     [m^2]     [m^2] &lt;chr&gt;                 &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 9330005.00   1370041   1565155   1569750   1593819 estimate              0.151</span>
-<span class="co">#&gt; 2 9330008.00   5509380   6970320   6943538   6943917 estimate              0.235</span></code></pre></div>
+<span class="co">#&gt; 1 9330005.00  1365653.  1560143.  1564724.  1588715. estimate              0.151</span>
+<span class="co">#&gt; 2 9330008.00  5491709.  6947963.  6921267.  6921645. estimate              0.235</span></code></pre></div>
 <p>We see that there are two such regions, and it appears that the mismatch is mostly due to the 2001 geography being different. It’s worthwhile to inspect the regions in question by aggregating up the data to the common geography based on 2001 and one of the other geographies and compare the result.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mismatched_tongfen_ids</span> <span class="op">&lt;-</span> <span class="va">tongfen_area_check</span> <span class="op">%&gt;%</span>
@@ -205,8 +204,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">"steelblue"</span>,colour<span class="op">=</span><span class="st">"brown"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Tongfen area mismatch check"</span>,caption<span class="op">=</span><span class="st">"StatCan Census 2001-2016"</span><span class="op">)</span>
-<span class="co">#&gt; although coordinates are longitude/latitude, st_union assumes that they are planar</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Tongfen area mismatch check"</span>,caption<span class="op">=</span><span class="st">"StatCan Census 2001-2016"</span><span class="op">)</span></code></pre></div>
 <p><img src="tongfen_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>It appears that the difference is explained by the 2001 geography having the hydro layer clipped out and better fit the north arm of the Fraser river. For completeness we will also visually inspect the common geographies based on all four input geographies.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
