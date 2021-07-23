@@ -28,6 +28,7 @@ Suggests:
     rmarkdown,
     RColorBrewer,
     ggplot2,
+    geojsonsf,
     cancensus,
     tidycensus,
     spelling,
