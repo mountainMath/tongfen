@@ -187,7 +187,8 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
     url=correspondence_ca_census_urls[[year]][[level]]
     tmp=tempfile()
     utils::download.file(url,tmp)
-    exdir=file.path(tempdir(),"correspondence")
+    exdir=file.path(tempdir(),paste0("correspondence_",year,"_",level))
+    if (dir.exists(exdir)) file.remove(exdir,recursive=TRUE)
     dir.create(exdir,showWarnings = FALSE)
     utils::unzip(tmp,exdir=exdir)
     file=dir(exdir,"\\.txt|\\.csv")
