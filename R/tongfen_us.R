@@ -14,9 +14,32 @@ get_us_ct_correspondence_path <- function(state,year){
     path <- paste0("https://www2.census.gov/geo/docs/maps-data/data/rel/trf_txt/",
                    tolower(states$state),
                    states$state_code,"trf.txt")
+  } else if (year=="2020") {
+    states <- fips_code_for_state(state)
+    if (nrow(states)!= 1) {
+      stop(paste0("Could not determine state: ",state))
+    }
+    path <- paste0("https://www2.census.gov/geo/docs/maps-data/data/rel2020/t10t20/TAB2010_TAB2020_ST",
+                   states$state_code,".zip")
   }
 }
 
+get_us_ct_correspondence_2020 <- function(state,cache_path=getOption("tongfen.cache_path")) {
+  states <- fips_code_for_state(state)
+  cache_path = file.path(cache_path %||% tempdir(),"us_data")
+
+  path <- get_us_ct_correspondence_path(state,2020)
+  local_path <-  file.path(cache_path,basename(path))
+  if (!file.exists(local_path)) {
+    if (!dir.exists(cache_path)) dir.create(cache_path)
+    utils::download.file(path,local_path,quiet = TRUE)
+  }
+  readr::read_delim(local_path,delim="|", col_types = "cccccnncccnncnn") %>%
+    mutate(GEOID10=paste0(STATE_2010,COUNTY_2010,TRACT_2010),
+           GEOID20=paste0(STATE_2020,COUNTY_2020,TRACT_2020)) %>%
+    select(GEOID10,GEOID20)%>%
+    unique
+}
 
 get_us_ct_correspondence <- function(state,cache_path=getOption("tongfen.cache_path")){
   path <- get_us_ct_correspondence_path(state,"2010")
