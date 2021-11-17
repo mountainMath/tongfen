@@ -26,8 +26,14 @@ inner_join_tongfen_correspondence <- function(data,correspondence,link){
 
 get_tongfen_correspondence <- function(dd){
   hs <- names(dd)[!grepl("TongfenMethod",names(dd))]
+  index = 1
   ddd<- dd %>%
-    mutate(TongfenID=!!as.name(hs[1]))
+    mutate(TongfenID=!!as.name(hs[index]))
+
+  while (index<length(hs) && filter(ddd,is.na(.data$TongfenID)) %>% nrow > 0) {
+    ddd<- ddd %>%
+      mutate(TongfenID=coalesce(.data$TongfenID,paste0(index,"_",!!as.name(hs[index]))))
+  }
 
   done_tongfen <- FALSE
   iterations <- 0

@@ -35,13 +35,13 @@ get_us_ct_correspondence_2020 <- function(state,cache_path=getOption("tongfen.ca
     utils::download.file(path,local_path,quiet = TRUE)
   }
   readr::read_delim(local_path,delim="|", col_types = "cccccnncccnncnn") %>%
-    mutate(GEOID10=paste0(STATE_2010,COUNTY_2010,TRACT_2010),
-           GEOID20=paste0(STATE_2020,COUNTY_2020,TRACT_2020)) %>%
-    select(GEOID10,GEOID20)%>%
+    mutate(GEOID10=paste0(.data$STATE_2010,.data$COUNTY_2010,.data$TRACT_2010),
+           GEOID20=paste0(.data$STATE_2020,.data$COUNTY_2020,.data$TRACT_2020)) %>%
+    select(.data$GEOID10,.data$GEOID20)%>%
     unique
 }
 
-get_us_ct_correspondence <- function(state,cache_path=getOption("tongfen.cache_path")){
+get_us_ct_correspondence_2010 <- function(state,cache_path=getOption("tongfen.cache_path")){
   path <- get_us_ct_correspondence_path(state,"2010")
   file <- basename(path)
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
@@ -61,6 +61,29 @@ get_us_ct_correspondence <- function(state,cache_path=getOption("tongfen.cache_p
                      col_types = "cccciiccccccciicccnnnnnnnnnnnn")
 }
 
+get_us_ct_correspondence <- function(state, datasets,
+                                     cache_path=getOption("tongfen.cache_path")){
+  c <- NULL
+  if (setdiff(datasets,c("dec2000","dec2010","dec2020")) %>% length() > 0) {
+    stop("Invalid census years, can only match censuses 2000 through 2020")
+  }
+  if ("dec2000" %in% datasets) {
+    c<-get_us_ct_correspondence_2010(state,cache_path=cache_path) %>%
+      select(matches("^GEOID\\d{2}$"))
+    if ("dec2020" %in% datasets) {
+      c2 <- get_us_ct_correspondence_2020(state,cache_path=cache_path) %>%
+        select(matches("^GEOID\\d{2}$"))
+      c <- full_join(c,c2,by="GEOID10")
+    }
+    if (!("dec2010" %in% datasets)) c <- c %>% select(-.data$GEOIOD10)
+    c <- c %>% unique
+  } else if ("dec2020" %in% datasets) {
+    c<-get_us_ct_correspondence_2020(state,cache_path=cache_path) %>%
+      select(matches("^GEOID\\d{2}$"))
+  } else stop("Invalid census years, can only match censuses 2000 through 2020")
+  c
+}
+
 get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongfen.cache_path")){
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
   file <- "Cousub_comparability.xlsx"
@@ -78,7 +101,8 @@ get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongf
 
 valid_us_census_datasets <- c(
   dec2000 = "US decentennial census 2000",
-  dec2010 = "US decentennial census 2010"
+  dec2010 = "US decentennial census 2010",
+  dec2020 = "US decentennial census 2020"
 )
 
 #' Get US census data for 2000 and 2010 census on common census tract based geography
@@ -127,8 +151,7 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
 
   regions$state %>% lapply(function(state){
     if (level=='tract') {
-      correspondence <-  get_us_ct_correspondence(state) %>%
-        select(.data$GEOID00,.data$GEOID10)
+      correspondence <-  get_us_ct_correspondence(state,datasets)
     } else  if (level=="county subdivision") {
       fips <- fips_code_for_state(state)$state_code
       correspondence <-  get_us_county_subdivision_correspondence() %>%

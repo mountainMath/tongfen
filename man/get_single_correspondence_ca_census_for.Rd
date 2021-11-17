@@ -11,7 +11,7 @@ get_single_correspondence_ca_census_for(
 )
 }
 \arguments{
-\item{year}{census year}
+\item{year}{census year, only 2006 through 2021 are supported}
 
 \item{level}{geographic level, DA or DB}
 

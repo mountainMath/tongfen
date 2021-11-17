@@ -102,7 +102,7 @@
 
       
 
-      </header><script src="tongfen_us_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="tongfen_us_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>TongFen for US census data</h1>
@@ -131,13 +131,13 @@
     <span class="op">}</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">meta</span>
-<span class="co">#&gt; # A tibble: 4 x 8</span>
-<span class="co">#&gt;   variable dataset label           type   aggregation rule    geo_dataset parent</span>
-<span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;       &lt;lgl&gt; </span>
-<span class="co">#&gt; 1 H011001  dec2000 population_2000 Manual Additive    Additi… dec2000     NA    </span>
-<span class="co">#&gt; 2 H013001  dec2000 households_2000 Manual Additive    Additi… dec2000     NA    </span>
-<span class="co">#&gt; 3 H011001  dec2010 population_2010 Manual Additive    Additi… dec2010     NA    </span>
-<span class="co">#&gt; 4 H013001  dec2010 households_2010 Manual Additive    Additi… dec2010     NA</span></code></pre></div>
+<span class="co">#&gt; # A tibble: 4 × 8</span>
+<span class="co">#&gt;   variable dataset label           type   aggregation rule     geo_dataset parent</span>
+<span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;       &lt;lgl&gt; </span>
+<span class="co">#&gt; 1 H011001  dec2000 population_2000 Manual Additive    Additive dec2000     NA    </span>
+<span class="co">#&gt; 2 H013001  dec2000 households_2000 Manual Additive    Additive dec2000     NA    </span>
+<span class="co">#&gt; 3 H011001  dec2010 population_2010 Manual Additive    Additive dec2010     NA    </span>
+<span class="co">#&gt; 4 H013001  dec2010 households_2010 Manual Additive    Additive dec2010     NA</span></code></pre></div>
 <p>Armed with that we can call <code>get_tongfen_us_census</code> to request the data on a common geography based on census tracts and compute the change in household size.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">census_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_us_census.html">get_tongfen_us_census</a></span><span class="op">(</span>regions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>state<span class="op">=</span><span class="st">"CA"</span><span class="op">)</span>, meta<span class="op">=</span><span class="va">meta</span>, level<span class="op">=</span><span class="st">"tract"</span><span class="op">)</span> <span class="op">%&gt;%</span>

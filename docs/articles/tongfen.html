@@ -102,7 +102,7 @@
 
       
 
-      </header><script src="tongfen_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="tongfen_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>General TongFen</h1>
@@ -163,15 +163,15 @@
 <code class="sourceCode R"><span class="va">correspondence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_tongfen_correspondence.html">estimate_tongfen_correspondence</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">geo_identifiers</span>,
                                                    tolerance<span class="op">=</span><span class="fl">200</span>, computation_crs<span class="op">=</span><span class="fl">3347</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">correspondence</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 6 x 7</span>
-<span class="co">#&gt;   GeoUIDCA01 GeoUIDCA06 GeoUIDCA11 GeoUIDCA16 TongfenMethod TongfenID TongfenUID</span>
-<span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;     </span>
-<span class="co">#&gt; 1 9330040.01 9330040.01 9330040.01 9330040.01 estimate      9330040.… GeoUIDCA0…</span>
-<span class="co">#&gt; 2 9330050.04 9330050.04 9330050.04 9330050.04 estimate      9330050.… GeoUIDCA0…</span>
-<span class="co">#&gt; 3 9330054.02 9330054.02 9330054.02 9330054.02 estimate      9330054.… GeoUIDCA0…</span>
-<span class="co">#&gt; 4 9330060.02 9330060.02 9330060.02 9330060.02 estimate      9330060.… GeoUIDCA0…</span>
-<span class="co">#&gt; 5 9330001.01 9330001.01 9330001.01 9330001.01 estimate      9330001.… GeoUIDCA0…</span>
-<span class="co">#&gt; 6 9330015.01 9330015.01 9330015.01 9330015.01 estimate      9330015.… GeoUIDCA0…</span></code></pre></div>
+<span class="co">#&gt; # A tibble: 6 × 7</span>
+<span class="co">#&gt;   GeoUIDCA01 GeoUIDCA06 GeoUIDCA11 GeoUIDCA16 TongfenMethod TongfenID  TongfenUID</span>
+<span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;     </span>
+<span class="co">#&gt; 1 9330040.01 9330040.01 9330040.01 9330040.01 estimate      9330040.01 GeoUIDCA0…</span>
+<span class="co">#&gt; 2 9330050.04 9330050.04 9330050.04 9330050.04 estimate      9330050.04 GeoUIDCA0…</span>
+<span class="co">#&gt; 3 9330054.02 9330054.02 9330054.02 9330054.02 estimate      9330054.02 GeoUIDCA0…</span>
+<span class="co">#&gt; 4 9330060.02 9330060.02 9330060.02 9330060.02 estimate      9330060.02 GeoUIDCA0…</span>
+<span class="co">#&gt; 5 9330001.01 9330001.01 9330001.01 9330001.01 estimate      9330001.01 GeoUIDCA0…</span>
+<span class="co">#&gt; 6 9330015.01 9330015.01 9330015.01 9330015.01 estimate      9330015.01 GeoUIDCA0…</span></code></pre></div>
 <p>Before we proceed it is useful to check the integrity of our correspondence. One quick way to understand mismatches is to aggregate up the geographies for each year to the common geography and compare their areas. The (logarithm of the) maximum ratio of areas for each region of the common geography gives some measure of mismatch, where taking the logarithm serves to make this measure symmetric.</p>
 <p>The <code>check_tongfen_areas</code> function does exactly this, and we inspect the list of areas in the common geography with maximum log area ratios greater than 0.1. This corresponds to a difference in area of about 10% or more.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -179,7 +179,7 @@
 
 <span class="va">tongfen_area_check</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">max_log_ratio</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 2 x 7</span>
+<span class="co">#&gt; # A tibble: 2 × 7</span>
 <span class="co">#&gt;   TongfenID  area_2001 area_2006 area_2011 area_2016 TongfenMethod max_log_ratio</span>
 <span class="co">#&gt;   &lt;chr&gt;          [m^2]     [m^2]     [m^2]     [m^2] &lt;chr&gt;                 &lt;dbl&gt;</span>
 <span class="co">#&gt; 1 9330005.00  1365653.  1560143.  1564724.  1588715. estimate              0.151</span>
@@ -227,13 +227,13 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="va">years</span>,<span class="st">"Population"</span><span class="op">)</span>
 <span class="va">meta</span>
-<span class="co">#&gt; # A tibble: 4 x 8</span>
-<span class="co">#&gt;   variable   dataset label          type  aggregation rule    geo_dataset parent</span>
-<span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;         &lt;dbl&gt; &lt;lgl&gt; </span>
-<span class="co">#&gt; 1 Population    2001 Population_20… Manu… Additive    Additi…        2001 NA    </span>
-<span class="co">#&gt; 2 Population    2006 Population_20… Manu… Additive    Additi…        2006 NA    </span>
-<span class="co">#&gt; 3 Population    2011 Population_20… Manu… Additive    Additi…        2011 NA    </span>
-<span class="co">#&gt; 4 Population    2016 Population_20… Manu… Additive    Additi…        2016 NA</span></code></pre></div>
+<span class="co">#&gt; # A tibble: 4 × 8</span>
+<span class="co">#&gt;   variable   dataset label           type   aggregation rule  geo_dataset parent</span>
+<span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;       &lt;dbl&gt; &lt;lgl&gt; </span>
+<span class="co">#&gt; 1 Population    2001 Population_2001 Manual Additive    Addi…        2001 NA    </span>
+<span class="co">#&gt; 2 Population    2006 Population_2006 Manual Additive    Addi…        2006 NA    </span>
+<span class="co">#&gt; 3 Population    2011 Population_2011 Manual Additive    Addi…        2011 NA    </span>
+<span class="co">#&gt; 4 Population    2016 Population_2016 Manual Additive    Addi…        2016 NA</span></code></pre></div>
 <p>What’s left is to add up the population data. We choose 2001 as the base year as the clipped boundaries look better.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">breaks</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.15</span>,<span class="op">-</span><span class="fl">0.1</span>,<span class="op">-</span><span class="fl">0.075</span>,<span class="op">-</span><span class="fl">0.05</span>,<span class="op">-</span><span class="fl">0.025</span>,<span class="fl">0</span>,<span class="fl">0.025</span>,<span class="fl">0.05</span>,<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span><span class="op">)</span>

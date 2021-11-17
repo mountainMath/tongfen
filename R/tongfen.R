@@ -65,8 +65,8 @@ tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
     source <- source %>% sf::st_collection_extract("POLYGON")
   }
 
-  unique_key="tongfen_row_number"
-  target <- target %>% mutate(!!unique_key:=row_number())
+  unique_key="...tongfen_row_number"
+  target <- target %>% ungroup %>% mutate(!!unique_key:=row_number())
 
   meta <- meta %>%
     cut_meta(source,.) %>%
