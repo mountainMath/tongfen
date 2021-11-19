@@ -181,7 +181,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
   level=level[1]
   year=as.character(year)[1]
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
-  if (!(year %in% c("2006","2011","2016","2021"))) stop("Year needds to be 2006, 2011, 2016, or 2021")
+  if (!(year %in% c("2006","2011","2016","2021"))) stop("Year needs to be 2006, 2011, 2016, or 2021")
   new_field=paste0(level,"UID",year)
   old_field=paste0(level,"UID",as.integer(year)-5)
   path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".csv"))
