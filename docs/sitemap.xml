@@ -1,96 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://mountainmath.github.io/tongfen//index.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/404.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/add_census_ca_base_variables.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/aggregate_data_with_meta.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/check_tongfen_areas.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/demo.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/check_tongfen_single_areas.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/estimate_tongfen_correspondence.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/polling_districts.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/estimate_tongfen_single_correspondence.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/tongfen-ca-estimate.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_correspondence_ca_census_for.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/tongfen.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_single_correspondence_ca_census_for.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/tongfen_ca.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_tongfen_ca_census.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/articles/tongfen_us.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_tongfen_ca_census_ct_from_da.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/authors.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_tongfen_census_ct.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/index.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_tongfen_census_da.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/news/index.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_tongfen_correspondence_ca_census.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/add_census_ca_base_variables.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/get_tongfen_us_census.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/aggregate_data_with_meta.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/meta_for_additive_variables.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/check_tongfen_areas.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/meta_for_ca_census_vectors.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/check_tongfen_single_areas.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/proportional_reaggregate.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/estimate_tongfen_correspondence.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/tongfen_aggregate.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/estimate_tongfen_single_correspondence.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/tongfen_ca_census_ct.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_correspondence_ca_census_for.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/tongfen_estimate.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_single_correspondence_ca_census_for.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/tongfen_estimate_ca_census.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_single_correspondence_ca_for.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/vancouver_elections_data_2015.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_single_correspondence_for.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/vancouver_elections_data_2019.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/vancouver_elections_geos_2015.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census_ct.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//reference/vancouver_elections_geos_2019.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census_ct_from_da.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//articles/polling_districts.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census_da.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//articles/tongfen-ca-estimate.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_ct.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//articles/tongfen.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_ct_from_da.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//articles/tongfen_ca.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_da.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen//articles/tongfen_us.html</loc>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_census_ct.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_census_ct_from_da.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_census_da.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_correspondence_ca_census.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_us_census.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_us_census_ct.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/meta_for_additive_variables.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/meta_for_ca_census_vectors.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/meta_for_ca_vectors.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/meta_for_vectors.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/proportional_reaggregate.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_aggregate.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_ca_census_ct.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_ca_ct.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_ct.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_estimate.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_estimate_ca_census.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/vancouver_elections_data_2015.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/vancouver_elections_data_2019.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/vancouver_elections_geos_2015.html</loc>
+  </url>
+  <url>
+    <loc>https://mountainmath.github.io/tongfen/reference/vancouver_elections_geos_2019.html</loc>
   </url>
 </urlset>
