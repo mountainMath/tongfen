@@ -30,6 +30,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -42,18 +44,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/tongfen.html">Get started</a>
 </li>
@@ -87,7 +83,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mountainMath/tongfen/">
+  <a href="https://github.com/mountainMath/tongfen/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -102,13 +98,13 @@
 
       
 
-      </header><script src="tongfen-ca-estimate_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Estimating Canadian data on custom geographies</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mountainMath/tongfen/blob/master/vignettes/tongfen-ca-estimate.Rmd"><code>vignettes/tongfen-ca-estimate.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mountainMath/tongfen/blob/HEAD/vignettes/tongfen-ca-estimate.Rmd" class="external-link"><code>vignettes/tongfen-ca-estimate.Rmd</code></a></small>
       <div class="hidden name"><code>tongfen-ca-estimate.Rmd</code></div>
 
     </div>
@@ -116,27 +112,27 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/tongfen">tongfen</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/tongfen" class="external-link">tongfen</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></code></pre></div>
 <p>The <code>tongfen_estimate_ca_census</code> function implements the full pipeline to estimate census data on custom geographies.</p>
 <p>As an example, we estimate the share of people in low income in Vancouver’s skytrain station neighbourhoods. The station neighbourhoods are available as part of the <code>cancenus</code> package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">station_buffers</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="va"><a href="https://mountainmath.github.io/cancensus/index.html/reference/COV_SKYTRAIN_STATIONS.html">COV_SKYTRAIN_STATIONS</a></span></code></pre></div>
+<code class="sourceCode R"><span class="va">station_buffers</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="va"><a href="https://mountainmath.github.io/cancensus/index.html/reference/COV_SKYTRAIN_STATIONS.html" class="external-link">COV_SKYTRAIN_STATIONS</a></span></code></pre></div>
 <p>Next we assemble the required metadata for the share of people in LIM-AT and estimate the share on our custom geography using DA level census data. Here we pull the census data based on CT level intersections to preserve API points.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_ca_census_vectors.html">meta_for_ca_census_vectors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>limat <span class="op">=</span> <span class="st">"v_CA16_2540"</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_ca_census_vectors.html">meta_for_ca_census_vectors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>limat <span class="op">=</span> <span class="st">"v_CA16_2540"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">station_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tongfen_estimate_ca_census.html">tongfen_estimate_ca_census</a></span><span class="op">(</span><span class="va">station_buffers</span>,<span class="va">meta</span>,level <span class="op">=</span> <span class="st">"DA"</span>,intersection_level <span class="op">=</span> <span class="st">"CT"</span>, 
                                            quiet<span class="op">=</span><span class="cn">TRUE</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>The result is a dataframe with estimates of the share of the population in LIM-AT for each buffered station, which we can plot or use otherwise for further analysis.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cov_background</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format <span class="op">=</span> <span class="st">"sf"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">cov_background</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format <span class="op">=</span> <span class="st">"sf"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">station_data</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">cov_background</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">limat</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op">(</span>labels<span class="op">=</span><span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/label_percent.html">percent</a></span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Share of people in low icome in Vancouver Skytrain station neighbourhoods"</span>,
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">station_data</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">cov_background</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">limat</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>labels<span class="op">=</span><span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/label_percent.html" class="external-link">percent</a></span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Share of people in low icome in Vancouver Skytrain station neighbourhoods"</span>,
        fill<span class="op">=</span><span class="st">"Share of people\nin LIM-AT"</span>,
        caption<span class="op">=</span><span class="st">"StatCan Census 2016"</span><span class="op">)</span></code></pre></div>
 <p><img src="tongfen-ca-estimate_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
@@ -151,11 +147,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://mountainmath.ca">Jens von Bergmann</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://mountainmath.ca" class="external-link">Jens von Bergmann</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -163,6 +161,8 @@
 
   
 
+
+  
 
   </body>
 </html>

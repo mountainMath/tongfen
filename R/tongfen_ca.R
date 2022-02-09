@@ -4,7 +4,9 @@ correspondence_ca_census_urls <- list(
   "2011"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2011_92-156_DB_ID_txt.zip",
               "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2011_92-156_DA_AD_txt.zip"),
   "2016"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DB_ID_csv.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DA_AD_csv.zip")
+              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DA_AD_csv.zip"),
+  "2021"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DB_ID.zip",
+              "DA"="https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DA_AD.zip")
 )
 
 ca_census_base <- c("Population","Dwellings","Households")
@@ -171,7 +173,7 @@ add_census_ca_base_variables <- function(meta){
 #' @description
 #' \lifecycle{maturing}
 #'
-#' @param year census year
+#' @param year census year, only 2006 through 2021 are supported
 #' @param level geographic level, DA or DB
 #' @param refresh reload the correspondence files, default is `FALSE`
 #' @return tibble with correspondence table`
@@ -179,7 +181,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
   level=level[1]
   year=as.character(year)[1]
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
-  if (!(year %in% c("2006","2011","2016"))) stop("Year needds to be 2006, 2011 or 2016")
+  if (!(year %in% c("2006","2011","2016","2021"))) stop("Year needs to be 2006, 2011, 2016, or 2021")
   new_field=paste0(level,"UID",year)
   old_field=paste0(level,"UID",as.integer(year)-5)
   path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".csv"))
@@ -187,14 +189,24 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
     url=correspondence_ca_census_urls[[year]][[level]]
     tmp=tempfile()
     utils::download.file(url,tmp)
-    exdir=file.path(tempdir(),"correspondence")
+    exdir=file.path(tempdir(),paste0("correspondence_",year,"_",level))
+    if (dir.exists(exdir)) file.remove(exdir,recursive=TRUE)
     dir.create(exdir,showWarnings = FALSE)
     utils::unzip(tmp,exdir=exdir)
     file=dir(exdir,"\\.txt|\\.csv")
+    if (length(file)==0) {
+      p<-dir(exdir)[1]
+      if (dir.exists(file.path(exdir,p))) {
+        exdir=file.path(exdir,p)
+        file=dir(exdir,"\\.txt|\\.csv")
+      }
+    }
     if (level=="DB") headers=c(new_field,old_field,"flag") else headers=c(new_field,old_field,paste0("DBUID",year),"flag")
+    unwanted <- paste0(level,"UID",year)
     d<-readr::read_csv(file.path(exdir,file),col_types = readr::cols(.default = "c"),col_names = headers) %>%
-      select(c(new_field,old_field,"flag")) %>%
-      unique()
+      select(all_of(c(new_field,old_field,"flag"))) %>%
+      unique() %>%
+      filter(!grepl(unwanted,!!as.name(new_field)))
     readr::write_csv(d,path)
     unlink(tmp)
     unlink(exdir,recursive = TRUE)
@@ -237,7 +249,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
                                                  quiet = FALSE, refresh = FALSE) {
   if (method=="statcan") {
     assert(level %in% c("DB","DA","CT"),"Level has to be one of DB, DA, or CT when using method = 'statcan'.")
-    assert(length(setdiff(geo_datasets,  c("CA16","CA11","CA06","CA01")))==0,"Method 'statcan' only works for census years 2001 through 2016.")
+    assert(length(setdiff(geo_datasets,  c("CA21","CA16","CA11","CA06","CA01")))==0,"Method 'statcan' only works for census years 2001 through 2016.")
   } else if (method=="estimate") {
 
   } else if (method=="identifier") {
