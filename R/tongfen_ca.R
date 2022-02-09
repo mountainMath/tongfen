@@ -249,7 +249,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
                                                  quiet = FALSE, refresh = FALSE) {
   if (method=="statcan") {
     assert(level %in% c("DB","DA","CT"),"Level has to be one of DB, DA, or CT when using method = 'statcan'.")
-    assert(length(setdiff(geo_datasets,  c("CA16","CA11","CA06","CA01")))==0,"Method 'statcan' only works for census years 2001 through 2016.")
+    assert(length(setdiff(geo_datasets,  c("CA21","CA16","CA11","CA06","CA01")))==0,"Method 'statcan' only works for census years 2001 through 2016.")
   } else if (method=="estimate") {
 
   } else if (method=="identifier") {
