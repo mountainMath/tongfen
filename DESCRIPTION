@@ -34,7 +34,7 @@ Suggests:
     spelling,
     readxl,
     scales
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
 URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
 BugReports: https://github.com/mountainMath/tongfen/issues
 Language: en-US
