@@ -211,7 +211,18 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
     unlink(tmp)
     unlink(exdir,recursive = TRUE)
   }
-  readr::read_csv(path,col_types = readr::cols(.default = "c"))
+  result <- readr::read_csv(path,col_types = readr::cols(.default = "c"))
+
+  # manual corrections
+  if (year=="2021" && level=="DB") {
+    # inconsequential boundary shift Cov/UBC
+    result <- result %>% filter(.data$DBUID2021!="59150934010")
+  } else if (year=="2021" && level=="DA") {
+    # inconsequential boundary shift Cov/UBC
+    result <- result %>% filter(!(.data$DAUID2021=="59150934" & .data$DAUID2016 == "59150936"))
+  }
+
+  result
 }
 
 
