@@ -1,7 +1,7 @@
 # tongfen
 
 <!-- badges: start -->
-[![R build status](https://github.com/mountainMath/tongfen/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/tongfen/actions)
+[![R-CMD-check](https://github.com/mountainMath/tongfen/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/tongfen/actions)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tongfen)](https://cran.r-project.org/package=tongfen)
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/tongfen)](https://cranlogs.r-pkg.org/badges/tongfen)
 <!-- badges: end -->
