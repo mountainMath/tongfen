@@ -13,7 +13,6 @@ NeedsCompilation: no
 Imports: 
     dplyr (>= 1.0),
     tidyr (>= 1.0),
-    PROJ,
     sf,
     tibble,
     rlang,

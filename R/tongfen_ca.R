@@ -159,7 +159,10 @@ add_census_ca_base_variables <- function(meta){
   new_meta <- meta$geo_dataset %>%
     unique() %>%
     lapply(function(ds) {
-      meta_for_additive_variables(ds,ca_census_base) %>%
+      ca_base <- setdiff(ca_census_base,meta %>%
+                           filter(.data$geo_dataset==ds) %>%
+                           pull(.data$variable))
+      meta_for_additive_variables(ds,ca_base) %>%
         mutate(units="Number",
                year=years_from_datasets(ds))
     }) %>%
@@ -420,6 +423,8 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
   use_cache <- !refresh
 
   geo_datasets <- meta$geo_dataset %>% unique() %>% sort()
+
+  meta <- meta %>% add_census_ca_base_variables()
 
   data <- lapply(geo_datasets,function(g_ds){
     vectors <- meta %>%
