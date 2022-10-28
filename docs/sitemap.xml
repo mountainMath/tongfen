@@ -10,9 +10,6 @@
     <loc>https://mountainmath.github.io/tongfen/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen/articles/demo.html</loc>
-  </url>
-  <url>
     <loc>https://mountainmath.github.io/tongfen/articles/index.html</loc>
   </url>
   <url>
@@ -64,37 +61,13 @@
     <loc>https://mountainmath.github.io/tongfen/reference/get_single_correspondence_ca_census_for.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_single_correspondence_ca_for.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_single_correspondence_for.html</loc>
-  </url>
-  <url>
     <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census_ct.html</loc>
   </url>
   <url>
     <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census_ct_from_da.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_census_da.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_ct.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_ct_from_da.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_ca_da.html</loc>
-  </url>
-  <url>
     <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_census_ct.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_census_ct_from_da.html</loc>
   </url>
   <url>
     <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_census_da.html</loc>
@@ -106,9 +79,6 @@
     <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_us_census.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/get_tongfen_us_census_ct.html</loc>
-  </url>
-  <url>
     <loc>https://mountainmath.github.io/tongfen/reference/index.html</loc>
   </url>
   <url>
@@ -118,12 +88,6 @@
     <loc>https://mountainmath.github.io/tongfen/reference/meta_for_ca_census_vectors.html</loc>
   </url>
   <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/meta_for_ca_vectors.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/meta_for_vectors.html</loc>
-  </url>
-  <url>
     <loc>https://mountainmath.github.io/tongfen/reference/proportional_reaggregate.html</loc>
   </url>
   <url>
@@ -131,12 +95,6 @@
   </url>
   <url>
     <loc>https://mountainmath.github.io/tongfen/reference/tongfen_ca_census_ct.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_ca_ct.html</loc>
-  </url>
-  <url>
-    <loc>https://mountainmath.github.io/tongfen/reference/tongfen_ct.html</loc>
   </url>
   <url>
     <loc>https://mountainmath.github.io/tongfen/reference/tongfen_estimate.html</loc>

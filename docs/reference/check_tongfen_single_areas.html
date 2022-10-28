@@ -19,7 +19,7 @@ of geo1 and geo2 differ and there are regions at the edges with large difference
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -31,7 +31,7 @@ of geo1 and geo2 differ and there are regions at the edges with large difference
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,22 +79,29 @@ of geo1 and geo2 differ and there are regions at the edges with large difference
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">check_tongfen_single_areas</span><span class="op">(</span><span class="va">geo1</span>, <span class="va">geo2</span>, <span class="va">correspondence</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_tongfen_single_areas</span><span class="op">(</span><span class="va">geo1</span>, <span class="va">geo2</span>, <span class="va">correspondence</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>geo1</dt>
 <dd><p>input geometry 1 of class sf</p></dd>
+
+
 <dt>geo2</dt>
 <dd><p>input geometry 2 of class sf</p></dd>
+
+
 <dt>correspondence</dt>
 <dd><p>Correspondence table between `geo1` and `geo2` as e.g.
 returned by `estimate_tongfen_correspondence`.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
+    
+
+<p>A table with columns `TongfenID`, `area1` and `area2`, where each row corresponds to a unique
 `TongfenID` from them `correspondence` table and the other columns hold the areas of the regions
 aggregated from `geo1` and `geo2`.`</p>
     </div>
@@ -111,7 +118,7 @@ aggregated from `geo1` and `geo2`.`</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -30,7 +30,7 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,27 +77,36 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tongfen_ca_census_ct</span><span class="op">(</span>
-  <span class="va">data1</span>,
-  <span class="va">data2</span>,
-  <span class="va">data2_sum_vars</span>,
-  data2_group_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,
-  na.rm <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tongfen_ca_census_ct</span><span class="op">(</span></span>
+<span>  <span class="va">data1</span>,</span>
+<span>  <span class="va">data2</span>,</span>
+<span>  <span class="va">data2_sum_vars</span>,</span>
+<span>  data2_group_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data1</dt>
 <dd><p>cancensus CT level datatset for year1 &lt; year2 to serve as base for common geography</p></dd>
+
+
 <dt>data2</dt>
 <dd><p>cancensus CT level datatset for year2 to be aggregated to common geography</p></dd>
+
+
 <dt>data2_sum_vars</dt>
 <dd><p>vector of variable names to by summed up when aggregating geographies</p></dd>
+
+
 <dt>data2_group_vars</dt>
 <dd><p>optional vector of grouping variables</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p>optional parameter to remove NA values when summing, default = `TRUE`</p></dd>
+
 </dl></div>
 
   </div>
@@ -112,7 +121,7 @@ Aggregate variables to common CTs, returns data2 on new tiling matching data1 ge
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

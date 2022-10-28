@@ -19,7 +19,7 @@ Will return CT level data"><meta property="og:image" content="https://mountainma
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -31,7 +31,7 @@ Will return CT level data"><meta property="og:image" content="https://mountainma
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,34 +79,47 @@ Will return CT level data</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_tongfen_census_ct</span><span class="op">(</span>
-  <span class="va">regions</span>,
-  <span class="va">vectors</span>,
-  geo_format <span class="op">=</span> <span class="cn">NA</span>,
-  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,
-  quiet <span class="op">=</span> <span class="cn">TRUE</span>,
-  refresh <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_tongfen_census_ct</span><span class="op">(</span></span>
+<span>  <span class="va">regions</span>,</span>
+<span>  <span class="va">vectors</span>,</span>
+<span>  geo_format <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  refresh <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>regions</dt>
 <dd><p>census region list, should be inclusive list of GeoUIDs across censuses</p></dd>
+
+
 <dt>vectors</dt>
 <dd><p>List of cancensus vectors, can come from different census years</p></dd>
+
+
 <dt>geo_format</dt>
 <dd><p>geographic format for returned data, 'sf' for sf format and `NA``</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p>remove NA values when aggregating up values, default is `TRUE`</p></dd>
+
+
 <dt>quiet</dt>
 <dd><p>suppress download progress output, default is `FALSE`</p></dd>
+
+
 <dt>refresh</dt>
 <dd><p>optional character, refresh data cache for this call</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>dataframe with census variables on common geography</p>
+    
+
+<p>dataframe with census variables on common geography</p>
     </div>
 
   </div>
@@ -121,7 +134,7 @@ Will return CT level data</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

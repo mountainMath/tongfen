@@ -19,7 +19,7 @@ a single convenience function."><meta property="og:image" content="https://mount
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -31,7 +31,7 @@ a single convenience function."><meta property="og:image" content="https://mount
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,13 +79,13 @@ a single convenience function.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_tongfen_us_census</span><span class="op">(</span>
-  <span class="va">regions</span>,
-  <span class="va">meta</span>,
-  level <span class="op">=</span> <span class="st">"tract"</span>,
-  survey <span class="op">=</span> <span class="st">"census"</span>,
-  base_geo <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_tongfen_us_census</span><span class="op">(</span></span>
+<span>  <span class="va">regions</span>,</span>
+<span>  <span class="va">meta</span>,</span>
+<span>  level <span class="op">=</span> <span class="st">"tract"</span>,</span>
+<span>  survey <span class="op">=</span> <span class="st">"census"</span>,</span>
+<span>  base_geo <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -93,37 +93,48 @@ a single convenience function.</p>
     <dl><dt>regions</dt>
 <dd><p>list with regions to query the data for. At this stage, the only
 valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``</p></dd>
+
+
 <dt>meta</dt>
 <dd><p>metadata for variables to retrieve</p></dd>
+
+
 <dt>level</dt>
 <dd><p>aggregation level to return the data on. At this stage, the only valid levels are 'tract' and 'county subdivision'.</p></dd>
+
+
 <dt>survey</dt>
 <dd><p>survey to get data for, supported options is "census"</p></dd>
+
+
 <dt>base_geo</dt>
 <dd><p>census year to use as base geography, default is `2010`.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").</p>
+    
+
+<p>sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Get US census data on population and households for 2000 and 2010 censuses on a uniform geography</span></span>
-<span class="r-in"><span class="co"># based on census tracts.</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">variables</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>population<span class="op">=</span><span class="st">"H011001"</span>,households<span class="op">=</span><span class="st">"H013001"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2000</span>,<span class="fl">2010</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">{</span></span>
-<span class="r-in">    <span class="va">v</span> <span class="op">&lt;-</span> <span class="va">variables</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>,<span class="st">"_"</span>,<span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dec"</span>,<span class="va">year</span><span class="op">)</span>,<span class="va">v</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu">bind_rows</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">census_data</span> <span class="op">&lt;-</span> <span class="fu">get_tongfen_us_census</span><span class="op">(</span>regions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>state<span class="op">=</span><span class="st">"CA"</span><span class="op">)</span>, meta<span class="op">=</span><span class="va">meta</span>, level<span class="op">=</span><span class="st">"tract"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu">mutate</span><span class="op">(</span>change<span class="op">=</span><span class="va">population_2010</span><span class="op">/</span><span class="va">households_2010</span><span class="op">-</span><span class="va">population_2000</span><span class="op">/</span><span class="va">households_2000</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get US census data on population and households for 2000 and 2010 censuses on a uniform geography</span></span></span>
+<span class="r-in"><span><span class="co"># based on census tracts.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">variables</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>population<span class="op">=</span><span class="st">"H011001"</span>,households<span class="op">=</span><span class="st">"H013001"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2000</span>,<span class="fl">2010</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">v</span> <span class="op">&lt;-</span> <span class="va">variables</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>,<span class="st">"_"</span>,<span class="va">year</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dec"</span>,<span class="va">year</span><span class="op">)</span>,<span class="va">v</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">census_data</span> <span class="op">&lt;-</span> <span class="fu">get_tongfen_us_census</span><span class="op">(</span>regions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>state<span class="op">=</span><span class="st">"CA"</span><span class="op">)</span>, meta<span class="op">=</span><span class="va">meta</span>, level<span class="op">=</span><span class="st">"tract"</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu">mutate</span><span class="op">(</span>change<span class="op">=</span><span class="va">population_2010</span><span class="op">/</span><span class="va">households_2010</span><span class="op">-</span><span class="va">population_2000</span><span class="op">/</span><span class="va">households_2000</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -138,7 +149,7 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -84,8 +84,8 @@ Methods to facilitate this are still under active development.
 
 If you wish to cite tongfen:
 
-  von Bergmann, J. (2021). tongfen: R package to
-  Make Data Based on Different Geographies Comparable. v0.3.3.
+  von Bergmann, J. (2022). tongfen: R package to
+  Make Data Based on Different Geographies Comparable. v0.3.6.
 
 
 A BibTeX entry for LaTeX users is
@@ -94,7 +94,7 @@ A BibTeX entry for LaTeX users is
     author = {Jens {von Bergmann}},
     title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
     year = {2021},
-    note = {R package version 0.3.3},
+    note = {R package version 0.3.6},
     url = {https://mountainmath.github.io/tongfen/},
   }
 ```

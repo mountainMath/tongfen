@@ -18,7 +18,7 @@ Estimates data from source geometry onto target geometry"><meta property="og:ima
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -30,7 +30,7 @@ Estimates data from source geometry onto target geometry"><meta property="og:ima
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,34 +77,43 @@ Estimates data from source geometry onto target geometry"><meta property="og:ima
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tongfen_estimate</span><span class="op">(</span><span class="va">target</span>, <span class="va">source</span>, <span class="va">meta</span>, na.rm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tongfen_estimate</span><span class="op">(</span><span class="va">target</span>, <span class="va">source</span>, <span class="va">meta</span>, na.rm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>target</dt>
 <dd><p>custom geography to estimate values for</p></dd>
+
+
 <dt>source</dt>
 <dd><p>input geography with values</p></dd>
+
+
 <dt>meta</dt>
 <dd><p>metadata for variable aggregation</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p>remove NA values when aggregating, default is FALSE</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>`target` with estimated quantities from `source` as specified by `meta`</p>
+    
+
+<p>`target` with estimated quantities from `source` as specified by `meta`</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">geo1</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA06"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'DA'</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">geo2</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'DA'</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="st">"CA06"</span>,<span class="st">"Population"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">tongfen_estimate</span><span class="op">(</span><span class="va">geo2</span> <span class="op">%&gt;%</span> <span class="fu">rename</span><span class="op">(</span>Population_2016<span class="op">=</span><span class="va">Population</span><span class="op">)</span>,<span class="va">geo1</span>,<span class="va">meta</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">geo1</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA06"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'DA'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">geo2</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'DA'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="st">"CA06"</span>,<span class="st">"Population"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">tongfen_estimate</span><span class="op">(</span><span class="va">geo2</span> <span class="op">%&gt;%</span> <span class="fu">rename</span><span class="op">(</span>Population_2016<span class="op">=</span><span class="va">Population</span><span class="op">)</span>,<span class="va">geo1</span>,<span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -119,7 +128,7 @@ Estimates data from source geometry onto target geometry"><meta property="og:ima
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

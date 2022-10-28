@@ -19,7 +19,7 @@ data from the specified level range"><meta property="og:image" content="https://
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tongfen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -31,7 +31,7 @@ data from the specified level range"><meta property="og:image" content="https://
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,64 +79,77 @@ data from the specified level range</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tongfen_estimate_ca_census</span><span class="op">(</span>
-  <span class="va">geometry</span>,
-  <span class="va">meta</span>,
-  <span class="va">level</span>,
-  intersection_level <span class="op">=</span> <span class="va">level</span>,
-  downsample_level <span class="op">=</span> <span class="cn">NULL</span>,
-  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,
-  quiet <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tongfen_estimate_ca_census</span><span class="op">(</span></span>
+<span>  <span class="va">geometry</span>,</span>
+<span>  <span class="va">meta</span>,</span>
+<span>  <span class="va">level</span>,</span>
+<span>  intersection_level <span class="op">=</span> <span class="va">level</span>,</span>
+<span>  downsample_level <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>geometry</dt>
 <dd><p>geometry</p></dd>
+
+
 <dt>meta</dt>
 <dd><p>metadata for the census variables to aggregate, for example as returned by `meta_for_ca_census_vectors`.
 At this point this function only accepts variables from the same census geography year. We will expand this to also
 allow estimates across multiple census geography years, but this requires further attention to detail. It is
 recommended to apply due caution when running this function separately across several census geography years with
 the purpose of comparing data across time as a naive application can lead to systematic biases.</p></dd>
+
+
 <dt>level</dt>
 <dd><p>level to use for tongfen</p></dd>
+
+
 <dt>intersection_level</dt>
 <dd><p>level to use for geometry intersection, if different from tongfen level
 by <code>meta_for_ca_census_vectors</code>. This can be set at a higher aggregation level to conserve API points
 for the `get_intersecting_geometries` call.</p></dd>
+
+
 <dt>downsample_level</dt>
 <dd><p>default `NULL`, can be a geographic level lower than `level`, in which case the data is downsamples
 to that geography level proportionally using the value of the `downsample` column (must be supplied) in the `meta`
 argument before intersecting the geometries. This can lead to more accurate results. At this point the only allowed
 variables for the `downsample` column in `meta` are "Population", "Households" or "Dwellings", and it can only be
 one of these for all variables.</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p>how to deal with NA values, default is <code>FALSE</code>.</p></dd>
+
+
 <dt>quiet</dt>
 <dd><p>suppress progress messages</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver</span></span>
-<span class="r-in"><span class="co"># based on the geographic data and check estimation errors</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">toronto_city_hall</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">79.3839</span>,<span class="fl">43.6534</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span>crs<span class="op">=</span><span class="fl">4326</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="fl">3348</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="st">"CA16"</span>,<span class="st">"Population"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">tongfen_estimate_ca_census</span><span class="op">(</span><span class="va">toronto_city_hall</span>,<span class="va">meta</span>,level<span class="op">=</span><span class="st">"DA"</span>,intersection_level<span class="op">=</span><span class="st">"CT"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Approximately "</span>,<span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">comma</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Population</span>,accuracy<span class="op">=</span><span class="fl">100</span><span class="op">)</span>,</span>
-<span class="r-in">             <span class="st">" people live within a 1 km radius of Toronto City."</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver</span></span></span>
+<span class="r-in"><span><span class="co"># based on the geographic data and check estimation errors</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">toronto_city_hall</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">79.3839</span>,<span class="fl">43.6534</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span>crs<span class="op">=</span><span class="fl">4326</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="fl">3348</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="st">"CA16"</span>,<span class="st">"Population"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">tongfen_estimate_ca_census</span><span class="op">(</span><span class="va">toronto_city_hall</span>,<span class="va">meta</span>,level<span class="op">=</span><span class="st">"DA"</span>,intersection_level<span class="op">=</span><span class="st">"CT"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Approximately "</span>,<span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/comma.html" class="external-link">comma</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Population</span>,accuracy<span class="op">=</span><span class="fl">100</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             <span class="st">" people live within a 1 km radius of Toronto City."</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -151,7 +164,7 @@ one of these for all variables.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
