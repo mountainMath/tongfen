@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -154,7 +154,7 @@ package</a> to import the data for three separate census years.</p>
 tracts changed over the years.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">"steelblue"</span>,colour<span class="op">=</span><span class="st">"brown"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
@@ -178,15 +178,14 @@ metres.</p>
 <span>                                                   tolerance<span class="op">=</span><span class="fl">200</span>, computation_crs<span class="op">=</span><span class="fl">3347</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">correspondence</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
-<span><span class="co">#&gt;   GeoUIDCA01 GeoUIDCA06 GeoUIDCA11 GeoUIDCA16 TongfenMethod TongfenID  Tongfen…¹</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 9330040.01 9330040.01 9330040.01 9330040.01 estimate      9330040.01 GeoUIDCA…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 9330050.04 9330050.04 9330050.04 9330050.04 estimate      9330050.04 GeoUIDCA…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 9330054.02 9330054.02 9330054.02 9330054.02 estimate      9330054.02 GeoUIDCA…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 9330060.02 9330060.02 9330060.02 9330060.02 estimate      9330060.02 GeoUIDCA…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 9330001.01 9330001.01 9330001.01 9330001.01 estimate      9330001.01 GeoUIDCA…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 9330015.01 9330015.01 9330015.01 9330015.01 estimate      9330015.01 GeoUIDCA…</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable name ¹​TongfenUID</span></span></span></code></pre></div>
+<span><span class="co">#&gt;   GeoUIDCA01 GeoUIDCA06 GeoUIDCA11 GeoUIDCA16 TongfenMethod TongfenID TongfenUID</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 9330040.01 9330040.01 9330040.01 9330040.01 estimate      9330040.… GeoUIDCA0…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 9330050.04 9330050.04 9330050.04 9330050.04 estimate      9330050.… GeoUIDCA0…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 9330054.02 9330054.02 9330054.02 9330054.02 estimate      9330054.… GeoUIDCA0…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 9330060.02 9330060.02 9330060.02 9330060.02 estimate      9330060.… GeoUIDCA0…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 9330001.01 9330001.01 9330001.01 9330001.01 estimate      9330001.… GeoUIDCA0…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 9330015.01 9330015.01 9330015.01 9330015.01 estimate      9330015.… GeoUIDCA0…</span></span></code></pre></div>
 <p>Before we proceed it is useful to check the integrity of our
 correspondence. One quick way to understand mismatches is to aggregate
 up the geographies for each year to the common geography and compare
@@ -225,7 +224,7 @@ and compare the result.</p>
 <span>    <span class="fu"><a href="../reference/tongfen_aggregate.html">tongfen_aggregate</a></span><span class="op">(</span><span class="va">data</span>,<span class="va">mismatch_correspondence</span>,base_geo <span class="op">=</span> <span class="va">year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Year<span class="op">=</span><span class="va">year</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">"steelblue"</span>,colour<span class="op">=</span><span class="st">"brown"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -243,7 +242,7 @@ geographies based on all four input geographies.</p>
 <span>    <span class="fu"><a href="../reference/tongfen_aggregate.html">tongfen_aggregate</a></span><span class="op">(</span><span class="va">data</span>,<span class="va">correspondence</span>,base_geo <span class="op">=</span> <span class="va">year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Year<span class="op">=</span><span class="va">year</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">"steelblue"</span>,colour<span class="op">=</span><span class="st">"brown"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>datum<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
@@ -262,13 +261,12 @@ the appropriate metatdata that specifies how to deal with this data.</p>
 <code class="sourceCode R"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="va">years</span>,<span class="st">"Population"</span><span class="op">)</span></span>
 <span><span class="va">meta</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 8</span></span></span>
-<span><span class="co">#&gt;   variable   dataset label           type   aggregation rule     geo_da…¹ parent</span></span>
+<span><span class="co">#&gt;   variable   dataset label           type   aggregation rule  geo_dataset parent</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Population    <span style="text-decoration: underline;">2</span>001 Population_2001 Manual Additive    Additive     <span style="text-decoration: underline;">2</span>001 <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Population    <span style="text-decoration: underline;">2</span>006 Population_2006 Manual Additive    Additive     <span style="text-decoration: underline;">2</span>006 <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Population    <span style="text-decoration: underline;">2</span>011 Population_2011 Manual Additive    Additive     <span style="text-decoration: underline;">2</span>011 <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Population    <span style="text-decoration: underline;">2</span>016 Population_2016 Manual Additive    Additive     <span style="text-decoration: underline;">2</span>016 <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable name ¹​geo_dataset</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Population    <span style="text-decoration: underline;">2</span>001 Population_2001 Manual Additive    Addi…        <span style="text-decoration: underline;">2</span>001 <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Population    <span style="text-decoration: underline;">2</span>006 Population_2006 Manual Additive    Addi…        <span style="text-decoration: underline;">2</span>006 <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Population    <span style="text-decoration: underline;">2</span>011 Population_2011 Manual Additive    Addi…        <span style="text-decoration: underline;">2</span>011 <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Population    <span style="text-decoration: underline;">2</span>016 Population_2016 Manual Additive    Addi…        <span style="text-decoration: underline;">2</span>016 <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
 <p>What’s left is to add up the population data. We choose 2001 as the
 base year as the clipped boundaries look better.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -320,7 +318,7 @@ base year as the clipped boundaries look better.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>
