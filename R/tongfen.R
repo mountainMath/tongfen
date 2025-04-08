@@ -351,10 +351,10 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
                         names_to="category",
                         values_to="value") %>%
     mutate(weight=select(.,base[.data$category])[[1]]) %>%
-    mutate(agg_type=ifelse(category %in% na_weight_cats,"na_weight","additive")) %>%
-    mutate(weight=weight/sum(weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
-    mutate(weight=coalesce(weight,0)) %>%
-    mutate(weight=if_else(agg_type=="na_weight",NA_real_,weight)) %>%
+    mutate(agg_type=ifelse(.data$category %in% na_weight_cats,"na_weight","additive")) %>%
+    mutate(weight=.data$weight/sum(.data$weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
+    mutate(weight=coalesce(.data$weight,0)) %>%
+    mutate(weight=if_else(.data$agg_type=="na_weight",NA_real_,.data$weight)) %>%
     select(-any_of(unique_base_vars))
 
   d_parent <- parent_data %>%
@@ -367,9 +367,9 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
   d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
     mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
     mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
-    mutate(value=case_when(agg_type=="additive" ~ coalesce(value,0) + weight*(p_value-s_value),
-                         is.na(value) ~ p_value,
-                         TRUE ~ value))
+    mutate(value=case_when(.data$agg_type=="additive" ~ coalesce(.data$value,0) + .data$weight*(.data$p_value-.data$s_value),
+                         is.na(.data$value) ~ .data$p_value,
+                         TRUE ~ .data$value))
 
   d_result <- d_combined %>%
     select(any_of(id),"category","value") %>%
@@ -379,7 +379,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
   data %>%
     select(-any_of(c(categories,na_base))) %>%
     left_join(d_result,by=id) %>%
-    select(-id)
+    select(-any_of(id))
 }
 
 #' Generate togfen correspondence for two geographies
