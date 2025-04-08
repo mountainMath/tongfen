@@ -132,16 +132,19 @@ meta_for_ca_census_vectors <- function(vectors){
   extras <- meta %>%
     select(variable=.data$parent,.data$dataset) %>%
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
-    filter(!is.na(.data$variable),!.data$variable %in% meta$variable)
+    filter(!is.na(.data$variable),!.data$variable %in% meta$variable) %>%
+    filter(!duplicated(.data$variable,.data$dataset))
 
   if (nrow(extras)>0) {
-    meta <- meta %>% bind_rows(extras)
+    meta <- meta %>%
+      bind_rows(extras) %>%
+      filter(!duplicated(variable))
   }
 
   meta <- meta %>%
     mutate(geo_dataset=geo_dataset_from_dataset(.data$dataset),
-           year=years_from_datasets(.data$dataset)) %>%
-    mutate(label = coalesce(.data$label,.data$variable))
+           year=years_from_datasets(.data$dataset))  %>%
+    filter(!duplicated(.data$variable,.data$dataset))
   meta
 }
 
