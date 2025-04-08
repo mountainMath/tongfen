@@ -4,7 +4,9 @@
 #' \lifecycle{maturing}
 #'
 #' Estimates values for the given census vectors for the given geometry using
-#' data from the specified level range
+#' data from the specified level range. This is a wrapper around `cancensus::get_intersecting_geometries` and `tongfen_estimate`,
+#' optionally with downsampling via `proportional_reaggregate`,
+#' to streamline estimating Canadian census data on custom geographies.
 #'
 #' @param geometry geometry
 #' @param meta metadata for the census variables to aggregate, for example as returned by `meta_for_ca_census_vectors`.

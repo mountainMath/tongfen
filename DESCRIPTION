@@ -21,7 +21,7 @@ Imports:
     readr,
     utils,
     lifecycle
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Suggests: 
     knitr,
     rmarkdown,

@@ -283,7 +283,8 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
 #' @param parent_data Higher level geographic data
 #' @param geo_match A named string informing on what column names to match data and parent_data
 #' @param categories Vector of column names to re-aggregate
-#' @param base Column name to use for proportional weighting when re-aggregating
+#' @param base Column name to use for proportional weighting when re-aggregating, or named vector with column name for each category.
+#' Categries that should be re-aggregated as means should be set to NA and will only be reaggregated if the base data has NA values.
 #' @return dataframe with downsampled variables from parent_data
 #' @keywords reaggregate proportionally wrt base variable
 #' @export
@@ -307,35 +308,78 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
 proportional_reaggregate <- function(data,parent_data,geo_match,categories,base="Population"){
   # create zero categories if we don't have them on base (for example DB geo)
   for (v in setdiff(categories,names(data))) {
-    data <- data %>% mutate(!!v := 0)
+    data <- data %>% mutate(!!v := NA_real_)
   }
-  ## join and compute the weights
-  ## maybe should be left join, but then have to worry about what happens if there is no match. For hierarchial data should always have higher level geo!
-  d1 <- inner_join(data  %>% mutate(!!base:=tidyr::replace_na(!!as.name(base),0)),
-                   select(parent_data %>% as.data.frame,c(categories,c(as.character(geo_match)))),
-                   by=geo_match) %>%
-    group_by(!!as.name(names(geo_match))) %>%
-    mutate(weight=!!as.name(base)/sum(!!as.name(base),na.rm=TRUE)) %>%
-    ungroup() %>%
-    mutate(weight=tidyr::replace_na(.data$weight,0))
-  ## aggregate variables up and down
-  ## lower level geography counts might have been suppressed, reaggregating these makes sure that the total number of
-  ## dots on the map are given by more accurate higher level geo counts, difference is distributed proportionally by *base*
-  for (v in categories) {
-    vss=paste(v,'s',sep=".")
-    vs=as.name(vss)
-    vx=as.name(paste(v,'x',sep="."))
-    vy=as.name(paste(v,'y',sep="."))
-    d1 <- d1 %>%
-      mutate(!!vx:=tidyr::replace_na(!!vx,0)) %>%
-      group_by(!!as.name(names(geo_match))) %>%
-      mutate(!!vss := sum(!!vx,na.rm=TRUE)) %>%
-      ungroup() %>%
-      mutate(!!v := !!quo(UQ(vx) + .data$weight * (UQ(vy) - UQ(vs))))
+
+  if (length(base) == 1 && length(categories)>1) {
+    base=setNames(rep_len(base,length(categories)),categories)
+  } else if (length(base) == 1 &&  is.null(names(base))) {
+    base <- setNames(base,categories)
   }
-  ## clean up and return
-  d1 %>%
-    select(-one_of(c(paste0(categories,".s"),paste0(categories,".x"),paste0(categories,".y"))))
+
+  if (length(base) != length(categories)) {
+    stop("Base and categories must be of the same length")
+  }
+
+  id <- "...id"
+  while (id %in% names(data)) {
+    id <- paste0("...",id)
+  }
+
+  na_base <- "...na_base"
+  while (na_base %in% names(data)) {
+    na_base <- paste0(na_base)
+  }
+
+
+  na_weight_cats <- names(base[is.na(base)])
+  if (length(na_weight_cats) >0) {
+    data <- data %>%
+      mutate(!!na_base := NA_real_)
+    base[na_weight_cats] <- na_base
+  }
+
+  unique_base_vars <- unique(base)
+
+  data <- data |>
+    mutate(!!id:=as.character(row_number()))
+
+  d_base <- data %>%
+    st_drop_geometry() %>%
+    select(any_of(c(id,na_base,names(geo_match),unique_base_vars,categories))) %>%
+    tidyr::pivot_longer(cols=all_of(categories),
+                        names_to="category",
+                        values_to="value") %>%
+    mutate(weight=select(.,base[.data$category])[[1]]) %>%
+    mutate(agg_type=ifelse(category %in% na_weight_cats,"na_weight","additive")) %>%
+    mutate(weight=weight/sum(weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
+    mutate(weight=coalesce(weight,0)) %>%
+    mutate(weight=if_else(agg_type=="na_weight",NA_real_,weight)) %>%
+    select(-any_of(unique_base_vars))
+
+  d_parent <- parent_data %>%
+    st_drop_geometry() %>%
+    select(any_of(c(as.character(geo_match),categories))) %>%
+    tidyr::pivot_longer(cols=all_of(categories),
+                        names_to="category",
+                        values_to="p_value")
+
+  d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
+    mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
+    mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
+    mutate(value=case_when(agg_type=="additive" ~ coalesce(value,0) + weight*(p_value-s_value),
+                         is.na(value) ~ p_value,
+                         TRUE ~ value))
+
+  d_result <- d_combined %>%
+    select(any_of(id),"category","value") %>%
+    tidyr::pivot_wider(names_from="category",
+                        values_from="value")
+
+  data %>%
+    select(-any_of(c(categories,na_base))) %>%
+    left_join(d_result,by=id) %>%
+    select(-id)
 }
 
 #' Generate togfen correspondence for two geographies

@@ -21,7 +21,8 @@ proportional_reaggregate(
 
 \item{categories}{Vector of column names to re-aggregate}
 
-\item{base}{Column name to use for proportional weighting when re-aggregating}
+\item{base}{Column name to use for proportional weighting when re-aggregating, or named vector with column name for each category.
+Categries that should be re-aggregated as means should be set to NA and will only be reaggregated if the base data has NA values.}
 }
 \value{
 dataframe with downsampled variables from parent_data
