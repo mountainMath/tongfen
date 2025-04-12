@@ -321,6 +321,11 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
     stop("Base and categories must be of the same length")
   }
 
+  if (is.null(names(base))) {
+    # ensure that base is named, f
+    base <- setNames(base,categories)
+  }
+
   id <- "...id"
   while (id %in% names(data)) {
     id <- paste0("...",id)
