@@ -97,6 +97,16 @@ aggregate_correspondences <- function(correspondences){
 }
 
 
+normalize_datasets <- function(geo_datasets) {
+  geo_datasets <- as.character(geo_datasets)
+  dataset_translation <- setNames(
+    c("CA21","CA16","CA11","CA06","CA01") %>% rev(),
+    as.character(seq(2001,2021,5)))
+  geo_datasets <- geo_datasets %>% dplyr::recode(!!!dataset_translation)
+  geo_datasets
+}
+
+
 ensure_names <- function(list,default_names=seq(1,length(list))){
   nn <- names(list)
   if (is.null(nn)) {

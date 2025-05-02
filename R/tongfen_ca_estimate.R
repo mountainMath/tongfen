@@ -4,7 +4,9 @@
 #' \lifecycle{maturing}
 #'
 #' Estimates values for the given census vectors for the given geometry using
-#' data from the specified level range
+#' data from the specified level range. This is a wrapper around `cancensus::get_intersecting_geometries` and `tongfen_estimate`,
+#' optionally with downsampling via `proportional_reaggregate`,
+#' to streamline estimating Canadian census data on custom geographies.
 #'
 #' @param geometry geometry
 #' @param meta metadata for the census variables to aggregate, for example as returned by `meta_for_ca_census_vectors`.
@@ -70,9 +72,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
 
   if (!is.null(downsample_level)){
     if (!("downsample" %in% names(meta))) stop("The downsample column in meta needs to be set")
-    base_vars <- meta %>% pull(.data$downsample) %>% stats::na.omit() %>% unique()
-    if (length(base_vars)==0) stop("The downsample column in meta needs to be set")
-    if (length(base_vars)!=1) stop(paste0("The downsample column has to have a unique variable, you provided ",paste0(base_vars, collapse = ", ")))
+    base_vars <- setNames(meta$downsample, meta$label)
     dg <- cancensus::get_census(dataset=datasets,regions = regions,
                                 level = downsample_level, quiet = quiet, geo_format = "sf") %>%
       sf::st_transform(st_crs(geometry))

@@ -22,10 +22,12 @@ years_from_datasets <- function(ds) {
 
 
 datasets_from_vectors <- function(vs){
-  vs %>%
+  ds<-vs %>%
     stringr::str_split("_") %>%
     purrr::map(function(v)v[[2]]) %>%
     unlist()
+  ds[grepl("^\\d{4}$",ds)]<-geo_dataset_for_years(ds[grepl("^\\d{4}$",ds)])
+  ds
 }
 
 GEO_DATASET_LOOKUP <- c(
@@ -51,7 +53,7 @@ geo_dataset_for_years <- function(years){
 
 geo_dataset_from_dataset <- function(datasets){
   if (TRUE) { # legacy until cancensus updates
-  datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.)
+  datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.) %>% gsub("\\d{4}x","",.)
   dataset_list <- cancensus::list_census_datasets()
   lapply(datasets, function(ds){
     dataset_list %>%
@@ -132,16 +134,19 @@ meta_for_ca_census_vectors <- function(vectors){
   extras <- meta %>%
     select(variable=.data$parent,.data$dataset) %>%
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
-    filter(!is.na(.data$variable),!.data$variable %in% meta$variable)
+    filter(!is.na(.data$variable),!.data$variable %in% meta$variable) %>%
+    filter(!duplicated(.data$variable,.data$dataset)) %>%
+    mutate(label=.data$variable)
 
   if (nrow(extras)>0) {
-    meta <- meta %>% bind_rows(extras)
+    meta <- meta %>%
+      bind_rows(extras) %>%
+      filter(!duplicated(.data$variable,.data$dataset))
   }
 
   meta <- meta %>%
     mutate(geo_dataset=geo_dataset_from_dataset(.data$dataset),
-           year=years_from_datasets(.data$dataset)) %>%
-    mutate(label = coalesce(.data$label,.data$variable))
+           year=years_from_datasets(.data$dataset))
   meta
 }
 
@@ -261,9 +266,12 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="CT", method="statcan",
                                                  tolerance = 50, area_mismatch_cutoff = 0.1,
                                                  quiet = FALSE, refresh = FALSE) {
+
+  geo_datasets <- normalize_datasets(geo_datasets)
   if (method=="statcan") {
     assert(level %in% c("DB","DA","CT"),"Level has to be one of DB, DA, or CT when using method = 'statcan'.")
-    assert(length(setdiff(geo_datasets,  c("CA21","CA16","CA11","CA06","CA01")))==0,"Method 'statcan' only works for census years 2001 through 2016.")
+    assert(length(setdiff(geo_datasets,  c("CA21","CA16","CA11","CA06","CA01")))==0,
+           "Method 'statcan' only works for census years 2001 through 2021.")
   } else if (method=="estimate") {
 
   } else if (method=="identifier") {

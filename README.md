@@ -4,6 +4,7 @@
 [![R-CMD-check](https://github.com/mountainMath/tongfen/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/tongfen/actions)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tongfen)](https://cran.r-project.org/package=tongfen)
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/tongfen)](https://cranlogs.r-pkg.org/badges/tongfen)
+[![R-CMD-check](https://github.com/mountainMath/tongfen/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mountainMath/tongfen/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 <a href="https://mountainmath.github.io/tongfen/index.html"><img src="https://raw.githubusercontent.com/mountainMath/tongfen/master/images/tongfen-sticker.png" alt="tongfen logo" align="right" width = "25%" height = "25%"/></a>
@@ -84,17 +85,18 @@ Methods to facilitate this are still under active development.
 
 If you wish to cite tongfen:
 
-  von Bergmann, J. (2021). tongfen: R package to
-  Make Data Based on Different Geographies Comparable. v0.3.3.
+  von Bergmann, J. (2024). tongfen: R package to
+  Make Data Based on Different Geographies Comparable. v0.3.6.
 
 
 A BibTeX entry for LaTeX users is
 ```
-  @Manual{,
+  @Manual{tongfen,
     author = {Jens {von Bergmann}},
     title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
-    year = {2021},
-    note = {R package version 0.3.3},
+    year = {2024},
+    doi = {10.32614/CRAN.package.tongfen},
+    note = {R package version 0.3.6},
     url = {https://mountainmath.github.io/tongfen/},
   }
 ```

@@ -168,7 +168,8 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
         m <- meta %>% filter(.data$dataset==ds)
         year=as.numeric(gsub("dec", "", ds))
         short_year <- substr(as.character(year),3,4)
-        tidycensus::get_decennial(geography=level, state=state, variables = m$variable, year = year,
+        tidycensus::get_decennial(geography=level, state=state, county=regions$county,
+                                  variables = m$variable, year = year,
                                   geometry = base_geo==ds, output="wide") %>%
           rename(!!paste0("GEOID",short_year):=.data$GEOID)
       }) %>%

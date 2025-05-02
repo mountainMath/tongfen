@@ -1,13 +1,13 @@
-pandoc: 2.14.0.3
-pkgdown: 2.0.1
+pandoc: '3.2'
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   polling_districts: polling_districts.html
-  tongfen-ca-estimate: tongfen-ca-estimate.html
-  tongfen: tongfen.html
   tongfen_ca: tongfen_ca.html
   tongfen_us: tongfen_us.html
-last_built: 2022-02-24T20:06Z
+  tongfen-ca-estimate: tongfen-ca-estimate.html
+  tongfen: tongfen.html
+last_built: 2025-05-02T03:43Z
 urls:
   reference: https://mountainmath.github.io/tongfen/reference
   article: https://mountainmath.github.io/tongfen/articles

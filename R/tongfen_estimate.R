@@ -4,17 +4,20 @@
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Estimates data from source geometry onto target geometry
+#' Estimates data from source geometry onto target geometry using area-weighted interpolation. The metadata specifies how data
+#' should be aggregated, "additive" data like population counts are summed up proportionally to the area of the intersection, "averages"
+#' need further additive "parent" count variables to estimate weighted averages.
 #'
 #' @param target custom geography to estimate values for
 #' @param source input geography with values
-#' @param meta metadata for variable aggregation
+#' @param meta metadata for variable aggregation, see `meta_for_additive_variables` and `meta_for_ca_census_vectors` for more information
+#' on how to construct metadata.
 #' @param na.rm remove NA values when aggregating, default is FALSE
 #' @return `target` with estimated quantities from `source` as specified by `meta`
 #' @export
 #'
 #' @examples
-#' # Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies
+#' # Estimate 2006 Population in the City of Vancouver dissemination ares on 2016 census geographies
 #' \dontrun{
 #' geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='DA')
 #' geo2 <- cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format='sf',level='DA')
