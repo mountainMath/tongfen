@@ -21,5 +21,5 @@
 
 # tongfen 0.3
 
-# Major changes
+## Major changes
 - Initial release
