@@ -346,7 +346,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
 
   unique_base_vars <- unique(base)
 
-  data <- data |>
+  data <- data %>%
     mutate(!!id:=as.character(row_number()))
 
   d_base <- data %>%
