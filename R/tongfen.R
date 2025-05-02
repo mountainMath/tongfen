@@ -216,7 +216,7 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
         d <- d %>% sf::st_drop_geometry()
       }
       match_column <- intersect(names(d),names(correspondence))
-      if (length(match_column)==0) stop("Did not found matching geographic identifiers.")
+      if (length(match_column)==0) stop("Did not find matching geographic identifiers.")
       if (length(match_column)>1) warning(paste0("Matching over several geographic identifiers: ",paste0(match_column,collapse=", ")))
       c <- correspondence %>%
         select_at(c(match_column,"TongfenID","TongfenUID")) %>%

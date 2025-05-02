@@ -22,10 +22,12 @@ years_from_datasets <- function(ds) {
 
 
 datasets_from_vectors <- function(vs){
-  vs %>%
+  ds<-vs %>%
     stringr::str_split("_") %>%
     purrr::map(function(v)v[[2]]) %>%
     unlist()
+  ds[grepl("^\\d{4}$",ds)]<-geo_dataset_for_years(ds[grepl("^\\d{4}$",ds)])
+  ds
 }
 
 GEO_DATASET_LOOKUP <- c(

@@ -1,3 +1,12 @@
+# tongfen v.0.3.6
+## Major changs
+- better downsampling that can also accommodate averages
+- performance improvements
+## Minor changes
+- better documentation
+- allow for datasets vartiables by census year for canadian data
+- fix issue where some metadata might get duplicated
+
 # tongfen 0.3.2
 - Fix compatibility issue with changes in {sf} package
 - More reliable GitHub action CRAN checks
@@ -12,5 +21,5 @@
 
 # tongfen 0.3
 
-## Major changes
+# Major changes
 - Initial release

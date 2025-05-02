@@ -16,4 +16,3 @@ card_fix.sh
 ^CRAN-RELEASE$
 ^\.github$
 ^CRAN-SUBMISSION$
-vignettes/tongfen_us.Rmd

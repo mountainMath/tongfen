@@ -21,10 +21,10 @@ articles:
     contents:
     - tongfen_ca
     - tongfen-ca-estimate
-  # - title: "TongFen for US census data"
-  #   navbar: ~
-  #   contents:
-  #   - tongfen_us
+  - title: "TongFen for US census data"
+    navbar: ~
+    contents:
+    - tongfen_us
 
 authors:
   Jens von Bergmann:
