@@ -1,10 +1,9 @@
 # tongfen
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/mountainMath/tongfen/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/tongfen/actions)
+[![R-CMD-check](https://github.com/mountainMath/tongfen/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mountainMath/tongfen/actions/workflows/R-CMD-check.yaml)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tongfen)](https://cran.r-project.org/package=tongfen)
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/tongfen)](https://cranlogs.r-pkg.org/badges/tongfen)
-[![R-CMD-check](https://github.com/mountainMath/tongfen/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mountainMath/tongfen/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 <a href="https://mountainmath.github.io/tongfen/index.html"><img src="https://raw.githubusercontent.com/mountainMath/tongfen/master/images/tongfen-sticker.png" alt="tongfen logo" align="right" width = "25%" height = "25%"/></a>
@@ -87,6 +86,7 @@ If you wish to cite tongfen:
 
   von Bergmann, J. (2024). tongfen: R package to
   Make Data Based on Different Geographies Comparable. v0.3.6.
+  DOI: 10.32614/CRAN.package.tongfen
 
 
 A BibTeX entry for LaTeX users is
