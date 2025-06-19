@@ -306,9 +306,15 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
 #'
 #'}
 proportional_reaggregate <- function(data,parent_data,geo_match,categories,base="Population"){
+
+  var_types <- parent_data %>%
+    st_drop_geometry %>%
+    select(any_of(categories)) %>%
+    lapply(class)
+
   # create zero categories if we don't have them on base (for example DB geo)
   for (v in setdiff(categories,names(data))) {
-    data <- data %>% mutate(!!v := NA_real_)
+    data <- data %>% mutate(!!v := get(paste0("as.",var_types[[v]]))(NA))
   }
 
   if (length(base) == 1 && length(categories)>1) {
@@ -349,37 +355,49 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
   data <- data %>%
     mutate(!!id:=as.character(row_number()))
 
-  d_base <- data %>%
-    st_drop_geometry() %>%
-    select(any_of(c(id,na_base,names(geo_match),unique_base_vars,categories))) %>%
-    tidyr::pivot_longer(cols=all_of(categories),
-                        names_to="category",
-                        values_to="value") %>%
-    mutate(weight=select(.,base[.data$category])[[1]]) %>%
-    mutate(agg_type=ifelse(.data$category %in% na_weight_cats,"na_weight","additive")) %>%
-    mutate(weight=.data$weight/sum(.data$weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
-    mutate(weight=coalesce(.data$weight,0)) %>%
-    mutate(weight=if_else(.data$agg_type=="na_weight",NA_real_,.data$weight)) %>%
-    select(-any_of(unique_base_vars))
+  d_result <- unique(var_types) %>%
+    unlist() %>%
+    lapply(\(vt){
+      cats <- names(var_types)[var_types==vt]
+      d_base <- data %>%
+        st_drop_geometry() %>%
+        select(any_of(c(id,na_base,names(geo_match),unique_base_vars,cats))) %>%
+        tidyr::pivot_longer(cols=all_of(cats),
+                            names_to="category",
+                            values_to="value") %>%
+        mutate(weight=select(.,base[.data$category])[[1]]) %>%
+        mutate(agg_type=ifelse(.data$category %in% na_weight_cats,"na_weight","additive")) %>%
+        mutate(weight=.data$weight/sum(.data$weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
+        mutate(weight=coalesce(.data$weight,0)) %>%
+        mutate(weight=if_else(.data$agg_type=="na_weight",NA_real_,.data$weight)) %>%
+        select(-any_of(unique_base_vars))
 
-  d_parent <- parent_data %>%
-    st_drop_geometry() %>%
-    select(any_of(c(as.character(geo_match),categories))) %>%
-    tidyr::pivot_longer(cols=all_of(categories),
-                        names_to="category",
-                        values_to="p_value")
+      d_parent <- parent_data %>%
+        st_drop_geometry() %>%
+        select(any_of(c(as.character(geo_match),cats))) %>%
+        tidyr::pivot_longer(cols=all_of(cats),
+                            names_to="category",
+                            values_to="p_value")
+      if (vt %in% c("numeric","integer","double")) {
+        d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
+          mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
+          mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
+          mutate(value=case_when(.data$agg_type=="additive" ~ coalesce(.data$value,0) + .data$weight*(.data$p_value-.data$s_value),
+                                 is.na(.data$value) ~ .data$p_value,
+                                 TRUE ~ .data$value))
+      } else {
+        d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
+          mutate(value=case_when(is.na(.data$value) ~ .data$p_value,
+                                 TRUE ~ .data$value))
+      }
 
-  d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
-    mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
-    mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
-    mutate(value=case_when(.data$agg_type=="additive" ~ coalesce(.data$value,0) + .data$weight*(.data$p_value-.data$s_value),
-                         is.na(.data$value) ~ .data$p_value,
-                         TRUE ~ .data$value))
-
-  d_result <- d_combined %>%
-    select(any_of(id),"category","value") %>%
-    tidyr::pivot_wider(names_from="category",
-                        values_from="value")
+      d_result <- d_combined %>%
+        select(any_of(id),"category","value") %>%
+        tidyr::pivot_wider(names_from="category",
+                           values_from="value")
+      d_result
+    }) %>%
+    Reduce(\(x,y)full_join(x,y,by="...id"),.)
 
   data %>%
     select(-any_of(c(categories,na_base))) %>%

@@ -1,3 +1,7 @@
+# tongfen v.0.3.7
+## Minor changes
+- accommodate factors in proportional_reaggregate
+
 # tongfen v.0.3.6
 ## Major changs
 - better downsampling that can also accommodate averages
