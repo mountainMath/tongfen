@@ -18,3 +18,4 @@ card_fix.sh
 ^CRAN-SUBMISSION$
 ^benchmarks$
 ^claude$
+^\.claude$
