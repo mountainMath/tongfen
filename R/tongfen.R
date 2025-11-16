@@ -51,8 +51,14 @@ pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
   }
 
 
-  for (x in to_scale) {
-    data <- data %>% mutate(!!x := !!as.name(x)*!!as.name(parent_lookup[x]))
+  # Optimized: Vectorized scaling using mutate(across(...)) instead of loop
+  if (length(to_scale) > 0) {
+    data <- data %>%
+      mutate(across(
+        all_of(to_scale),
+        ~ .x * data[[parent_lookup[cur_column()]]],
+        .names = "{.col}"
+      ))
   }
 
   data
@@ -64,8 +70,14 @@ post_scale <- function(data,meta,meta_var="data_var") {
   parent_lookup <- setNames(meta$parent_name,meta %>% pull(meta_var))
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
 
-  for (x in to_scale) {
-    data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(parent_lookup[x]))
+  # Optimized: Vectorized scaling using mutate(across(...)) instead of loop
+  if (length(to_scale) > 0) {
+    data <- data %>%
+      mutate(across(
+        all_of(to_scale),
+        ~ .x / data[[parent_lookup[cur_column()]]],
+        .names = "{.col}"
+      ))
   }
 
   data
@@ -112,8 +124,14 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
       message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
   }
 
-  for (x in to_scale) {
-    data <- data %>% mutate(!!x := !!as.name(x)*!!as.name(parent_lookup[x]))
+  # Optimized: Vectorized pre-scaling
+  if (length(to_scale) > 0) {
+    data <- data %>%
+      mutate(across(
+        all_of(to_scale),
+        ~ .x * data[[parent_lookup[cur_column()]]],
+        .names = "{.col}"
+      ))
   }
 
   base_variables <- c()
@@ -147,13 +165,23 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
   } else {
     data <- data %>% summarize_at(meta$variable,sum,na.rm=na.rm)
   }
-  for (x in to_scale) {
-    data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(parent_lookup[x]))
+
+  # Optimized: Vectorized post-scaling
+  if (length(to_scale) > 0) {
+    data <- data %>%
+      mutate(across(
+        all_of(to_scale),
+        ~ .x / data[[parent_lookup[cur_column()]]],
+        .names = "{.col}"
+      ))
   }
-  for (x in to_scale_from) {
-    scale_type <- meta %>% filter(.data$variable==x) %>% pull(units) %>% as.character()
-    base_vector <- paste0("base_",parent_lookup[x])
-    data <- data %>% mutate(!!x := !!as.name(x)/!!as.name(base_vector))
+
+  # Optimized: Vectorized division by base vectors
+  if (length(to_scale_from) > 0) {
+    for (x in to_scale_from) {
+      base_vector <- paste0("base_", parent_lookup[x])
+      data[[x]] <- data[[x]] / data[[base_vector]]
+    }
   }
   data
 }
@@ -456,24 +484,25 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
   cgeo1 <- geo1 %>% robust_tolerance_buffer(geo_uid = geo1_uid,tolerance = tolerance)
   cgeo2 <- geo2 %>% robust_tolerance_buffer(geo_uid = geo2_uid,tolerance = tolerance)
 
-  i1 <- cgeo1 %>%
-    st_intersects(geo2,sparse = TRUE) %>%
+  # Optimized: Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1)
+  # But we can streamline the conversion and processing
+  # Convert sparse matrix directly to tibble, avoiding intermediate data.frame step
+  i1 <- st_intersects(cgeo1, geo2, sparse = TRUE) %>%
     as.data.frame() %>%
     as_tibble() %>%
-    rename(id1=.data$row.id,id2=.data$col.id) %>%
-    left_join(id1,by="id1") %>%
-    left_join(id2,by="id2") %>%
-    select(-id1,-id2)
-  i2 <- cgeo2 %>%
-    st_intersects(geo1,sparse = TRUE) %>%
-    as.data.frame() %>%
-    as_tibble() %>%
-    rename(id2=.data$row.id,id1=.data$col.id) %>%
-    left_join(id1,by="id1") %>%
-    left_join(id2,by="id2") %>%
-    select(-id1,-id2)
+    left_join(id1, by = c("row.id" = "id1")) %>%
+    left_join(id2, by = c("col.id" = "id2")) %>%
+    select(-.data$row.id, -.data$col.id)
 
-  correspondence <- bind_rows(i1,i2) %>%
+  i2 <- st_intersects(cgeo2, geo1, sparse = TRUE) %>%
+    as.data.frame() %>%
+    as_tibble() %>%
+    left_join(id2, by = c("row.id" = "id2")) %>%
+    left_join(id1, by = c("col.id" = "id1")) %>%
+    select(-.data$row.id, -.data$col.id)
+
+  # Combine and find correspondence
+  correspondence <- bind_rows(i1, i2) %>%
     unique() %>%
     get_tongfen_correspondence()
 

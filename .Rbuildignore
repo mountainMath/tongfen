@@ -16,3 +16,5 @@ card_fix.sh
 ^CRAN-RELEASE$
 ^\.github$
 ^CRAN-SUBMISSION$
+^benchmarks$
+^claude$
