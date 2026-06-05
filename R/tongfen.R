@@ -391,7 +391,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
         tidyr::pivot_longer(cols=all_of(cats),
                             names_to="category",
                             values_to="p_value")
-      if (vt %in% c("numeric","integer")) {
+      if (vt %in% c("numeric","integer","integer64")) {
         d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
           mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
           mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%

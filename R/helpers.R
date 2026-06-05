@@ -24,7 +24,7 @@ inner_join_tongfen_correspondence <- function(data,correspondence,link){
 
 
 
-get_tongfen_correspondence <- function(dd, max_iterations = 100){
+get_tongfen_correspondence <- function(dd){
   hs <- names(dd)[!grepl("TongfenMethod",names(dd))]
   index = 1
   ddd<- dd %>%
