@@ -33,7 +33,8 @@ Suggests:
     spelling,
     readxl,
     scales,
-    microbenchmark
+    microbenchmark,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr, rmarkdown
 URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
 BugReports: https://github.com/mountainMath/tongfen/issues

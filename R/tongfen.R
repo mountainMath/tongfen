@@ -51,14 +51,10 @@ pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
   }
 
 
-  # Optimized: Vectorized scaling using mutate(across(...)) instead of loop
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x * data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) * !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   data
@@ -70,14 +66,10 @@ post_scale <- function(data,meta,meta_var="data_var") {
   parent_lookup <- setNames(meta$parent_name,meta %>% pull(meta_var))
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
 
-  # Optimized: Vectorized scaling using mutate(across(...)) instead of loop
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x / data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) / !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   data
@@ -124,14 +116,10 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
       message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
   }
 
-  # Optimized: Vectorized pre-scaling
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x * data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) * !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   base_variables <- c()
@@ -166,14 +154,10 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
     data <- data %>% summarize_at(meta$variable,sum,na.rm=na.rm)
   }
 
-  # Optimized: Vectorized post-scaling
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x / data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) / !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   # Optimized: Vectorized division by base vectors
@@ -342,7 +326,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
 
   # create zero categories if we don't have them on base (for example DB geo)
   for (v in setdiff(categories,names(data))) {
-    data <- data %>% mutate(!!v := get(paste0("as.",var_types[[v]]))(NA))
+    data <- data %>% mutate(!!v := parent_data[[v]][NA_integer_])
   }
 
   if (length(base) == 1 && length(categories)>1) {
@@ -383,10 +367,11 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
   data <- data %>%
     mutate(!!id:=as.character(row_number()))
 
-  d_result <- unique(var_types) %>%
-    unlist() %>%
+  var_types_primary <- vapply(var_types, `[[`, character(1), 1)
+
+  d_result <- unique(var_types_primary) %>%
     lapply(\(vt){
-      cats <- names(var_types)[var_types==vt]
+      cats <- names(var_types_primary)[var_types_primary==vt]
       d_base <- data %>%
         st_drop_geometry() %>%
         select(any_of(c(id,na_base,names(geo_match),unique_base_vars,cats))) %>%
@@ -406,7 +391,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
         tidyr::pivot_longer(cols=all_of(cats),
                             names_to="category",
                             values_to="p_value")
-      if (vt %in% c("numeric","integer","double")) {
+      if (vt %in% c("numeric","integer")) {
         d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
           mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
           mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
@@ -425,7 +410,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
                            values_from="value")
       d_result
     }) %>%
-    Reduce(\(x,y)full_join(x,y,by="...id"),.)
+    Reduce(\(x,y)full_join(x,y,by=id),.)
 
   data %>%
     select(-any_of(c(categories,na_base))) %>%
