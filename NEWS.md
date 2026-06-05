@@ -1,3 +1,9 @@
+# tongfen v.0.3.7
+## Major changes
+- accommodate factors in proportional_reaggregate
+- sizable performance increases
+- squish several edge case bugs
+
 # tongfen v.0.3.6
 ## Major changs
 - better downsampling that can also accommodate averages

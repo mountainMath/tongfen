@@ -6,7 +6,7 @@
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/tongfen)](https://cranlogs.r-pkg.org/badges/tongfen)
 <!-- badges: end -->
 
-<a href="https://mountainmath.github.io/tongfen/index.html"><img src="https://raw.githubusercontent.com/mountainMath/tongfen/master/images/tongfen-sticker.png" alt="tongfen logo" align="right" width = "25%" height = "25%"/></a>
+<!--a href="https://mountainmath.github.io/tongfen/index.html"><img src="https://raw.githubusercontent.com/mountainMath/tongfen/master/images/tongfen-sticker.png" alt="tongfen logo" align="right" width = "25%" height = "25%"/></a-->
 TongFen (通分) means to convert two fractions to the least common denominator, typically in preparation for further manipulation like addition or subtraction. In English, that's a mouthful and sounds complicated. But in Chinese there is a word for this, TongFen, which makes this process appear very simple.
 
 When working with geospatial datasets we often want to compare data that is given on different regions. For example census data and election data. Or data from two different censuses. To properly compare this data we first need to convert it to a common geography. The process to do this is quite analogous to the process of TongFen for fractions, so we appropriate this term to give it a simple name. Using the **tongfen** package, preparing data on disparate geographies for comparison by converting them to a common geography is as easy as typing `tongfen`.
@@ -85,7 +85,7 @@ Methods to facilitate this are still under active development.
 If you wish to cite tongfen:
 
   von Bergmann, J. (2024). tongfen: R package to
-  Make Data Based on Different Geographies Comparable. v0.3.6.
+  Make Data Based on Different Geographies Comparable. v0.3.7.
   DOI: 10.32614/CRAN.package.tongfen
 
 
@@ -96,7 +96,7 @@ A BibTeX entry for LaTeX users is
     title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
     year = {2024},
     doi = {10.32614/CRAN.package.tongfen},
-    note = {R package version 0.3.6},
+    note = {R package version 0.3.7},
     url = {https://mountainmath.github.io/tongfen/},
   }
 ```

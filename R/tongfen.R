@@ -51,14 +51,10 @@ pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
   }
 
 
-  # Optimized: Vectorized scaling using mutate(across(...)) instead of loop
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x * data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) * !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   data
@@ -70,14 +66,10 @@ post_scale <- function(data,meta,meta_var="data_var") {
   parent_lookup <- setNames(meta$parent_name,meta %>% pull(meta_var))
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
 
-  # Optimized: Vectorized scaling using mutate(across(...)) instead of loop
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x / data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) / !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   data
@@ -124,14 +116,10 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
       message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
   }
 
-  # Optimized: Vectorized pre-scaling
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x * data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) * !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   base_variables <- c()
@@ -166,14 +154,10 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
     data <- data %>% summarize_at(meta$variable,sum,na.rm=na.rm)
   }
 
-  # Optimized: Vectorized post-scaling
   if (length(to_scale) > 0) {
-    data <- data %>%
-      mutate(across(
-        all_of(to_scale),
-        ~ .x / data[[parent_lookup[cur_column()]]],
-        .names = "{.col}"
-      ))
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
+      rlang::expr(!!as.name(col) / !!as.name(unname(parent_lookup[col]))))
+    data <- data %>% mutate(!!!scale_exprs)
   }
 
   # Optimized: Vectorized division by base vectors
@@ -334,9 +318,15 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
 #'
 #'}
 proportional_reaggregate <- function(data,parent_data,geo_match,categories,base="Population"){
+
+  var_types <- parent_data %>%
+    st_drop_geometry %>%
+    select(any_of(categories)) %>%
+    lapply(class)
+
   # create zero categories if we don't have them on base (for example DB geo)
   for (v in setdiff(categories,names(data))) {
-    data <- data %>% mutate(!!v := NA_real_)
+    data <- data %>% mutate(!!v := parent_data[[v]][NA_integer_])
   }
 
   if (length(base) == 1 && length(categories)>1) {
@@ -377,37 +367,50 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
   data <- data %>%
     mutate(!!id:=as.character(row_number()))
 
-  d_base <- data %>%
-    st_drop_geometry() %>%
-    select(any_of(c(id,na_base,names(geo_match),unique_base_vars,categories))) %>%
-    tidyr::pivot_longer(cols=all_of(categories),
-                        names_to="category",
-                        values_to="value") %>%
-    mutate(weight=select(.,base[.data$category])[[1]]) %>%
-    mutate(agg_type=ifelse(.data$category %in% na_weight_cats,"na_weight","additive")) %>%
-    mutate(weight=.data$weight/sum(.data$weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
-    mutate(weight=coalesce(.data$weight,0)) %>%
-    mutate(weight=if_else(.data$agg_type=="na_weight",NA_real_,.data$weight)) %>%
-    select(-any_of(unique_base_vars))
+  var_types_primary <- vapply(var_types, `[[`, character(1), 1)
 
-  d_parent <- parent_data %>%
-    st_drop_geometry() %>%
-    select(any_of(c(as.character(geo_match),categories))) %>%
-    tidyr::pivot_longer(cols=all_of(categories),
-                        names_to="category",
-                        values_to="p_value")
+  d_result <- unique(var_types_primary) %>%
+    lapply(\(vt){
+      cats <- names(var_types_primary)[var_types_primary==vt]
+      d_base <- data %>%
+        st_drop_geometry() %>%
+        select(any_of(c(id,na_base,names(geo_match),unique_base_vars,cats))) %>%
+        tidyr::pivot_longer(cols=all_of(cats),
+                            names_to="category",
+                            values_to="value") %>%
+        mutate(weight=select(.,base[.data$category])[[1]]) %>%
+        mutate(agg_type=ifelse(.data$category %in% na_weight_cats,"na_weight","additive")) %>%
+        mutate(weight=.data$weight/sum(.data$weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
+        mutate(weight=coalesce(.data$weight,0)) %>%
+        mutate(weight=if_else(.data$agg_type=="na_weight",NA_real_,.data$weight)) %>%
+        select(-any_of(unique_base_vars))
 
-  d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
-    mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
-    mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
-    mutate(value=case_when(.data$agg_type=="additive" ~ coalesce(.data$value,0) + .data$weight*(.data$p_value-.data$s_value),
-                         is.na(.data$value) ~ .data$p_value,
-                         TRUE ~ .data$value))
+      d_parent <- parent_data %>%
+        st_drop_geometry() %>%
+        select(any_of(c(as.character(geo_match),cats))) %>%
+        tidyr::pivot_longer(cols=all_of(cats),
+                            names_to="category",
+                            values_to="p_value")
+      if (vt %in% c("numeric","integer","integer64")) {
+        d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
+          mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
+          mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
+          mutate(value=case_when(.data$agg_type=="additive" ~ coalesce(.data$value,0) + .data$weight*(.data$p_value-.data$s_value),
+                                 is.na(.data$value) ~ .data$p_value,
+                                 TRUE ~ .data$value))
+      } else {
+        d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
+          mutate(value=case_when(is.na(.data$value) ~ .data$p_value,
+                                 TRUE ~ .data$value))
+      }
 
-  d_result <- d_combined %>%
-    select(any_of(id),"category","value") %>%
-    tidyr::pivot_wider(names_from="category",
-                        values_from="value")
+      d_result <- d_combined %>%
+        select(any_of(id),"category","value") %>%
+        tidyr::pivot_wider(names_from="category",
+                           values_from="value")
+      d_result
+    }) %>%
+    Reduce(\(x,y)full_join(x,y,by=id),.)
 
   data %>%
     select(-any_of(c(categories,na_base))) %>%

@@ -1,7 +1,7 @@
 Package: tongfen
 Type: Package
 Title: Make Data Based on Different Geographies Comparable
-Version: 0.3.6
+Version: 0.3.7
 Authors@R: c(
     person("Jens", "von Bergmann", email = "jens@mountainmath.ca", role = c("aut", "cre"), comment = "creator and maintainer"))
 Description: Several functions to allow comparisons of data across different geographies, in particular for Canadian census data from different censuses.
@@ -21,7 +21,7 @@ Imports:
     readr,
     utils,
     lifecycle
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Suggests:
     knitr,
     rmarkdown,
@@ -33,7 +33,8 @@ Suggests:
     spelling,
     readxl,
     scales,
-    microbenchmark
+    microbenchmark,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr, rmarkdown
 URL: https://github.com/mountainMath/tongfen, https://mountainmath.github.io/tongfen/
 BugReports: https://github.com/mountainMath/tongfen/issues

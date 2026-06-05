@@ -24,7 +24,7 @@ inner_join_tongfen_correspondence <- function(data,correspondence,link){
 
 
 
-get_tongfen_correspondence <- function(dd, max_iterations = 100){
+get_tongfen_correspondence <- function(dd){
   hs <- names(dd)[!grepl("TongfenMethod",names(dd))]
   index = 1
   ddd<- dd %>%
@@ -68,7 +68,7 @@ get_tongfen_correspondence <- function(dd, max_iterations = 100){
   # For each identifier column, union all IDs that share the same identifier value
   for (nn in hs) {
     id_groups <- ddd %>%
-      select(identifier = !!as.name(nn), .data$TongfenID) %>%
+      select(identifier = !!as.name(nn), "TongfenID") %>%
       distinct() %>%
       group_by(.data$identifier) %>%
       summarise(ids = list(.data$TongfenID), .groups = "drop")
@@ -109,7 +109,7 @@ get_tongfen_correspondence <- function(dd, max_iterations = 100){
     mutate(
       TongfenUID = do.call(paste, c(select(., starts_with("uid_")), sep = " "))
     ) %>%
-    select(.data$TongfenID, .data$TongfenUID)
+    select("TongfenID", "TongfenUID")
 
   # Join the UIDs back
   ddd %>%
