@@ -24,7 +24,7 @@ inner_join_tongfen_correspondence <- function(data,correspondence,link){
 
 
 
-get_tongfen_correspondence <- function(dd){
+get_tongfen_correspondence <- function(dd, max_iterations = 100){
   hs <- names(dd)[!grepl("TongfenMethod",names(dd))]
   index = 1
   ddd<- dd %>%
@@ -33,35 +33,87 @@ get_tongfen_correspondence <- function(dd){
   while (index<length(hs) && filter(ddd,is.na(.data$TongfenID)) %>% nrow > 0) {
     ddd<- ddd %>%
       mutate(TongfenID=coalesce(.data$TongfenID,paste0(index,"_",!!as.name(hs[index]))))
+    index <- index + 1
   }
 
-  done_tongfen <- FALSE
-  iterations <- 0
-  while (!done_tongfen) {
-    ddd <- ddd %>%
-      mutate(TongfenIDOriginal=.data$TongfenID)
-    for (nn in hs) {
-      ddd <- ddd %>%
-        group_by(!!as.name(nn)) %>%
-        mutate(TongfenID=min(.data$TongfenID))
+  # Optimized connected components using union-find approach
+  # Build a mapping of all unique IDs to their component root
+  # This is much faster than repeated group_by operations
+
+  # Create union-find parent mapping
+  all_ids <- unique(ddd$TongfenID)
+  parent <- setNames(all_ids, all_ids)
+
+  # Find root with path compression
+  find_root <- function(x) {
+    if (parent[x] == x) return(x)
+    parent[x] <<- find_root(parent[x])  # Path compression
+    return(parent[x])
+  }
+
+  # Union two components
+  union_ids <- function(x, y) {
+    root_x <- find_root(x)
+    root_y <- find_root(y)
+    if (root_x != root_y) {
+      # Always attach to the smaller ID (alphabetically)
+      if (root_x < root_y) {
+        parent[root_y] <<- root_x
+      } else {
+        parent[root_x] <<- root_y
+      }
     }
-    done_tongfen <- ddd %>% filter(.data$TongfenID!=.data$TongfenIDOriginal) %>% nrow == 0
-    iterations <- iterations+1
   }
 
-  ddd <- ddd %>% select(-.data$TongfenIDOriginal)
+  # For each identifier column, union all IDs that share the same identifier value
+  for (nn in hs) {
+    id_groups <- ddd %>%
+      select(identifier = !!as.name(nn), .data$TongfenID) %>%
+      distinct() %>%
+      group_by(.data$identifier) %>%
+      summarise(ids = list(.data$TongfenID), .groups = "drop")
 
-  tongfen_groups <- unique(ddd$TongfenID)
-  grp_lookup <- setNames(seq(1,length(tongfen_groups)),tongfen_groups)
+    for (i in seq_len(nrow(id_groups))) {
+      ids_in_group <- id_groups$ids[[i]]
+      if (length(ids_in_group) > 1) {
+        # Union all pairs in this group
+        for (j in 2:length(ids_in_group)) {
+          union_ids(ids_in_group[1], ids_in_group[j])
+        }
+      }
+    }
+  }
 
+  # Apply the final mapping - find root for each ID
+  final_mapping <- setNames(
+    vapply(all_ids, find_root, character(1), USE.NAMES = FALSE),
+    all_ids
+  )
+
+  # Map all TongfenIDs to their roots
   ddd <- ddd %>%
+    mutate(TongfenID = final_mapping[.data$TongfenID])
+
+  # Vectorized UID generation
+  # Pre-compute all the grouped values at once
+  uid_parts <- ddd %>%
     group_by(.data$TongfenID) %>%
-    mutate(TongfenUID=paste0(hs[1],":",paste0(sort(unique(!!as.name(hs[1]))),collapse=",")))
-  for (nn in hs[-1]) {
-    ddd <- ddd %>%
-      mutate(TongfenUID=paste0(.data$TongfenUID," ",nn,":",paste0(sort(unique(!!as.name(nn))),collapse=",")))
-  }
+    summarise(
+      across(
+        all_of(hs),
+        ~paste0(cur_column(), ":", paste0(sort(unique(.x)), collapse = ",")),
+        .names = "uid_{.col}"
+      ),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      TongfenUID = do.call(paste, c(select(., starts_with("uid_")), sep = " "))
+    ) %>%
+    select(.data$TongfenID, .data$TongfenUID)
+
+  # Join the UIDs back
   ddd %>%
+    left_join(uid_parts, by = "TongfenID") %>%
     ungroup()
 }
 
