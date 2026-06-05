@@ -1,0 +1,75 @@
+# Dasymetric downsampling
+
+**\[maturing\]**
+
+Proportionally re-aggregate hierarchical data to lower-level w.r.t.
+values of the \*base\* variable Also handles cases where lower level
+data may be available but blinded at times by filling in data from
+higher level
+
+Data at lower aggregation levels may not add up to the more accurate
+aggregate counts. This function distributes the aggregate level counts
+proportionally (by population) to the containing lower level geographic
+regions.
+
+## Usage
+
+``` r
+proportional_reaggregate(
+  data,
+  parent_data,
+  geo_match,
+  categories,
+  base = "Population"
+)
+```
+
+## Arguments
+
+- data:
+
+  The base geographic data
+
+- parent_data:
+
+  Higher level geographic data
+
+- geo_match:
+
+  A named string informing on what column names to match data and
+  parent_data
+
+- categories:
+
+  Vector of column names to re-aggregate
+
+- base:
+
+  Column name to use for proportional weighting when re-aggregating, or
+  named vector with column name for each category. Categries that should
+  be re-aggregated as means should be set to NA and will only be
+  reaggregated if the base data has NA values.
+
+## Value
+
+dataframe with downsampled variables from parent_data
+
+## Examples
+
+``` r
+# Proportionally reaggregate visible minority data from dissemination area 2016
+# census data to dissemination block geography, proportionally based on dissemination
+# block population
+if (FALSE) { # \dontrun{
+regions <- list(CSD="5915022")
+variables <- cancensus::child_census_vectors("v_CA16_3954")
+
+da_data <- cancensus::get_census("CA16",regions=regions,
+                                 vectors=setNames(variables$vector,variables$label),
+                                 level="DA")
+geo_data <- cancensus::get_census("CA16",regions=regions,geo_format="sf",level="DB")
+
+db_data <- geo_data %>% proportional_reaggregate(da_data,c("DA_UID"="GeoUID"),variables$label)
+
+} # }
+```
