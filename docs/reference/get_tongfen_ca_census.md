@@ -16,7 +16,6 @@ get_tongfen_ca_census(
   base_geo = NULL,
   na.rm = FALSE,
   tolerance = 50,
-  area_mismatch_cutoff = 0.1,
   quiet = FALSE,
   refresh = FALSE,
   crs = NULL,
@@ -54,24 +53,18 @@ get_tongfen_ca_census(
 - base_geo:
 
   base census year to build up common geography from, \`NULL\` (the
-  default) to not return any geographi data
+  default) to not return any geographic data
 
 - na.rm:
 
   logical, determines how NA values should be treated when aggregating
-  variables
+  variables, default is \`FALSE\`
 
 - tolerance:
 
   tolerance for \`estimate_tongen_correspondence\` in metres, default
   value is 50 metres, only used when method is 'estimate' or
   'identifier'
-
-- area_mismatch_cutoff:
-
-  discard areas returned by \`estimate_tongfen_correspondence\` with
-  area mismatch (log ratio) greater than cutoff, only used when method
-  is 'estimate' or 'identifier'
 
 - quiet:
 
@@ -85,7 +78,8 @@ get_tongfen_ca_census(
 - crs:
 
   optional CRS to transform data to, and use for spatial intersections
-  if method is 'identifier' or 'estimate'
+  if method is 'identifier' or 'estimate', defaults to \`3347\`
+  (Statistics Canada Lambert) for the intersections
 
 - data_transform:
 
