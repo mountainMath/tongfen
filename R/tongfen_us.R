@@ -75,7 +75,7 @@ get_us_ct_correspondence <- function(state, datasets,
         select(matches("^GEOID\\d{2}$"))
       c <- full_join(c,c2,by="GEOID10")
     }
-    if (!("dec2010" %in% datasets)) c <- c %>% select(-.data$GEOIOD10)
+    if (!("dec2010" %in% datasets)) c <- c %>% select(-.data$GEOID10)
     c <- c %>% unique
   } else if ("dec2020" %in% datasets) {
     c<-get_us_ct_correspondence_2020(state,cache_path=cache_path) %>%

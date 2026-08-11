@@ -23,7 +23,7 @@ get_tongfen_census_ct <- function(regions,
   lifecycle::deprecate_warn("0.2.0", "get_tongfen_census_ct()", "get_tongfen_ca_census()")
   #warning("This method is deprecated, use `get_tongfen_ca_census(regions,vectors,level='CT', method = 'identifier', tolerance = 500, ...)` instead")
   meta <- meta_for_ca_census_vectors(vectors)
-  base_geo <- ifelse(is.na(geo_format),NULL,meta$geo_dataset %>% unique %>% sort %>% first )
+  base_geo <- if (is.na(geo_format)) NULL else meta$geo_dataset %>% unique() %>% sort() %>% first()
 
   get_tongfen_ca_census(regions = regions,
                         meta = meta,
@@ -55,7 +55,7 @@ get_tongfen_census_ct <- function(regions,
 get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,quiet=TRUE) {
   lifecycle::deprecate_warn("0.2.0", "get_tongfen_census_da()", "get_tongfen_ca_census()")
   meta <- meta_for_ca_census_vectors(vectors)
-  base_geo <- ifelse(is.na(geo_format),NULL,meta$geo_dataset %>% unique %>% sort %>% first )
+  base_geo <- if (is.na(geo_format)) NULL else meta$geo_dataset %>% unique() %>% sort() %>% first()
 
   get_tongfen_ca_census(regions = regions,
                         meta = meta,
@@ -87,7 +87,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 get_tongfen_ca_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,quiet=TRUE) {
   lifecycle::deprecate_warn("0.2.0", "get_tongfen_census_da()", "get_tongfen_census_ca()")
   meta <- meta_for_ca_census_vectors(vectors)
-  base_geo <- ifelse(is.na(geo_format),NULL,meta$geo_dataset %>% unique %>% sort %>% first )
+  base_geo <- if (is.na(geo_format)) NULL else meta$geo_dataset %>% unique() %>% sort() %>% first()
 
   get_tongfen_ca_census(regions = regions,
                         meta = meta,

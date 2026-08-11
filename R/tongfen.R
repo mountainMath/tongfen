@@ -141,11 +141,7 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
     meta <- meta %>% bind_rows(tibble(variable=base_variables,type="Base"))
 
   if ("sf" %in% class(data)) {
-    geo_column=attr(data,"sf_column")
-    data <- left_join(data %>%
-                        select(c(geo_column,grouping_var)) %>%
-                        summarize(!!geo_column:=suppressMessages(sf::st_union(!!as.name(geo_column))) %>%
-                                    sf::st_cast("MULTIPOLYGON")),
+    data <- left_join(summarize_geometry_by_group(data,grouping_var),
                       data %>%
                         sf::st_set_geometry(NULL) %>%
                         summarize_at(meta$variable,sum,na.rm=na.rm),
@@ -198,6 +194,8 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' @param base_geo identifier for which data element to base the final geography on,
 #' uses the first data element if  `NULL` (default),
 #' expects that `base_geo` is an element of `names(data)`.
+#' @param na.rm logical, determines how NA values should be treated when aggregating variables,
+#' default is `TRUE`
 #' @return aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.
 #' @export
 #'
@@ -214,7 +212,7 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' result <- tongfen_aggregate(list(geo1 %>% rename(GeoUIDCA06=GeoUID),
 #'                                  geo2 %>% rename(GeoUIDCA16=GeoUID)),correspondence,meta)
 #'}
-tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
+tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL, na.rm = TRUE){
   data <- ensure_names(data)
   nn <- names(data)
   if (is.null(base_geo)) base_geo <- nn[1]
@@ -240,14 +238,10 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
                    by=match_column) %>%
         group_by(.data$TongfenID,.data$TongfenUID)
       if (!is.null(meta)) {
-        d <- d %>%  aggregate_data_with_meta(meta)
+        d <- d %>%  aggregate_data_with_meta(meta,na.rm=na.rm)
       } else {
         if ("sf" %in% class(d)) {
-          geo_column=attr(d,"sf_column")
-          d <- d %>% summarize(!!geo_column:=suppressMessages(sf::st_union(!!as.name(geo_column))) %>%
-                      sf::st_cast("MULTIPOLYGON"),
-                      .groups="drop")
-
+          d <- summarize_geometry_by_group(d,c("TongfenID","TongfenUID"))
         } else {
           d <- d %>% summarize(.groups="drop")
         }
@@ -261,7 +255,7 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL){
   for (ds in nn[nn!=base_geo]) {
     aggregated_data <- aggregated_data %>%
       inner_join(data_new[[ds]] %>%
-                   select(-.data$TongfenUID) %>%
+                   select(-"TongfenUID") %>%
                    rename_with_meta(meta,ds),
                  by="TongfenID")
   }
@@ -351,7 +345,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
 
   na_base <- "...na_base"
   while (na_base %in% names(data)) {
-    na_base <- paste0(na_base)
+    na_base <- paste0("...",na_base)
   }
 
 
@@ -615,6 +609,10 @@ estimate_tongfen_correspondence <- function(data,
 #' Sanity check for areas of estimated tongfen correspondence. This is useful if for example the total extent
 #' of geo1 and geo2 differ and there are regions at the edges with large difference in overlap.
 #'
+#' The result is a diagnostic, not a pass/fail test. Geographies for different years are
+#' simplified independently and differ in how water features are cut out, so a sizable area
+#' mismatch does not by itself mean the regions were matched up incorrectly.
+#'
 #' @param data alist of geogrpahic data of class sf
 #' @param correspondence Correspondence table with columns the unique geographic identifiers for each of the
 #' geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)
@@ -668,14 +666,15 @@ check_tongfen_areas <- function(data,correspondence) {
     purrr::reduce(full_join,by="TongfenID")
 
   method_columns <- names(summary_data)[grepl("TongfenMethod",names(summary_data))]
-  summary_data$M  <- apply(summary_data[,method_columns],1,function(d)paste0(unique(d),collapse = ", "))
+  summary_data$M  <- collapse_unique_by_row(summary_data,method_columns)
+  summary_data <- summary_data %>%
+    select(-all_of(method_columns)) %>%
+    rename(TongfenMethod="M")
+
+  area_columns <- names(summary_data)[grepl("^area_",names(summary_data))]
+  areas <- lapply(area_columns,function(cc) as.numeric(summary_data[[cc]]))
   summary_data %>%
-    select(-method_columns) %>%
-    rename(TongfenMethod=.data$M) %>%
-    mutate(maxa=apply(select(.,matches("^area_")),1,max),
-           mina=apply(select(.,matches("^area_")),1,min)) %>%
-    mutate(max_log_ratio=log(.data$maxa/.data$mina)) %>%
-    select(-.data$maxa,-.data$mina)
+    mutate(max_log_ratio=log(do.call(pmax,areas)/do.call(pmin,areas)))
 }
 
 

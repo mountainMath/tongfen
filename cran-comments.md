@@ -1,3 +1,20 @@
+# tongfen v.0.3.8
+## Breaking changes
+- `get_tongfen_ca_census` now honours its `base_geo`, `na.rm`, `tolerance`, `crs` and
+  `data_transform` arguments, all of which were silently ignored
+- removed the `area_mismatch_cutoff` argument from `get_tongfen_ca_census` and
+  `get_tongfen_correspondence_ca_census`, it never had any effect
+## Major changes
+- correspondence tables are now built via a vectorised connected components pass instead of
+  a row-by-row union-find, making tongfen on large geographies dramatically faster
+- the "statcan" method no longer downloads census geometries it does not use
+- dissolving geometries skips regions that don't need to be merged
+## Minor changes
+- `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial intersections
+- missing geographic identifiers no longer merge unrelated regions into one common geography
+- fix crash when tongfen-ing census tracts across non-adjacent censuses
+- several fixes to the deprecated `get_tongfen_census_*` functions
+
 # tongfen v.0.3.7
 ## Major changes
 - accommodate factors in proportional_reaggregate
@@ -26,7 +43,10 @@
 # Submission - v.0.3
 
 # Test environments
-* local R installation, R 4.0.2
-* GitHub action release
+* local macOS installation, R 4.6.0
+* GitHub actions (windows-latest, macOS-latest, ubuntu-latest) on release, devel and oldrel
+
+# R CMD check results
+0 errors | 0 warnings | 0 notes
 
 

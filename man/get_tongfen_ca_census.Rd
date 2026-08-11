@@ -12,7 +12,6 @@ get_tongfen_ca_census(
   base_geo = NULL,
   na.rm = FALSE,
   tolerance = 50,
-  area_mismatch_cutoff = 0.1,
   quiet = FALSE,
   refresh = FALSE,
   crs = NULL,
@@ -34,14 +33,12 @@ this method only works for "DB", "DA" and "CT" levels.
 * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.}
 
 \item{base_geo}{base census year to build up common geography from, `NULL` (the default) to not return
-any geographi data}
+any geographic data}
 
-\item{na.rm}{logical, determines how NA values should be treated when aggregating variables}
+\item{na.rm}{logical, determines how NA values should be treated when aggregating variables,
+default is `FALSE`}
 
 \item{tolerance}{tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
-only used when method is 'estimate' or 'identifier'}
-
-\item{area_mismatch_cutoff}{discard areas returned by `estimate_tongfen_correspondence` with area mismatch (log ratio) greater than cutoff,
 only used when method is 'estimate' or 'identifier'}
 
 \item{quiet}{suppress download progress output, default is `FALSE`}
@@ -49,7 +46,7 @@ only used when method is 'estimate' or 'identifier'}
 \item{refresh}{optional character, refresh data cache for this call, (default `FALSE`)}
 
 \item{crs}{optional CRS to transform data to, and use for spatial intersections if method is
-'identifier' or 'estimate'}
+'identifier' or 'estimate', defaults to `3347` (Statistics Canada Lambert) for the intersections}
 
 \item{data_transform}{optional transform function to be applied to census data after being returned from cancensus}
 }
