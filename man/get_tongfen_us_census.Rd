@@ -32,6 +32,11 @@ sf object with (wide form) census variables with census year as suffix (separate
 
 This wraps data acquisition via the tidycensus package and tongfen on a common geography into
 a single convenience function.
+
+Data is only available for the 2000, 2010 and 2020 censuses, the Census Bureau has retired the
+1990 API endpoint. To tongfen 1990 data, obtain it elsewhere and combine it with a
+correspondence table from \code{\link{get_tongfen_correspondence_us_census}} via
+\code{\link{tongfen_aggregate}}.
 }
 \examples{
 # Get US census data on population and households for 2000 and 2010 censuses on a uniform geography

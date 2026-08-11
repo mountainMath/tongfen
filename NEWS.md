@@ -15,6 +15,11 @@
   (dissemination blocks for a large province: minutes down to seconds)
 - the "statcan" method no longer downloads census geometries it does not use
 - dissolving geometries skips regions that don't need to be merged
+- new `get_tongfen_correspondence_us_census` to get correspondence tables for US census
+  geographies without also fetching the data
+- US census tract correspondence tables now reach back to the 1990 census (`dec1990`). The
+  Census Bureau has retired the 1990 API endpoint, so 1990 data itself has to be brought in
+  separately, for example from NHGIS, and combined via `tongfen_aggregate`
 ## Minor changes
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial
   intersections, default is `3347` (Statistics Canada Lambert)
@@ -22,6 +27,9 @@
 - fix crash when tongfen-ing census tracts across non-adjacent censuses
 - fix `get_tongfen_census_ct`, `get_tongfen_census_da` and `get_tongfen_ca_census_ct_from_da`
   erroring out when called with `geo_format=NA`
+- US county subdivision data now errors out up front on censuses it can't be matched across,
+  instead of failing with "Did not find matching geographic identifiers" after downloading
+  the comparability file and the census data
 - faster `check_tongfen_areas` and `aggregate_correspondences`
 
 # tongfen v.0.3.7
