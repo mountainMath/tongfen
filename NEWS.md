@@ -30,6 +30,9 @@
   common geographies, for Rhode Island tracts across the 2010 and 2020 censuses 198 instead of
   60, for Vermont 151 instead of 26
 ## Minor changes
+- `get_tongfen_us_census` gained a `sumfile` argument, passed through to tidycensus, either a
+  single value for all censuses or a vector named by dataset. Without it 2020 data is read from
+  the PL 94-171 redistricting file, which carries almost no variables
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial
   intersections, default is `3347` (Statistics Canada Lambert)
 - missing geographic identifiers no longer merge unrelated regions into one common geography

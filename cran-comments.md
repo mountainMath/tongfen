@@ -14,10 +14,13 @@
 - US correspondence tables no longer chain regions together over slivers, and no longer strip
   leading zeros off 2020 census tract identifiers
 ## Minor changes
+- `get_tongfen_us_census` gained a `sumfile` argument, passed through to tidycensus
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial intersections
 - missing geographic identifiers no longer merge unrelated regions into one common geography
 - fix crash when tongfen-ing census tracts across non-adjacent censuses
+- US county subdivision data errors out up front on censuses it can't be matched across
 - several fixes to the deprecated `get_tongfen_census_*` functions
+- faster `check_tongfen_areas` and `aggregate_correspondences`
 
 # tongfen v.0.3.7
 ## Major changes

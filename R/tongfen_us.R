@@ -337,6 +337,18 @@ valid_us_census_datasets <- c(
   dec2020 = "US decentennial census 2020"
 )
 
+# Censuses that published several summary files need to be told which one to read. tidycensus
+# picks a default per census year, for 2020 that is the PL 94-171 redistricting file which only
+# carries a handful of variables, most 2020 variables live in the DHC file. `sumfile` is either a
+# single value for all censuses or a vector named by dataset, `NULL` leaves the choice to
+# tidycensus.
+sumfile_for_dataset <- function(sumfile, ds){
+  if (is.null(sumfile)) return(NULL)
+  if (is.null(names(sumfile))) return(unname(sumfile))
+  if (!(ds %in% names(sumfile))) return(NULL)
+  unname(sumfile[[ds]])
+}
+
 #' Get US census data for 2000 and 2010 census on common census tract based geography
 #'
 #' @description
@@ -358,6 +370,10 @@ valid_us_census_datasets <- c(
 #' @param base_geo census year to use as base geography, default is `2010`.
 #' @param min_area_share minimum share of area two geographies have to have in common to count
 #' as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.
+#' @param sumfile summary file to read the variables from, either a single value used for all
+#' censuses or a vector named by dataset, for example `c(dec2010="sf1", dec2020="dhc")`. Default
+#' is `NULL`, which leaves the choice to tidycensus. Note that tidycensus defaults the 2020
+#' census to the PL 94-171 redistricting file, most 2020 variables need `sumfile="dhc"`.
 #' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
 #' @export
 #'
@@ -378,7 +394,7 @@ valid_us_census_datasets <- c(
 #'
 #'}
 get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
-                                  base_geo = NULL, min_area_share = 0.01){
+                                  base_geo = NULL, min_area_share = 0.01, sumfile = NULL){
 
   datasets <- meta$dataset %>% unique
   if (is.null(base_geo)) base_geo=datasets[1]
@@ -387,6 +403,16 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
   assert(length(invalid_datasets)==0, paste0("Invalid datasets :",paste0(invalid_datasets,collapse = ", ")))
   assert(level %in% c('tract','county subdivision'),"Only census tracts and counties are supported right now.")
   assert(survey %in% c('census'),"Only census surveys are supported right now.")
+  if (!is.null(sumfile)) {
+    if (is.null(names(sumfile))) {
+      assert(length(sumfile)==1,
+             "sumfile has to be a single value or a vector named by dataset")
+    } else {
+      invalid_sumfiles <- setdiff(names(sumfile),datasets)
+      assert(length(invalid_sumfiles)==0,
+             paste0("Invalid datasets in sumfile: ",paste0(invalid_sumfiles,collapse=", ")))
+    }
+  }
 
   regions$state %>% lapply(function(state){
     correspondence <- get_tongfen_correspondence_us_census(datasets = datasets,
@@ -401,6 +427,7 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
         short_year <- substr(as.character(year),3,4)
         tidycensus::get_decennial(geography=level, state=state, county=regions$county,
                                   variables = m$variable, year = year,
+                                  sumfile = sumfile_for_dataset(sumfile,ds),
                                   geometry = base_geo==ds, output="wide") %>%
           rename(!!paste0("GEOID",short_year):=.data$GEOID)
       }) %>%

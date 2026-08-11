@@ -10,7 +10,8 @@ get_tongfen_us_census(
   level = "tract",
   survey = "census",
   base_geo = NULL,
-  min_area_share = 0.01
+  min_area_share = 0.01,
+  sumfile = NULL
 )
 }
 \arguments{
@@ -27,6 +28,11 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``}
 
 \item{min_area_share}{minimum share of area two geographies have to have in common to count
 as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.}
+
+\item{sumfile}{summary file to read the variables from, either a single value used for all
+censuses or a vector named by dataset, for example `c(dec2010="sf1", dec2020="dhc")`. Default
+is `NULL`, which leaves the choice to tidycensus. Note that tidycensus defaults the 2020
+census to the PL 94-171 redistricting file, most 2020 variables need `sumfile="dhc"`.}
 }
 \value{
 sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
