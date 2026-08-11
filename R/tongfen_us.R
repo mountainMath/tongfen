@@ -12,6 +12,24 @@ us_geoid_columns <- c(dec1990 = "GEOID90",
                       dec2010 = "GEOID10",
                       dec2020 = "GEOID20")
 
+# Relationship files list every geometric overlap between two censuses, including slivers
+# along boundaries that only shifted slightly. Chaining those merges unrelated regions into
+# one common geography, so they get cut. The share is taken over the larger of the two sides,
+# a region carved out of a bigger one is only a small share of the old one but most of the
+# new one. Regions never get dropped: if all parts of a region are slivers its largest part
+# is kept, so every region still ends up in some common geography.
+area_share <- function(part, total) ifelse(total > 0, part/total, 0)
+
+cut_correspondence_slivers <- function(d, share, min_area_share){
+  keep <- share >= min_area_share
+  for (column in names(d)) {
+    g <- d[[column]]
+    largest <- share == unname(tapply(share, g, max)[g])
+    keep <- keep | (!(g %in% g[keep]) & largest)
+  }
+  d[keep,,drop=FALSE] %>% unique()
+}
+
 # `year` is the later of the two censuses the relationship file links
 get_us_ct_correspondence_path <- function(state,year){
   states <- fips_code_for_state(state)
@@ -36,8 +54,10 @@ get_us_ct_correspondence_path <- function(state,year){
   path
 }
 
-get_us_ct_correspondence_2020 <- function(state,cache_path=getOption("tongfen.cache_path")) {
-  states <- fips_code_for_state(state)
+# the 2010 to 2020 tract relationship file is block based, tract areas get summed up from
+# the blocks they are made up of
+get_us_ct_correspondence_2020 <- function(state,min_area_share=0.01,
+                                          cache_path=getOption("tongfen.cache_path")) {
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
 
   path <- get_us_ct_correspondence_path(state,2020)
@@ -46,14 +66,35 @@ get_us_ct_correspondence_2020 <- function(state,cache_path=getOption("tongfen.ca
     if (!dir.exists(cache_path)) dir.create(cache_path)
     utils::download.file(path,local_path,quiet = TRUE)
   }
-  readr::read_delim(local_path,delim="|", col_types = "cccccnncccnncnn") %>%
+  blocks <- readr::read_delim(local_path,delim="|",progress=FALSE,
+                              col_types=readr::cols_only(
+                                STATE_2010="c",COUNTY_2010="c",TRACT_2010="c",BLK_2010="c",
+                                AREALAND_2010="d",AREAWATER_2010="d",
+                                STATE_2020="c",COUNTY_2020="c",TRACT_2020="c",BLK_2020="c",
+                                AREALAND_2020="d",AREAWATER_2020="d",
+                                AREALAND_INT="d",AREAWATER_INT="d")) %>%
     mutate(GEOID10=paste0(.data$STATE_2010,.data$COUNTY_2010,.data$TRACT_2010),
-           GEOID20=paste0(.data$STATE_2020,.data$COUNTY_2020,.data$TRACT_2020)) %>%
-    select(.data$GEOID10,.data$GEOID20)%>%
-    unique
+           GEOID20=paste0(.data$STATE_2020,.data$COUNTY_2020,.data$TRACT_2020),
+           area10=.data$AREALAND_2010+.data$AREAWATER_2010,
+           area20=.data$AREALAND_2020+.data$AREAWATER_2020,
+           area_part=.data$AREALAND_INT+.data$AREAWATER_INT)
+  tracts10 <- blocks %>% select("GEOID10","BLK_2010","area10") %>% unique() %>%
+    group_by(.data$GEOID10) %>% summarize(area10=sum(.data$area10),.groups="drop")
+  tracts20 <- blocks %>% select("GEOID20","BLK_2020","area20") %>% unique() %>%
+    group_by(.data$GEOID20) %>% summarize(area20=sum(.data$area20),.groups="drop")
+  d <- blocks %>%
+    group_by(.data$GEOID10,.data$GEOID20) %>%
+    summarize(area_part=sum(.data$area_part),.groups="drop") %>%
+    left_join(tracts10,by="GEOID10") %>%
+    left_join(tracts20,by="GEOID20")
+  cut_correspondence_slivers(d %>% select("GEOID10","GEOID20"),
+                             pmax(area_share(d$area_part,d$area10),
+                                  area_share(d$area_part,d$area20)),
+                             min_area_share)
 }
 
-get_us_ct_correspondence_2010 <- function(state,cache_path=getOption("tongfen.cache_path")){
+get_us_ct_correspondence_2010 <- function(state,min_area_share=0.01,
+                                          cache_path=getOption("tongfen.cache_path")){
   path <- get_us_ct_correspondence_path(state,"2010")
   file <- basename(path)
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
@@ -62,7 +103,7 @@ get_us_ct_correspondence_2010 <- function(state,cache_path=getOption("tongfen.ca
     if (!dir.exists(cache_path)) dir.create(cache_path)
     utils::download.file(path,local_path,quiet=TRUE)
   }
-  d<-readr::read_csv(local_path,
+  d<-readr::read_csv(local_path,progress=FALSE,
                      col_names=c("STATE00","COUNTY00","TRACT00","GEOID00",
                                  "POP00","HU00","PART00","AREA00","AREALAND00",
                                  "STATE10","COUNTY10","TRACT10","GEOID10",
@@ -70,12 +111,23 @@ get_us_ct_correspondence_2010 <- function(state,cache_path=getOption("tongfen.ca
                                  "AREAPT","AREALANDPT","AREAPCT00PT",
                                  "AREALANDPCT00PT","AREAPCT10PT","AREALANDPCT10PT",
                                  "POP10PT","POPPCT00","POPPCT10","HU10PT","HUPCT00","HUPCT10"),
-                     col_types = "cccciiccccccciicccnnnnnnnnnnnn")
+                     col_types = "cccciiccccccciicccnnnnnnnnnnnn") %>%
+    group_by(.data$GEOID00,.data$GEOID10) %>%
+    summarize(area_part=sum(.data$AREAPT),
+              area00=max(as.numeric(.data$AREA00)),
+              area10=max(as.numeric(.data$AREA10)),
+              .groups="drop")
+  cut_correspondence_slivers(d %>% select("GEOID00","GEOID10"),
+                             pmax(area_share(d$area_part,d$area00),
+                                  area_share(d$area_part,d$area10)),
+                             min_area_share)
 }
 
-# the 1990 to 2000 relationship files are fixed width, the "pop" variant is the
-# complete one, listing every tract rather than only the ones that changed
-get_us_ct_correspondence_2000 <- function(state,cache_path=getOption("tongfen.cache_path")){
+# the 1990 to 2000 relationship files are fixed width, the "pop" variant is the complete one,
+# listing every tract rather than only the ones that changed. It only carries the land area of
+# each part, tract areas get summed up from those
+get_us_ct_correspondence_2000 <- function(state,min_area_share=0.01,
+                                          cache_path=getOption("tongfen.cache_path")){
   path <- get_us_ct_correspondence_path(state,"2000")
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
   local_path <- file.path(cache_path,basename(path))
@@ -83,20 +135,27 @@ get_us_ct_correspondence_2000 <- function(state,cache_path=getOption("tongfen.ca
     if (!dir.exists(cache_path)) dir.create(cache_path)
     utils::download.file(path,local_path,quiet=TRUE)
   }
-  readr::read_fwf(local_path,
+  d <- readr::read_fwf(local_path,
                   readr::fwf_cols(STATE90=c(1,2),COUNTY90=c(3,5),TRACT90BASE=c(6,9),
                                   TRACT90SUF=c(10,11),PART90=c(12,12),POP90TRACT=c(13,21),
                                   PCT90=c(22,25),STATE00=c(26,27),COUNTY00=c(28,30),
                                   TRACT00BASE=c(31,34),TRACT00SUF=c(35,36),PART00=c(37,37),
                                   POP00TRACT=c(38,46),PCT00=c(47,50),POPPART=c(51,59),
                                   AREALAND=c(60,73),STAB=c(74,75),COUNTYNAME=c(76,135)),
-                  col_types=readr::cols(.default="c")) %>%
+                  col_types=readr::cols(.default="c"),progress=FALSE) %>%
     mutate(GEOID90=paste0(.data$STATE90,.data$COUNTY90,.data$TRACT90BASE,
                           coalesce(.data$TRACT90SUF,"00")),
            GEOID00=paste0(.data$STATE00,.data$COUNTY00,.data$TRACT00BASE,
                           coalesce(.data$TRACT00SUF,"00"))) %>%
-    select("GEOID90","GEOID00") %>%
-    unique()
+    group_by(.data$GEOID90,.data$GEOID00) %>%
+    summarize(area_part=sum(as.numeric(.data$AREALAND)),.groups="drop") %>%
+    group_by(.data$GEOID90) %>% mutate(area90=sum(.data$area_part)) %>%
+    group_by(.data$GEOID00) %>% mutate(area00=sum(.data$area_part)) %>%
+    ungroup()
+  cut_correspondence_slivers(d %>% select("GEOID90","GEOID00"),
+                             pmax(area_share(d$area_part,d$area90),
+                                  area_share(d$area_part,d$area00)),
+                             min_area_share)
 }
 
 # stitch relationship files for consecutive censuses into one table spanning all
@@ -124,17 +183,17 @@ us_correspondence_span <- function(datasets, available){
   available[seq(match(datasets[1],available),match(utils::tail(datasets,1),available))]
 }
 
-get_us_ct_correspondence <- function(state, datasets,
+get_us_ct_correspondence <- function(state, datasets, min_area_share=0.01,
                                      cache_path=getOption("tongfen.cache_path")){
   available <- names(us_geoid_columns)
   span <- us_correspondence_span(datasets,available)
   links <- utils::head(span,-1) %>%
     lapply(function(year){
-      link <- switch(year,
-                     dec1990 = get_us_ct_correspondence_2000(state,cache_path=cache_path),
-                     dec2000 = get_us_ct_correspondence_2010(state,cache_path=cache_path),
-                     dec2010 = get_us_ct_correspondence_2020(state,cache_path=cache_path))
-      link %>% select(matches("^GEOID\\d{2}$")) %>% unique()
+      f <- switch(year,
+                  dec1990 = get_us_ct_correspondence_2000,
+                  dec2000 = get_us_ct_correspondence_2010,
+                  dec2010 = get_us_ct_correspondence_2020)
+      f(state,min_area_share=min_area_share,cache_path=cache_path)
     })
   join_us_correspondence(links,intersect(available,datasets))
 }
@@ -170,17 +229,20 @@ get_us_county_subdivision_correspondence_2020 <- function(min_area_share=0.01,
     if (!dir.exists(cache_path)) dir.create(cache_path)
     utils::download.file(path,local_path,quiet=TRUE)
   }
-  readr::read_delim(local_path,delim="|",progress=FALSE,
+  d <- readr::read_delim(local_path,delim="|",progress=FALSE,
                     col_types=readr::cols_only(GEOID_COUSUB_10="c",GEOID_COUSUB_20="c",
                                                AREALAND_COUSUB_10="d",AREAWATER_COUSUB_10="d",
                                                AREALAND_COUSUB_20="d",AREAWATER_COUSUB_20="d",
                                                AREALAND_PART="d",AREAWATER_PART="d")) %>%
-    mutate(area_part=.data$AREALAND_PART+.data$AREAWATER_PART) %>%
-    filter(pmax(.data$area_part/(.data$AREALAND_COUSUB_10+.data$AREAWATER_COUSUB_10),
-                .data$area_part/(.data$AREALAND_COUSUB_20+.data$AREAWATER_COUSUB_20))
-           >= min_area_share) %>%
-    select(GEOID10="GEOID_COUSUB_10",GEOID20="GEOID_COUSUB_20") %>%
-    unique()
+    group_by(GEOID10=.data$GEOID_COUSUB_10,GEOID20=.data$GEOID_COUSUB_20) %>%
+    summarize(area_part=sum(.data$AREALAND_PART+.data$AREAWATER_PART),
+              area10=max(.data$AREALAND_COUSUB_10+.data$AREAWATER_COUSUB_10),
+              area20=max(.data$AREALAND_COUSUB_20+.data$AREAWATER_COUSUB_20),
+              .groups="drop")
+  cut_correspondence_slivers(d %>% select("GEOID10","GEOID20"),
+                             pmax(area_share(d$area_part,d$area10),
+                                  area_share(d$area_part,d$area20)),
+                             min_area_share)
 }
 
 get_us_county_subdivision_correspondence_for <- function(state, datasets, min_area_share=0.01,
@@ -212,6 +274,10 @@ get_us_county_subdivision_correspondence_for <- function(state, datasets, min_ar
 #' in between two that are get traversed on the way, the Census Bureau only publishes
 #' relationship files between consecutive censuses.
 #'
+#' The relationship files are geometric overlays that list every sliver along boundaries that
+#' only shifted slightly. Those get cut via `min_area_share`, keeping them would chain
+#' unrelated regions into one common geography.
+#'
 #' The correspondence layer reaches back one census further than
 #' \code{\link{get_tongfen_us_census}}. The 1990 census is available as `dec1990` here, but the
 #' Census Bureau has retired the 1990 API endpoint, so 1990 data has to be brought in by other
@@ -226,10 +292,11 @@ get_us_county_subdivision_correspondence_for <- function(state, datasets, min_ar
 #' @param level aggregation level, at this stage the only valid levels are 'tract' and
 #' 'county subdivision'.
 #' @param min_area_share minimum share of area two geographies have to have in common to count
-#' as related, only used when matching county subdivisions across the 2010 and 2020 censuses.
-#' The Census Bureau relationship file for these is a geometric overlay, lowering this pulls in
-#' slivers along boundaries that only shifted slightly and chains unrelated subdivisions into
-#' one common geography. Default is `0.01`.
+#' as related, default is `0.01`. The Census Bureau relationship files list every geometric
+#' overlap, lowering this pulls in slivers along boundaries that only shifted slightly and
+#' chains unrelated regions into one common geography. Raising it gives finer common
+#' geographies at the risk of separating regions that did change. No region is ever dropped,
+#' if all of its parts are slivers its largest part is kept.
 #' @param cache_path optional path to cache the relationship files in, defaults to the
 #' `tongfen.cache_path` option and falls back to a temporary directory
 #' @return tibble with one row per census geography, a GEOID column for each requested census,
@@ -251,7 +318,8 @@ get_tongfen_correspondence_us_census <- function(datasets, regions, level='tract
   regions$state %>%
     lapply(function(state){
       if (level=='tract') {
-        get_us_ct_correspondence(state,datasets,cache_path=cache_path)
+        get_us_ct_correspondence(state,datasets,min_area_share=min_area_share,
+                                 cache_path=cache_path)
       } else {
         get_us_county_subdivision_correspondence_for(state,datasets,
                                                      min_area_share=min_area_share,
@@ -289,8 +357,7 @@ valid_us_census_datasets <- c(
 #' @param survey survey to get data for, supported options is "census"
 #' @param base_geo census year to use as base geography, default is `2010`.
 #' @param min_area_share minimum share of area two geographies have to have in common to count
-#' as related, see \code{\link{get_tongfen_correspondence_us_census}}. Only used when matching
-#' county subdivisions across the 2010 and 2020 censuses.
+#' as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.
 #' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
 #' @export
 #'

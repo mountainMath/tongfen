@@ -26,8 +26,7 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``}
 \item{base_geo}{census year to use as base geography, default is `2010`.}
 
 \item{min_area_share}{minimum share of area two geographies have to have in common to count
-as related, see \code{\link{get_tongfen_correspondence_us_census}}. Only used when matching
-county subdivisions across the 2010 and 2020 censuses.}
+as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.}
 }
 \value{
 sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").

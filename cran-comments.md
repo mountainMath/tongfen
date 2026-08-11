@@ -11,6 +11,8 @@
 - dissolving geometries skips regions that don't need to be merged
 - new `get_tongfen_correspondence_us_census`, US tract correspondence tables now reach back to
   the 1990 census and county subdivisions forward to the 2020 census
+- US correspondence tables no longer chain regions together over slivers, and no longer strip
+  leading zeros off 2020 census tract identifiers
 ## Minor changes
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial intersections
 - missing geographic identifiers no longer merge unrelated regions into one common geography

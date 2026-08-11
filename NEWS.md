@@ -21,9 +21,14 @@
   Census Bureau has retired the 1990 API endpoint, so 1990 data itself has to be brought in
   separately, for example from NHGIS, and combined via `tongfen_aggregate`
 - US county subdivisions can now be matched across the 2010 and 2020 censuses, previously only
-  the 2000 and 2010 censuses were available. The relationship file for these is a geometric
-  overlay, the new `min_area_share` argument controls how much area two subdivisions have to
-  have in common to count as related
+  the 2000 and 2010 censuses were available
+- US correspondence tables no longer chain regions together over slivers. The Census Bureau
+  relationship files list every geometric overlap, including boundaries that only shifted
+  slightly, and matching those up merged unrelated regions into one common geography. The new
+  `min_area_share` argument controls how much area two regions have to have in common to count
+  as related, default is `0.01`, and no region is ever dropped. This gives substantially finer
+  common geographies, for Rhode Island tracts across the 2010 and 2020 censuses 198 instead of
+  60, for Vermont 151 instead of 26
 ## Minor changes
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial
   intersections, default is `3347` (Statistics Canada Lambert)
@@ -31,6 +36,9 @@
 - fix crash when tongfen-ing census tracts across non-adjacent censuses
 - fix `get_tongfen_census_ct`, `get_tongfen_census_da` and `get_tongfen_ca_census_ct_from_da`
   erroring out when called with `geo_format=NA`
+- fix 2020 US census tract identifiers getting stripped of their leading zeros when read from
+  the relationship file, which silently dropped most tracts out of the result. For Rhode Island
+  246 of 250 tracts were affected
 - US county subdivision data now errors out up front on censuses it can't be matched across,
   instead of failing with "Did not find matching geographic identifiers" after downloading
   the comparability file and the census data

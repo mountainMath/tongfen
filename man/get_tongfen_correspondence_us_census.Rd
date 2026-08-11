@@ -24,10 +24,11 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))`}
 'county subdivision'.}
 
 \item{min_area_share}{minimum share of area two geographies have to have in common to count
-as related, only used when matching county subdivisions across the 2010 and 2020 censuses.
-The Census Bureau relationship file for these is a geometric overlay, lowering this pulls in
-slivers along boundaries that only shifted slightly and chains unrelated subdivisions into
-one common geography. Default is `0.01`.}
+as related, default is `0.01`. The Census Bureau relationship files list every geometric
+overlap, lowering this pulls in slivers along boundaries that only shifted slightly and
+chains unrelated regions into one common geography. Raising it gives finer common
+geographies at the risk of separating regions that did change. No region is ever dropped,
+if all of its parts are slivers its largest part is kept.}
 
 \item{cache_path}{optional path to cache the relationship files in, defaults to the
 `tongfen.cache_path` option and falls back to a temporary directory}
@@ -43,6 +44,10 @@ Builds a correspondence table matching US census geographies across censuses, ba
 relationship files published by the US Census Bureau. Censuses that aren't requested but sit
 in between two that are get traversed on the way, the Census Bureau only publishes
 relationship files between consecutive censuses.
+
+The relationship files are geometric overlays that list every sliver along boundaries that
+only shifted slightly. Those get cut via `min_area_share`, keeping them would chain
+unrelated regions into one common geography.
 
 The correspondence layer reaches back one census further than
 \code{\link{get_tongfen_us_census}}. The 1990 census is available as `dec1990` here, but the

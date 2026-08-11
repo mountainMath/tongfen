@@ -24,6 +24,32 @@ test_that("us tract correspondence links chain across censuses", {
   expect_equal(nrow(short),3)
 })
 
+test_that("sliver cut drops slivers but keeps every region", {
+  d <- tibble::tibble(GEOID10=c("a","a","b","c"),
+                      GEOID20=c("X","Y","Y","Z"))
+  k <- tongfen:::cut_correspondence_slivers(d,c(0.99,0.002,0.98,0.5),0.01)
+
+  expect_equal(nrow(k),3)
+  # the sliver is gone
+  expect_false(any(k$GEOID10=="a" & k$GEOID20=="Y"))
+  # but no region on either side disappeared with it
+  expect_setequal(k$GEOID10,c("a","b","c"))
+  expect_setequal(k$GEOID20,c("X","Y","Z"))
+})
+
+test_that("sliver cut keeps the largest part of a region made up of slivers only", {
+  d <- tibble::tibble(GEOID10=c("a","a","b"),GEOID20=c("X","Y","Y"))
+  k <- tongfen:::cut_correspondence_slivers(d,c(0.004,0.001,0.99),0.01)
+
+  # none of a's parts clears the cutoff, so its largest one is kept
+  expect_equal(nrow(k),2)
+  expect_equal(k$GEOID20[k$GEOID10=="a"],"X")
+})
+
+test_that("area shares are defined for regions without area", {
+  expect_equal(tongfen:::area_share(c(1,0),c(2,0)),c(0.5,0))
+})
+
 test_that("us correspondence spans intermediate censuses", {
   years <- names(tongfen:::us_geoid_columns)
 
