@@ -6,7 +6,7 @@ test_that("us tract correspondence links chain across censuses", {
   l1020 <- tibble::tibble(GEOID10=c("1","2","3"),
                           GEOID20=c("X","X","Y"))
 
-  all <- tongfen:::join_us_ct_correspondence(list(l9000,l0010,l1020),
+  all <- tongfen:::join_us_correspondence(list(l9000,l0010,l1020),
                                              c("dec1990","dec2000","dec2010","dec2020"))
   expect_equal(names(all),c("GEOID90","GEOID00","GEOID10","GEOID20"))
   # tract D has no 1990 predecessor but is kept
@@ -15,18 +15,36 @@ test_that("us tract correspondence links chain across censuses", {
   expect_true(is.na(all$GEOID90[all$GEOID00=="D"]))
 
   # censuses that only serve as stepping stones get dropped
-  ends <- tongfen:::join_us_ct_correspondence(list(l9000,l0010,l1020),
+  ends <- tongfen:::join_us_correspondence(list(l9000,l0010,l1020),
                                               c("dec1990","dec2020"))
   expect_equal(names(ends),c("GEOID90","GEOID20"))
   expect_equal(sort(ends$GEOID20[!is.na(ends$GEOID90)]),c("X","X","X"))
 
-  short <- tongfen:::join_us_ct_correspondence(list(l9000),c("dec1990","dec2000"))
+  short <- tongfen:::join_us_correspondence(list(l9000),c("dec1990","dec2000"))
   expect_equal(nrow(short),3)
 })
 
-test_that("us tract correspondence validates the requested censuses", {
+test_that("us correspondence spans intermediate censuses", {
+  years <- names(tongfen:::us_geoid_columns)
+
+  expect_equal(tongfen:::us_correspondence_span(c("dec1990","dec2020"),years),years)
+  expect_equal(tongfen:::us_correspondence_span(c("dec2000","dec2010"),years),
+               c("dec2000","dec2010"))
+  # order of the requested censuses does not matter
+  expect_equal(tongfen:::us_correspondence_span(c("dec2020","dec2000"),years),
+               c("dec2000","dec2010","dec2020"))
+
+  expect_error(tongfen:::us_correspondence_span(c("dec1980","dec1990"),years),"dec1980")
+  expect_error(tongfen:::us_correspondence_span("dec1990",years),"at least two")
+  # county subdivisions have no 1990 relationship file
+  expect_error(tongfen:::us_correspondence_span(c("dec1990","dec2000"),years[-1]),"dec1990")
+})
+
+test_that("us correspondence validates the requested censuses", {
   expect_error(tongfen:::get_us_ct_correspondence("RI",c("dec1980","dec1990")),"dec1980")
   expect_error(tongfen:::get_us_ct_correspondence("RI","dec1990"),"at least two")
+  expect_error(tongfen:::get_us_county_subdivision_correspondence_for("RI",c("dec1990","dec2000")),
+               "dec1990")
 })
 
 test_that("us tract relationship file paths are built for all census pairs", {

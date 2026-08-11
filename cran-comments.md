@@ -9,8 +9,8 @@
   a row-by-row union-find, making tongfen on large geographies dramatically faster
 - the "statcan" method no longer downloads census geometries it does not use
 - dissolving geometries skips regions that don't need to be merged
-- new `get_tongfen_correspondence_us_census`, US correspondence tables now reach back to the
-  1990 census
+- new `get_tongfen_correspondence_us_census`, US tract correspondence tables now reach back to
+  the 1990 census and county subdivisions forward to the 2020 census
 ## Minor changes
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial intersections
 - missing geographic identifiers no longer merge unrelated regions into one common geography

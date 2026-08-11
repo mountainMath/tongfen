@@ -20,6 +20,10 @@
 - US census tract correspondence tables now reach back to the 1990 census (`dec1990`). The
   Census Bureau has retired the 1990 API endpoint, so 1990 data itself has to be brought in
   separately, for example from NHGIS, and combined via `tongfen_aggregate`
+- US county subdivisions can now be matched across the 2010 and 2020 censuses, previously only
+  the 2000 and 2010 censuses were available. The relationship file for these is a geometric
+  overlay, the new `min_area_share` argument controls how much area two subdivisions have to
+  have in common to count as related
 ## Minor changes
 - `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial
   intersections, default is `3347` (Statistics Canada Lambert)

@@ -5,12 +5,12 @@ fips_code_for_state <- function(s){
     unique()
 }
 
-# census tract vintages the correspondence layer can bridge, in chronological order,
-# together with the name of the GEOID column identifying tracts of that vintage
-us_ct_geoid_columns <- c(dec1990 = "GEOID90",
-                         dec2000 = "GEOID00",
-                         dec2010 = "GEOID10",
-                         dec2020 = "GEOID20")
+# census vintages the correspondence layer can bridge, in chronological order, together
+# with the name of the GEOID column identifying geographies of that vintage
+us_geoid_columns <- c(dec1990 = "GEOID90",
+                      dec2000 = "GEOID00",
+                      dec2010 = "GEOID10",
+                      dec2020 = "GEOID20")
 
 # `year` is the later of the two censuses the relationship file links
 get_us_ct_correspondence_path <- function(state,year){
@@ -101,29 +101,33 @@ get_us_ct_correspondence_2000 <- function(state,cache_path=getOption("tongfen.ca
 
 # stitch relationship files for consecutive censuses into one table spanning all
 # requested censuses, dropping the vintages that only served as stepping stones
-join_us_ct_correspondence <- function(links, datasets){
+join_us_correspondence <- function(links, datasets){
   c <- links[[1]]
   for (l in links[-1]) c <- full_join(c,l,by=intersect(names(c),names(l)))
   c %>%
-    select(all_of(unname(us_ct_geoid_columns[datasets]))) %>%
+    select(all_of(unname(us_geoid_columns[datasets]))) %>%
     unique()
+}
+
+# the censuses that have to be traversed to get from the earliest to the latest requested
+# one, the Census Bureau only publishes relationship files between consecutive censuses
+us_correspondence_span <- function(datasets, available){
+  invalid_datasets <- setdiff(datasets,available)
+  if (length(invalid_datasets) > 0) {
+    stop(paste0("Invalid census years ",paste0(invalid_datasets,collapse=", "),
+                ", can only match censuses ",paste0(available,collapse=", ")))
+  }
+  datasets <- intersect(available,datasets)
+  if (length(datasets) < 2) {
+    stop("Need at least two censuses to build a correspondence table.")
+  }
+  available[seq(match(datasets[1],available),match(utils::tail(datasets,1),available))]
 }
 
 get_us_ct_correspondence <- function(state, datasets,
                                      cache_path=getOption("tongfen.cache_path")){
-  years <- names(us_ct_geoid_columns)
-  invalid_datasets <- setdiff(datasets,years)
-  if (length(invalid_datasets) > 0) {
-    stop(paste0("Invalid census years ",paste0(invalid_datasets,collapse=", "),
-                ", can only match censuses ",paste0(years,collapse=", ")))
-  }
-  datasets <- intersect(years,datasets)
-  if (length(datasets) < 2) {
-    stop("Need at least two censuses to build a correspondence table.")
-  }
-  # censuses in between the requested ones still have to be traversed, there are no
-  # relationship files skipping a census
-  span <- years[seq(match(datasets[1],years),match(utils::tail(datasets,1),years))]
+  available <- names(us_geoid_columns)
+  span <- us_correspondence_span(datasets,available)
   links <- utils::head(span,-1) %>%
     lapply(function(year){
       link <- switch(year,
@@ -132,9 +136,10 @@ get_us_ct_correspondence <- function(state, datasets,
                      dec2010 = get_us_ct_correspondence_2020(state,cache_path=cache_path))
       link %>% select(matches("^GEOID\\d{2}$")) %>% unique()
     })
-  join_us_ct_correspondence(links,datasets)
+  join_us_correspondence(links,intersect(available,datasets))
 }
 
+# the 2000 to 2010 county subdivision comparability file, covering all states
 get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongfen.cache_path")){
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
   file <- "Cousub_comparability.xlsx"
@@ -147,6 +152,53 @@ get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongf
     utils::unzip(tmp,exdir = cache_path)
   }
   readxl::read_xlsx(local_path)
+}
+
+# The 2010 to 2020 county subdivision relationship file, covering all states. Unlike the
+# 2000 to 2010 comparability file this is a geometric overlay, most rows are slivers along
+# boundaries that shifted slightly rather than actual relationships. Keeping them chains
+# unrelated subdivisions into one common geography, so they get cut. A subdivision carved
+# out of a larger one is only a small share of the old one but most of the new one, hence
+# the share is taken over the larger of the two.
+get_us_county_subdivision_correspondence_2020 <- function(min_area_share=0.01,
+                                                          cache_path=getOption("tongfen.cache_path")){
+  cache_path = file.path(cache_path %||% tempdir(),"us_data")
+  path <- paste0("https://www2.census.gov/geo/docs/maps-data/data/rel2020/cousub/",
+                 "tab20_cousub20_cousub10_natl.txt")
+  local_path <- file.path(cache_path,basename(path))
+  if (!file.exists(local_path)) {
+    if (!dir.exists(cache_path)) dir.create(cache_path)
+    utils::download.file(path,local_path,quiet=TRUE)
+  }
+  readr::read_delim(local_path,delim="|",progress=FALSE,
+                    col_types=readr::cols_only(GEOID_COUSUB_10="c",GEOID_COUSUB_20="c",
+                                               AREALAND_COUSUB_10="d",AREAWATER_COUSUB_10="d",
+                                               AREALAND_COUSUB_20="d",AREAWATER_COUSUB_20="d",
+                                               AREALAND_PART="d",AREAWATER_PART="d")) %>%
+    mutate(area_part=.data$AREALAND_PART+.data$AREAWATER_PART) %>%
+    filter(pmax(.data$area_part/(.data$AREALAND_COUSUB_10+.data$AREAWATER_COUSUB_10),
+                .data$area_part/(.data$AREALAND_COUSUB_20+.data$AREAWATER_COUSUB_20))
+           >= min_area_share) %>%
+    select(GEOID10="GEOID_COUSUB_10",GEOID20="GEOID_COUSUB_20") %>%
+    unique()
+}
+
+get_us_county_subdivision_correspondence_for <- function(state, datasets, min_area_share=0.01,
+                                                         cache_path=getOption("tongfen.cache_path")){
+  available <- setdiff(names(us_geoid_columns),"dec1990")
+  span <- us_correspondence_span(datasets,available)
+  fips <- fips_code_for_state(state)$state_code
+  links <- utils::head(span,-1) %>%
+    lapply(function(year){
+      link <- switch(year,
+                     dec2000 = get_us_county_subdivision_correspondence(cache_path=cache_path) %>%
+                       select("GEOID00","GEOID10"),
+                     dec2010 = get_us_county_subdivision_correspondence_2020(
+                       min_area_share=min_area_share,cache_path=cache_path))
+      # both files are national, county subdivisions don't cross state lines
+      link %>% filter(substr(.data$GEOID10,1,2)==fips) %>% unique()
+    })
+  join_us_correspondence(links,intersect(available,datasets))
 }
 
 
@@ -167,12 +219,17 @@ get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongf
 #' \code{\link{tongfen_aggregate}} together with this correspondence table.
 #'
 #' @param datasets vector of censuses to match up, valid values are `dec1990`, `dec2000`,
-#' `dec2010` and `dec2020` for census tracts, `dec2000` and `dec2010` for county subdivisions.
-#' At least two censuses are needed.
+#' `dec2010` and `dec2020` for census tracts, `dec2000` through `dec2020` for county
+#' subdivisions. At least two censuses are needed.
 #' @param regions list with regions to query the correspondence for. At this stage, the only
 #' valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))`
 #' @param level aggregation level, at this stage the only valid levels are 'tract' and
 #' 'county subdivision'.
+#' @param min_area_share minimum share of area two geographies have to have in common to count
+#' as related, only used when matching county subdivisions across the 2010 and 2020 censuses.
+#' The Census Bureau relationship file for these is a geometric overlay, lowering this pulls in
+#' slivers along boundaries that only shifted slightly and chains unrelated subdivisions into
+#' one common geography. Default is `0.01`.
 #' @param cache_path optional path to cache the relationship files in, defaults to the
 #' `tongfen.cache_path` option and falls back to a temporary directory
 #' @return tibble with one row per census geography, a GEOID column for each requested census,
@@ -186,25 +243,19 @@ get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongf
 #'                                                        regions = list(state="RI"))
 #'}
 get_tongfen_correspondence_us_census <- function(datasets, regions, level='tract',
+                                                 min_area_share=0.01,
                                                  cache_path=getOption("tongfen.cache_path")){
   assert(level %in% c('tract','county subdivision'),
          "Only census tracts and county subdivisions are supported right now.")
-  if (level=="county subdivision") {
-    invalid_datasets <- setdiff(datasets,c("dec2000","dec2010"))
-    assert(length(invalid_datasets)==0,
-           paste0("County subdivisions can only be matched between the 2000 and 2010 censuses, got: ",
-                  paste0(invalid_datasets,collapse=", ")))
-  }
 
   regions$state %>%
     lapply(function(state){
       if (level=='tract') {
         get_us_ct_correspondence(state,datasets,cache_path=cache_path)
       } else {
-        fips <- fips_code_for_state(state)$state_code
-        get_us_county_subdivision_correspondence(cache_path=cache_path) %>%
-          filter(.data$STATEFP10==fips) %>%
-          select("GEOID00","GEOID10")
+        get_us_county_subdivision_correspondence_for(state,datasets,
+                                                     min_area_share=min_area_share,
+                                                     cache_path=cache_path)
       }
     }) %>%
     bind_rows() %>%
@@ -237,6 +288,9 @@ valid_us_census_datasets <- c(
 #' @param level aggregation level to return the data on. At this stage, the only valid levels are 'tract' and 'county subdivision'.
 #' @param survey survey to get data for, supported options is "census"
 #' @param base_geo census year to use as base geography, default is `2010`.
+#' @param min_area_share minimum share of area two geographies have to have in common to count
+#' as related, see \code{\link{get_tongfen_correspondence_us_census}}. Only used when matching
+#' county subdivisions across the 2010 and 2020 censuses.
 #' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
 #' @export
 #'
@@ -257,7 +311,7 @@ valid_us_census_datasets <- c(
 #'
 #'}
 get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
-                                  base_geo = NULL){
+                                  base_geo = NULL, min_area_share = 0.01){
 
   datasets <- meta$dataset %>% unique
   if (is.null(base_geo)) base_geo=datasets[1]
@@ -270,7 +324,8 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
   regions$state %>% lapply(function(state){
     correspondence <- get_tongfen_correspondence_us_census(datasets = datasets,
                                                            regions = list(state=state),
-                                                           level = level)
+                                                           level = level,
+                                                           min_area_share = min_area_share)
 
     data <- datasets %>%
       lapply(function(ds){

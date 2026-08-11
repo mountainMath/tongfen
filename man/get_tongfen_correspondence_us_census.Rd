@@ -8,19 +8,26 @@ get_tongfen_correspondence_us_census(
   datasets,
   regions,
   level = "tract",
+  min_area_share = 0.01,
   cache_path = getOption("tongfen.cache_path")
 )
 }
 \arguments{
 \item{datasets}{vector of censuses to match up, valid values are `dec1990`, `dec2000`,
-`dec2010` and `dec2020` for census tracts, `dec2000` and `dec2010` for county subdivisions.
-At least two censuses are needed.}
+`dec2010` and `dec2020` for census tracts, `dec2000` through `dec2020` for county
+subdivisions. At least two censuses are needed.}
 
 \item{regions}{list with regions to query the correspondence for. At this stage, the only
 valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))`}
 
 \item{level}{aggregation level, at this stage the only valid levels are 'tract' and
 'county subdivision'.}
+
+\item{min_area_share}{minimum share of area two geographies have to have in common to count
+as related, only used when matching county subdivisions across the 2010 and 2020 censuses.
+The Census Bureau relationship file for these is a geometric overlay, lowering this pulls in
+slivers along boundaries that only shifted slightly and chains unrelated subdivisions into
+one common geography. Default is `0.01`.}
 
 \item{cache_path}{optional path to cache the relationship files in, defaults to the
 `tongfen.cache_path` option and falls back to a temporary directory}
