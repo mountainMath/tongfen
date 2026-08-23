@@ -56,38 +56,26 @@ tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
 
   gc = which(st_is(i, "GEOMETRYCOLLECTION"))
   i[gc] = st_collection_extract(i[gc], "POLYGON")
-  two_d = which(st_dimension(i) == 2)
-  i[two_d] = st_cast(i[two_d], "MULTIPOLYGON")
 
   source <- source %>% rename(!!!safe_rename_vars)
+  source_area <- unclass(st_area(source))
 
   x_st <- source[idx[,1],, drop=FALSE] %>%
     select(names(safe_rename_vars)) %>%
     pre_scale(meta,meta_var = "var_name") %>%
     mutate(...area_st = st_area(i) %>% unclass,
-           ...area_s = unclass(st_area(.))) %>%
+           ...area_s = source_area[idx[,1]]) %>%
     mutate(...factor = .data$...area_st/.data$...area_s) %>%
     mutate(...partial = .data$...factor < 0.99) %>%
     st_drop_geometry()
 
-
-  for (var in meta$var_name) {
-    # for (ci in naive_CI) {
-    #   c <- ci/100
-    #   x_st <- x_st %>%
-    #     mutate(!!paste0(var,"_lower_",ci) := !!as.name(var) * ifelse(.data$...partial,(1-c) * .data$...factor, 1),
-    #            !!paste0(var,"_upper_",ci) := !!as.name(var) * ifelse(.data$...partial,(1-c) * .data$...factor + c, 1))
-    #
-    # }
-    x_st <- x_st %>%
-      mutate(!!var:=!!as.name(var) * .data$...factor)
-  }
+  x_st[meta$var_name] <- lapply(x_st[meta$var_name], `*`, x_st$...factor)
 
   x_st <- stats::aggregate(x_st, list(idx[,2]), sum, na.rm=na.rm)
 
   result <- target %>%
     left_join(x_st %>%
-                select(-.data$...factor,-.data$...partial,-.data$...area_s,-.data$...area_st) %>%
+                select(-all_of(c("...factor", "...partial", "...area_s", "...area_st"))) %>%
                 rename(!!unique_key:="Group.1"),
               by=unique_key) %>%
     select(-all_of(unique_key)) %>%
