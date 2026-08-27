@@ -50,6 +50,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
                                        downsample_level = NULL,
                                        na.rm=FALSE,
                                        quiet=FALSE) {
+  require_suggested("cancensus")
   datasets <- meta$geo_dataset %>% unique()
   if (length(datasets)!=1) stop("At this point tongfen_estimate_ca_census can only handle data for a single census geography year")
   regions <- datasets %>%

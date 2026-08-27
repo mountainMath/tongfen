@@ -121,10 +121,10 @@ tongfen_ca_census_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c()
 
   d<-st_intersection(
     data2 %>% filter(.data$GeoUID %in% cts_diff_2) %>%
-      rename(GeoUID2=.data$GeoUID) %>%
-      select(.data$GeoUID2) %>% mutate(area2=st_area(.data$geometry)),
+      rename(GeoUID2="GeoUID") %>%
+      select("GeoUID2") %>% mutate(area2=st_area(.data$geometry)),
     data1 %>% filter(.data$GeoUID %in% cts_diff_1) %>%
-      select(.data$GeoUID) %>% mutate(area=st_area(.data$geometry))
+      select("GeoUID") %>% mutate(area=st_area(.data$geometry))
   )
 
   d <- d %>% mutate(area3=st_area(.data$geometry)) %>%
@@ -171,11 +171,11 @@ get_correspondence_ca_census_for <- function(years,level,refresh=FALSE){
   all_years=seq(min(years),max(years),5)[-1]
 
   d <- get_single_correspondence_ca_census_for(all_years[1],level,refresh) %>%
-    rename(!!paste0("flag",all_years[1]):=.data$flag)
+    rename(!!paste0("flag",all_years[1]):="flag")
   all_years=all_years[-1]
   while (length(all_years)>0) {
     d <- left_join(d,get_single_correspondence_ca_census_for(all_years[1],level,refresh) %>%
-                     rename(!!paste0("flag",all_years[1]):=.data$flag))
+                     rename(!!paste0("flag",all_years[1]):="flag"))
     all_years=all_years[-1]
   }
   dd<-d %>% select_if(grepl(years %>% paste0(collapse = "|"),names(.))) %>%

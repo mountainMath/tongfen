@@ -40,6 +40,7 @@ GEO_DATASET_LOOKUP <- c(
 )
 
 geo_dataset_for_years <- function(years){
+  require_suggested("cancensus")
   dataset_list <- cancensus::list_census_datasets()
   years %>%
     lapply(function(year){
@@ -52,6 +53,7 @@ geo_dataset_for_years <- function(years){
 }
 
 geo_dataset_from_dataset <- function(datasets){
+  require_suggested("cancensus")
   if (TRUE) { # legacy until cancensus updates
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.) %>% gsub("\\d{4}x","",.)
   dataset_list <- cancensus::list_census_datasets()
@@ -93,6 +95,7 @@ geo_dataset_from_dataset <- function(datasets){
 #' meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
 #'}
 meta_for_ca_census_vectors <- function(vectors){
+  require_suggested("cancensus")
   nn <- names(vectors)
   vectors <- as.character(vectors) ## strip names just in case
   if (is.null(nn)) {
@@ -112,7 +115,7 @@ meta_for_ca_census_vectors <- function(vectors){
   for (dataset in datasets){
     d <- cancensus::list_census_vectors(dataset) %>%
       filter(.data$vector %in% (filter(meta,.data$dataset==dataset)$variable)) %>%
-      select(.data$vector,.data$aggregation,.data$units)
+      select("vector","aggregation","units")
     aggregation_lookup <- setNames(d$aggregation,d$vector)
     units_lookup <- setNames(d$units %>% as.character,d$vector)
     meta <- meta %>%
@@ -132,7 +135,7 @@ meta_for_ca_census_vectors <- function(vectors){
            parent=get_vector(.data$aggregation))
 
   extras <- meta %>%
-    select(variable=.data$parent,.data$dataset) %>%
+    select(variable="parent","dataset") %>%
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
     filter(!is.na(.data$variable),!.data$variable %in% meta$variable) %>%
     filter(!duplicated(.data$variable,.data$dataset)) %>%
@@ -268,8 +271,11 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="CT", method="statcan",
                                                  tolerance = 50,
                                                  quiet = FALSE, refresh = FALSE, crs = 3347) {
+  require_suggested("cancensus")
 
   geo_datasets <- normalize_datasets(geo_datasets)
+  assert(length(unique(geo_datasets)) >= 2,
+         "Need at least two census geographies to build a correspondence table.")
   if (method=="statcan") {
     assert(level %in% c("DB","DA","CT"),"Level has to be one of DB, DA, or CT when using method = 'statcan'.")
     assert(length(setdiff(geo_datasets,  c("CA21","CA16","CA11","CA06","CA01")))==0,
@@ -322,9 +328,9 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
           da_column <- ds %>% years_from_datasets() %>% paste0("DAUID",.)
           match_column <- ds %>% paste0("GeoUID",.)
           cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache,quiet=quiet) %>%
-            select(.data$GeoUID,.data$CT_UID) %>%
-            rename(!!match_column:=.data$CT_UID,
-                   !!da_column:=.data$GeoUID)
+            select("GeoUID","CT_UID") %>%
+            rename(!!match_column:="CT_UID",
+                   !!da_column:="GeoUID")
         }) %>%
         setNames(geo_datasets)
     } else if (level %in% c("DB","DA")){
@@ -347,7 +353,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     correspondence <- correspondence_years %>%
       lapply(function(year){
         c <- get_single_correspondence_ca_census_for(year,statcan_level) %>%
-          select(-.data$flag)
+          select(-"flag")
         previous_year <- all_geo_years[which(all_geo_years==year)-1]
         ds1 <- all_geo_datasets[all_geo_years==year]
         ds2 <- all_geo_datasets[all_geo_years==previous_year]
@@ -439,6 +445,7 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                   refresh=FALSE,
                                   crs=NULL,
                                   data_transform=function(d)d) {
+  require_suggested("cancensus")
   use_cache <- !refresh
 
   geo_datasets <- meta$geo_dataset %>% unique() %>% sort()

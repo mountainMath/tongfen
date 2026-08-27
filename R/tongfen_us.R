@@ -1,4 +1,5 @@
 fips_code_for_state <- function(s){
+  require_suggested("tidycensus")
   tidycensus::fips_codes %>%
     filter(.data$state==s | .data$state_code==s) %>%
     select("state","state_code") %>%
@@ -63,7 +64,7 @@ get_us_ct_correspondence_2020 <- function(state,min_area_share=0.01,
   path <- get_us_ct_correspondence_path(state,2020)
   local_path <-  file.path(cache_path,basename(path))
   if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path)
+    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
     utils::download.file(path,local_path,quiet = TRUE)
   }
   blocks <- readr::read_delim(local_path,delim="|",progress=FALSE,
@@ -100,7 +101,7 @@ get_us_ct_correspondence_2010 <- function(state,min_area_share=0.01,
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
   local_path <- file.path(cache_path,file)
   if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path)
+    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
     utils::download.file(path,local_path,quiet=TRUE)
   }
   d<-readr::read_csv(local_path,progress=FALSE,
@@ -132,7 +133,7 @@ get_us_ct_correspondence_2000 <- function(state,min_area_share=0.01,
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
   local_path <- file.path(cache_path,basename(path))
   if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path)
+    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
     utils::download.file(path,local_path,quiet=TRUE)
   }
   d <- readr::read_fwf(local_path,
@@ -200,11 +201,12 @@ get_us_ct_correspondence <- function(state, datasets, min_area_share=0.01,
 
 # the 2000 to 2010 county subdivision comparability file, covering all states
 get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongfen.cache_path")){
+  require_suggested("readxl")
   cache_path = file.path(cache_path %||% tempdir(),"us_data")
   file <- "Cousub_comparability.xlsx"
   local_path <- file.path(cache_path,file)
   if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path)
+    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
     tmp=tempfile(fileext = ".zip")
     path="https://www2.census.gov/geo/docs/maps-data/data/comp/cousub_comparabilityxls.zip"
     utils::download.file(path,tmp,quiet=TRUE)
@@ -226,7 +228,7 @@ get_us_county_subdivision_correspondence_2020 <- function(min_area_share=0.01,
                  "tab20_cousub20_cousub10_natl.txt")
   local_path <- file.path(cache_path,basename(path))
   if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path)
+    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
     utils::download.file(path,local_path,quiet=TRUE)
   }
   d <- readr::read_delim(local_path,delim="|",progress=FALSE,
@@ -395,6 +397,7 @@ sumfile_for_dataset <- function(sumfile, ds){
 #'}
 get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
                                   base_geo = NULL, min_area_share = 0.01, sumfile = NULL){
+  require_suggested("tidycensus")
 
   datasets <- meta$dataset %>% unique
   if (is.null(base_geo)) base_geo=datasets[1]
@@ -429,7 +432,7 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
                                   variables = m$variable, year = year,
                                   sumfile = sumfile_for_dataset(sumfile,ds),
                                   geometry = base_geo==ds, output="wide") %>%
-          rename(!!paste0("GEOID",short_year):=.data$GEOID)
+          rename(!!paste0("GEOID",short_year):="GEOID")
       }) %>%
       setNames(datasets)
 

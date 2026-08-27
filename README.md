@@ -28,8 +28,8 @@ library(tongfen)
 ```
 
 ### Caching correspondence files
-The `get_tongfen_census_ct` and `get_tongfen_census_ct_from_da` methods make use of the StatCan correspondence
-files. To speed up this process it is useful to permanently cache these files instead of having to download them repeatedly. If caching is desired, set either 
+The `get_tongfen_ca_census` and `get_tongfen_correspondence_ca_census` methods make use of the StatCan correspondence
+files when run with `method = "statcan"`. To speed up this process it is useful to permanently cache these files instead of having to download them repeatedly. If caching is desired, set either 
 
 * `options("tongfen.cache_path"="<your local cache path>")` 
 * `Sys.setenv("tongfen.cache_path"="<your local cache path>")`

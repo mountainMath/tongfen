@@ -20,6 +20,12 @@
 - fix crash when tongfen-ing census tracts across non-adjacent censuses
 - US county subdivision data errors out up front on censuses it can't be matched across
 - several fixes to the deprecated `get_tongfen_census_*` functions
+- fix `proportional_reaggregate` ignoring all but the first base variable when `base` names a
+  different variable per category
+- fix `estimate_tongfen_correspondence` with `method="identifier"` erroring out when every
+  geographic identifier matches
+- packages in Suggests (`cancensus`, `tidycensus`, `readxl`) are now used conditionally, with an
+  actionable message when they are not installed
 - faster `check_tongfen_areas` and `aggregate_correspondences`
 
 # tongfen v.0.3.7

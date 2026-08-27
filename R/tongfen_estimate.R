@@ -157,17 +157,18 @@ tongfen_tag_largest_overlap <- function(source, target, target_id) {
            ...area_s = unclass(st_area(.))) %>%
     mutate(...overlap_fraction = .data$...area_st/.data$...area_s) %>%
     as_tibble() %>%
-    bind_cols(setNames(as_tibble(idx[,1:2]),c("...source_row_number","...target_row_number"))) %>%
+    bind_cols(setNames(tibble::tibble(source_row=idx[,1],target_row=idx[,2]),
+                       c("...source_row_number","...target_row_number"))) %>%
     left_join(target %>%
                 mutate(...target_row_number=row_number()) %>%
                 st_drop_geometry() %>%
-                select(.data$...target_row_number,all_of(target_id)),
+                select("...target_row_number",all_of(target_id)),
               by="...target_row_number") %>%
-    select(-.data$...target_row_number,-.data$...area_st,-.data$...area_s) %>%
+    select(-"...target_row_number",-"...area_st",-"...area_s") %>%
     group_by(.data$...source_row_number) %>%
     slice_max(order_by = .data$...overlap_fraction,n=1,with_ties = FALSE) %>%
     ungroup() %>%
-    select(-.data$...source_row_number)
+    select(-"...source_row_number")
 
   x_st %>%
     st_sf()

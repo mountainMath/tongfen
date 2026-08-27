@@ -231,7 +231,8 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL, na
       c <- correspondence %>%
         select_at(c(match_column,"TongfenID","TongfenUID")) %>%
         unique()
-      cd <- c %>% filter(duplicated(!!as.name(match_column))) # sanity check
+      # sanity check, `duplicated()` needs to consider all match columns, not just the first
+      cd <- c %>% select(all_of(match_column)) %>% filter(duplicated(.))
       assert(nrow(cd)==0,"Problem in tongfen_aggregate, have more than one TongFenID for some GeoUID")
       d<-d %>%
         inner_join(c,
@@ -371,8 +372,17 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
         select(any_of(c(id,na_base,names(geo_match),unique_base_vars,cats))) %>%
         tidyr::pivot_longer(cols=all_of(cats),
                             names_to="category",
-                            values_to="value") %>%
-        mutate(weight=select(.,base[.data$category])[[1]]) %>%
+                            values_to="value")
+      # each category can be weighted by a different base variable, pick the value from
+      # the base column belonging to the category of each row
+      row_base <- unname(base[d_base$category])
+      weights <- rep(NA_real_,nrow(d_base))
+      for (bv in unique_base_vars) {
+        rows <- row_base==bv
+        if (any(rows)) weights[rows] <- as.numeric(d_base[[bv]][rows])
+      }
+      d_base$weight <- weights
+      d_base <- d_base %>%
         mutate(agg_type=ifelse(.data$category %in% na_weight_cats,"na_weight","additive")) %>%
         mutate(weight=.data$weight/sum(.data$weight,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
         mutate(weight=coalesce(.data$weight,0)) %>%
@@ -481,22 +491,24 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
   cgeo1 <- geo1 %>% robust_tolerance_buffer(geo_uid = geo1_uid,tolerance = tolerance)
   cgeo2 <- geo2 %>% robust_tolerance_buffer(geo_uid = geo2_uid,tolerance = tolerance)
 
-  # Optimized: Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1)
-  # But we can streamline the conversion and processing
-  # Convert sparse matrix directly to tibble, avoiding intermediate data.frame step
-  i1 <- st_intersects(cgeo1, geo2, sparse = TRUE) %>%
-    as.data.frame() %>%
-    as_tibble() %>%
+  # Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1). The
+  # sparse index list is turned into a tibble directly, `as.data.frame()` on an empty
+  # result drops the columns we join on.
+  intersects_pairs <- function(x, y) {
+    m <- st_intersects(x, y, sparse = TRUE)
+    tibble(row.id = rep(seq_along(m), lengths(m)),
+           col.id = as.integer(unlist(m)))
+  }
+
+  i1 <- intersects_pairs(cgeo1, geo2) %>%
     left_join(id1, by = c("row.id" = "id1")) %>%
     left_join(id2, by = c("col.id" = "id2")) %>%
-    select(-.data$row.id, -.data$col.id)
+    select(-"row.id",-"col.id")
 
-  i2 <- st_intersects(cgeo2, geo1, sparse = TRUE) %>%
-    as.data.frame() %>%
-    as_tibble() %>%
+  i2 <- intersects_pairs(cgeo2, geo1) %>%
     left_join(id2, by = c("row.id" = "id2")) %>%
     left_join(id1, by = c("col.id" = "id1")) %>%
-    select(-.data$row.id, -.data$col.id)
+    select(-"row.id",-"col.id")
 
   # Combine and find correspondence
   correspondence <- bind_rows(i1, i2) %>%
@@ -550,6 +562,7 @@ estimate_tongfen_correspondence <- function(data,
   if (is.null(computation_crs)) computation_crs = sf::st_crs(data[[1]])
   assert(length(geo_identifiers) == length(unique(geo_identifiers)), "geo_identifiers need to be unique.")
   assert(length(geo_identifiers) == length(data), "data and geo_identifiers need to have the same legnth.")
+  assert(length(data) >= 2, "Need at least two geographies to build a correspondence table.")
 
   # assume regions with identical geo_identifiers are identical
   if (method=="identifier") {

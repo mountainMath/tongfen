@@ -227,6 +227,16 @@ normalize_datasets <- function(geo_datasets) {
 }
 
 
+# CRAN policy requires packages listed in Suggests to be used conditionally, give a
+# clear message instead of the bare "there is no package called ..." error
+require_suggested <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(paste0("The `", pkg, "` package is needed for this function, please install it via ",
+                "`install.packages(\"", pkg, "\")`."), call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 ensure_names <- function(list,default_names=seq(1,length(list))){
   nn <- names(list)
   if (is.null(nn)) {

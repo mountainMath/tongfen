@@ -45,6 +45,20 @@
 - US county subdivision data now errors out up front on censuses it can't be matched across,
   instead of failing with "Did not find matching geographic identifiers" after downloading
   the comparability file and the census data
+- fix `proportional_reaggregate` ignoring all but the first base variable when `base` names a
+  different variable per category, which silently weighted every category by the same variable
+- fix `estimate_tongfen_correspondence` with `method="identifier"` erroring out when every
+  geographic identifier matches and there is nothing left to estimate geometrically
+- fix `tongfen_tag_largest_overlap` emitting a tibble name repair deprecation warning
+- `estimate_tongfen_correspondence` and `get_tongfen_correspondence_ca_census` now error out with
+  a clear message when handed fewer than two geographies
+- no longer trip the tidyselect deprecation warning for `.data` in `select()` and `rename()`
+- functions relying on the suggested `cancensus`, `tidycensus` and `readxl` packages now check
+  that they are installed and give an actionable message instead of failing deep in the call
+- fix the duplicate check in `tongfen_aggregate` only looking at the first geographic identifier
+  when matching over several
+- cache directories for US data are now created recursively, so a nested
+  `options(tongfen.cache_path=...)` works
 - faster `check_tongfen_areas` and `aggregate_correspondences`
 
 # tongfen v.0.3.7
