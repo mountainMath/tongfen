@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="TongFen for Canadian census data">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tongfen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@
                         <h4 data-toc-skip class="author">Jens von
 Bergmann</h4>
             
-            <h4 data-toc-skip class="date">2026-06-04</h4>
+            <h4 data-toc-skip class="date">2026-08-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mountainMath/tongfen/blob/HEAD/vignettes/tongfen_ca.Rmd" class="external-link"><code>vignettes/tongfen_ca.Rmd</code></a></small>
       <div class="d-none name"><code>tongfen_ca.Rmd</code></div>
@@ -141,8 +141,8 @@ District.</p>
 <span>               <span class="st">"2011_0-4"</span><span class="op">=</span><span class="st">"v_CA11F_8"</span>,<span class="st">"2011_5-9"</span><span class="op">=</span><span class="st">"v_CA11F_11"</span>,<span class="st">"2011_10-14"</span><span class="op">=</span><span class="st">"v_CA11F_14"</span><span class="op">)</span></span>
 <span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_ca_census_vectors.html">meta_for_ca_census_vectors</a></span><span class="op">(</span><span class="va">variables</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="../reference/meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CA11"</span>,<span class="st">"CA16"</span><span class="op">)</span>,<span class="st">"Population"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">children_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_ca_census.html">get_tongfen_ca_census</a></span><span class="op">(</span>regions <span class="op">=</span> <span class="va">vsb_regions</span>, meta <span class="op">=</span> <span class="va">meta</span>, </span>
-<span>                                       level<span class="op">=</span><span class="st">"DA"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">children_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_tongfen_ca_census.html">get_tongfen_ca_census</a></span><span class="op">(</span>regions <span class="op">=</span> <span class="va">vsb_regions</span>, meta <span class="op">=</span> <span class="va">meta</span>,</span>
+<span>                                       level<span class="op">=</span><span class="st">"DA"</span>, base_geo <span class="op">=</span> <span class="st">"CA16"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>`2011_0-14`<span class="op">=</span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/reduce.html" class="external-link">reduce</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_set_geometry</a></span><span class="op">(</span><span class="va">.</span>,<span class="cn">NULL</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"2011_"</span><span class="op">)</span><span class="op">)</span>, <span class="va">`+`</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>change<span class="op">=</span><span class="va">`2016_0-14`</span><span class="op">/</span><span class="va">Population_CA16</span><span class="op">-</span><span class="va">`2011_0-14`</span><span class="op">/</span><span class="va">Population_CA11</span><span class="op">)</span></span>
 <span></span>

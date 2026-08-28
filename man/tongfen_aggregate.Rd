@@ -4,7 +4,13 @@
 \alias{tongfen_aggregate}
 \title{Perform tongfen according to correspondence}
 \usage{
-tongfen_aggregate(data, correspondence, meta = NULL, base_geo = NULL)
+tongfen_aggregate(
+  data,
+  correspondence,
+  meta = NULL,
+  base_geo = NULL,
+  na.rm = TRUE
+)
 }
 \arguments{
 \item{data}{list of datasets to be aggregated}
@@ -16,6 +22,9 @@ tongfen_aggregate(data, correspondence, meta = NULL, base_geo = NULL)
 \item{base_geo}{identifier for which data element to base the final geography on,
 uses the first data element if  `NULL` (default),
 expects that `base_geo` is an element of `names(data)`.}
+
+\item{na.rm}{logical, determines how NA values should be treated when aggregating variables,
+default is `TRUE`}
 }
 \value{
 aggregated dataset of class sf if base_geo is not NULL and data is of type sf or tibble otherwise.

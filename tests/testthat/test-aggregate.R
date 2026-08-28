@@ -153,3 +153,84 @@ test_that("pre_scale is a no-op when there are no Average/Median variables", {
   result <- tongfen:::pre_scale(data, meta, quiet = TRUE)
   expect_equal(result, data)
 })
+
+# ── tongfen_aggregate ─────────────────────────────────────────────────────────
+
+make_tongfen_data <- function(pop_a = c(100L, 200L, 50L)) {
+  correspondence <- tibble(
+    GeoUIDa    = c("a1", "a2", "a3"),
+    GeoUIDb    = c("b1", "b1", "b2"),
+    TongfenID  = c("a1", "a1", "a3"),
+    TongfenUID = c("u1", "u1", "u2")
+  )
+  data <- list(
+    A = tibble(GeoUIDa = c("a1", "a2", "a3"), pop_a = pop_a),
+    B = tibble(GeoUIDb = c("b1", "b2"), pop_b = c(300L, 50L))
+  )
+  list(data = data, correspondence = correspondence)
+}
+
+test_that("tongfen_aggregate: aggregates both datasets onto the common geography", {
+  d <- make_tongfen_data()
+  meta <- bind_rows(
+    make_meta("pop_a", "Additive") %>% mutate(dataset = "A", geo_dataset = "A"),
+    make_meta("pop_b", "Additive") %>% mutate(dataset = "B", geo_dataset = "B")
+  )
+  result <- tongfen_aggregate(d$data, d$correspondence, meta)
+  expect_equal(nrow(result), 2L)
+  expect_equal(result %>% filter(.data$TongfenID == "a1") %>% pull(.data$pop_a), 300L)
+  expect_equal(result %>% filter(.data$TongfenID == "a1") %>% pull(.data$pop_b), 300L)
+})
+
+test_that("tongfen_aggregate: na.rm is passed through to the aggregation", {
+  d <- make_tongfen_data(pop_a = c(100L, NA_integer_, 50L))
+  meta <- bind_rows(
+    make_meta("pop_a", "Additive") %>% mutate(dataset = "A", geo_dataset = "A"),
+    make_meta("pop_b", "Additive") %>% mutate(dataset = "B", geo_dataset = "B")
+  )
+  kept <- tongfen_aggregate(d$data, d$correspondence, meta, na.rm = FALSE)
+  expect_true(is.na(kept %>% filter(.data$TongfenID == "a1") %>% pull(.data$pop_a)))
+
+  dropped <- tongfen_aggregate(d$data, d$correspondence, meta, na.rm = TRUE)
+  expect_equal(dropped %>% filter(.data$TongfenID == "a1") %>% pull(.data$pop_a), 100L)
+})
+
+test_that("tongfen_aggregate: base_geo determines which geometry is returned", {
+  skip_if_not_installed("sf")
+  square <- function(x, y) {
+    sf::st_polygon(list(cbind(c(x, x + 1, x + 1, x, x),
+                              c(y, y, y + 1, y + 1, y))))
+  }
+  correspondence <- tibble(
+    GeoUIDa    = c("a1", "a2"),
+    GeoUIDb    = c("b1", "b1"),
+    TongfenID  = c("a1", "a1"),
+    TongfenUID = c("u1", "u1")
+  )
+  data <- list(
+    A = sf::st_sf(GeoUIDa = c("a1", "a2"), pop_a = c(100L, 200L),
+                  geometry = sf::st_sfc(square(0, 0), square(1, 0), crs = 3347)),
+    B = sf::st_sf(GeoUIDb = "b1", pop_b = 300L,
+                  geometry = sf::st_sfc(square(0, 0), crs = 3347))
+  )
+  meta <- bind_rows(
+    make_meta("pop_a", "Additive") %>% mutate(dataset = "A", geo_dataset = "A"),
+    make_meta("pop_b", "Additive") %>% mutate(dataset = "B", geo_dataset = "B")
+  )
+  # base geography A is the union of the two squares, base geography B is one square
+  result_a <- tongfen_aggregate(data, correspondence, meta, base_geo = "A")
+  result_b <- tongfen_aggregate(data, correspondence, meta, base_geo = "B")
+  expect_s3_class(result_a, "sf")
+  expect_equal(as.numeric(sf::st_area(result_a)), 2)
+  expect_equal(as.numeric(sf::st_area(result_b)), 1)
+})
+
+test_that("tongfen_aggregate: returns a plain tibble when no dataset has geometry", {
+  d <- make_tongfen_data()
+  meta <- bind_rows(
+    make_meta("pop_a", "Additive") %>% mutate(dataset = "A", geo_dataset = "A"),
+    make_meta("pop_b", "Additive") %>% mutate(dataset = "B", geo_dataset = "B")
+  )
+  result <- tongfen_aggregate(d$data, d$correspondence, meta)
+  expect_false("sf" %in% class(result))
+})

@@ -280,3 +280,35 @@ test_that("proportional_reaggregate: handles numeric and factor categories toget
   p1_sum <- result_tbl %>% filter(.data$parent_id == "P1") %>% pull(.data$numeric_var) %>% sum()
   expect_equal(p1_sum, 500, tolerance = 1e-9)
 })
+
+test_that("proportional_reaggregate: each category uses its own base variable", {
+  # v1 lives entirely in C1 when weighted by pop, v2 entirely in C2 when weighted by dw
+  parent <- tibble(
+    parent_id = "P1",
+    pop       = 100,
+    dw        = 100,
+    v1        = 50,
+    v2        = 50
+  ) %>% as_point_sf()
+
+  child <- tibble(
+    child_id  = c("C1", "C2"),
+    parent_id = "P1",
+    pop       = c(100, 0),
+    dw        = c(0, 100),
+    v1        = c(0, 0),
+    v2        = c(0, 0)
+  ) %>% as_point_sf()
+
+  result <- proportional_reaggregate(
+    child, parent,
+    geo_match  = c("parent_id" = "parent_id"),
+    categories = c("v1", "v2"),
+    base       = c(v1 = "pop", v2 = "dw")
+  ) %>%
+    sf::st_drop_geometry() %>%
+    arrange(.data$child_id)
+
+  expect_equal(result$v1, c(50, 0), tolerance = 1e-9)
+  expect_equal(result$v2, c(0, 50), tolerance = 1e-9)
+})

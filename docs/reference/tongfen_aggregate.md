@@ -8,7 +8,13 @@ correspondence.
 ## Usage
 
 ``` r
-tongfen_aggregate(data, correspondence, meta = NULL, base_geo = NULL)
+tongfen_aggregate(
+  data,
+  correspondence,
+  meta = NULL,
+  base_geo = NULL,
+  na.rm = TRUE
+)
 ```
 
 ## Arguments
@@ -31,6 +37,11 @@ tongfen_aggregate(data, correspondence, meta = NULL, base_geo = NULL)
   identifier for which data element to base the final geography on, uses
   the first data element if \`NULL\` (default), expects that
   \`base_geo\` is an element of \`names(data)\`.
+
+- na.rm:
+
+  logical, determines how NA values should be treated when aggregating
+  variables, default is \`TRUE\`
 
 ## Value
 

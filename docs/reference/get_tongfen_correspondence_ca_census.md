@@ -14,9 +14,9 @@ get_tongfen_correspondence_ca_census(
   level = "CT",
   method = "statcan",
   tolerance = 50,
-  area_mismatch_cutoff = 0.1,
   quiet = FALSE,
-  refresh = FALSE
+  refresh = FALSE,
+  crs = 3347
 )
 ```
 
@@ -49,12 +49,8 @@ get_tongfen_correspondence_ca_census(
 - tolerance:
 
   tolerance for \`estimate_tongen_correspondence\` in metres, default
-  value is 50 metres.
-
-- area_mismatch_cutoff:
-
-  discard areas returned by \`estimate_tongfen_correspondence\` with
-  area mismatch (log ratio) greater than cutoff.
+  value is 50 metres, only used when method is 'estimate' or
+  'identifier'
 
 - quiet:
 
@@ -64,6 +60,11 @@ get_tongfen_correspondence_ca_census(
 
   optional character, refresh data cache for this call, (default
   \`FALSE\`)
+
+- crs:
+
+  CRS to use for the spatial intersections if method is 'identifier' or
+  'estimate', default is \`3347\` (Statistics Canada Lambert)
 
 ## Value
 

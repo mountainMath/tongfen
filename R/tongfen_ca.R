@@ -40,6 +40,7 @@ GEO_DATASET_LOOKUP <- c(
 )
 
 geo_dataset_for_years <- function(years){
+  require_suggested("cancensus")
   dataset_list <- cancensus::list_census_datasets()
   years %>%
     lapply(function(year){
@@ -52,6 +53,7 @@ geo_dataset_for_years <- function(years){
 }
 
 geo_dataset_from_dataset <- function(datasets){
+  require_suggested("cancensus")
   if (TRUE) { # legacy until cancensus updates
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.) %>% gsub("\\d{4}x","",.)
   dataset_list <- cancensus::list_census_datasets()
@@ -93,6 +95,7 @@ geo_dataset_from_dataset <- function(datasets){
 #' meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
 #'}
 meta_for_ca_census_vectors <- function(vectors){
+  require_suggested("cancensus")
   nn <- names(vectors)
   vectors <- as.character(vectors) ## strip names just in case
   if (is.null(nn)) {
@@ -112,7 +115,7 @@ meta_for_ca_census_vectors <- function(vectors){
   for (dataset in datasets){
     d <- cancensus::list_census_vectors(dataset) %>%
       filter(.data$vector %in% (filter(meta,.data$dataset==dataset)$variable)) %>%
-      select(.data$vector,.data$aggregation,.data$units)
+      select("vector","aggregation","units")
     aggregation_lookup <- setNames(d$aggregation,d$vector)
     units_lookup <- setNames(d$units %>% as.character,d$vector)
     meta <- meta %>%
@@ -132,7 +135,7 @@ meta_for_ca_census_vectors <- function(vectors){
            parent=get_vector(.data$aggregation))
 
   extras <- meta %>%
-    select(variable=.data$parent,.data$dataset) %>%
+    select(variable="parent","dataset") %>%
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
     filter(!is.na(.data$variable),!.data$variable %in% meta$variable) %>%
     filter(!duplicated(.data$variable,.data$dataset)) %>%
@@ -198,7 +201,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
     tmp=tempfile()
     utils::download.file(url,tmp)
     exdir=file.path(tempdir(),paste0("correspondence_",year,"_",level))
-    if (dir.exists(exdir)) file.remove(exdir,recursive=TRUE)
+    if (dir.exists(exdir)) unlink(exdir,recursive=TRUE)
     dir.create(exdir,showWarnings = FALSE)
     utils::unzip(tmp,exdir=exdir)
     file=dir(exdir,"\\.txt|\\.csv")
@@ -250,10 +253,12 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' this method only works for "DB", "DA" and "CT" levels.
 #' * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
 #' * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
-#' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres.
-#' @param area_mismatch_cutoff discard areas returned by `estimate_tongfen_correspondence` with area mismatch (log ratio) greater than cutoff.
+#' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+#' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
+#' @param crs CRS to use for the spatial intersections if method is 'identifier' or
+#' 'estimate', default is `3347` (Statistics Canada Lambert)
 #' @return dataframe with the multi-census correspondence file
 #' @export
 #'
@@ -264,10 +269,13 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #'                                                        regions=list(CMA="59933"),level='CT')
 #'}
 get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="CT", method="statcan",
-                                                 tolerance = 50, area_mismatch_cutoff = 0.1,
-                                                 quiet = FALSE, refresh = FALSE) {
+                                                 tolerance = 50,
+                                                 quiet = FALSE, refresh = FALSE, crs = 3347) {
+  require_suggested("cancensus")
 
   geo_datasets <- normalize_datasets(geo_datasets)
+  assert(length(unique(geo_datasets)) >= 2,
+         "Need at least two census geographies to build a correspondence table.")
   if (method=="statcan") {
     assert(level %in% c("DB","DA","CT"),"Level has to be one of DB, DA, or CT when using method = 'statcan'.")
     assert(length(setdiff(geo_datasets,  c("CA21","CA16","CA11","CA06","CA01")))==0,
@@ -282,12 +290,21 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 
   use_cache <- !refresh
 
-  data <- lapply(geo_datasets,function(g_ds){
-    cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format='sf',
-                          labels="short", quiet=quiet, use_cache = use_cache) %>%
-      mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
-  }) %>%
-    setNames(geo_datasets)
+  # the "statcan" method only ever looks at geographic identifiers, only the
+  # geometry based methods need to download the (potentially very large) geometries
+  geo_format <- if (method=="statcan") NA else 'sf'
+
+  if (method=="statcan" && level=="CT") {
+    # correspondence is built from DA level links below, the CT level data is not needed
+    data <- list()
+  } else {
+    data <- lapply(geo_datasets,function(g_ds){
+      cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format=geo_format,
+                            labels="short", quiet=quiet, use_cache = use_cache) %>%
+        mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
+    }) %>%
+      setNames(geo_datasets)
+  }
 
   if (method=="statcan") {
     statcan_level <- level
@@ -296,10 +313,12 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     years<-as.integer(geo_years)
     all_geo_years=seq(min(years),max(years),5)
     all_geo_datasets <- geo_dataset_for_years(all_geo_years)
-    for (g_ds in setdiff(all_geo_datasets,geo_datasets)) {
-      data[[g_ds]] <- cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format='sf',
-                                       labels="short", quiet=quiet, use_cache = use_cache) %>%
-        mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
+    if (level!="CT") {
+      for (g_ds in setdiff(all_geo_datasets,geo_datasets)) {
+        data[[g_ds]] <- cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format=geo_format,
+                                         labels="short", quiet=quiet, use_cache = use_cache) %>%
+          mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
+      }
     }
     prefix=paste0(statcan_level,"UID")
 
@@ -309,9 +328,9 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
           da_column <- ds %>% years_from_datasets() %>% paste0("DAUID",.)
           match_column <- ds %>% paste0("GeoUID",.)
           cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache,quiet=quiet) %>%
-            select(.data$GeoUID,.data$CT_UID) %>%
-            rename(!!match_column:=.data$CT_UID,
-                   !!da_column:=.data$GeoUID)
+            select("GeoUID","CT_UID") %>%
+            rename(!!match_column:="CT_UID",
+                   !!da_column:="GeoUID")
         }) %>%
         setNames(geo_datasets)
     } else if (level %in% c("DB","DA")){
@@ -321,7 +340,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
           base_column <- paste0(prefix,year)
           match_column <- paste0("GeoUID",ds)
           data[[ds]] %>%
-            st_set_geometry(NULL) %>%
+            sf::st_drop_geometry() %>%
             select_at(match_column) %>%
             mutate(!!base_column:=!!as.name(match_column))
         }) %>%
@@ -334,13 +353,13 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     correspondence <- correspondence_years %>%
       lapply(function(year){
         c <- get_single_correspondence_ca_census_for(year,statcan_level) %>%
-          select(-.data$flag)
+          select(-"flag")
         previous_year <- all_geo_years[which(all_geo_years==year)-1]
         ds1 <- all_geo_datasets[all_geo_years==year]
         ds2 <- all_geo_datasets[all_geo_years==previous_year]
         if (!is.null(ds1) && length(ds1)>0) {
           match_column <- intersect(names(c),names(c_links[[ds1]]))
-          if (!is.null(match_column)) {
+          if (length(match_column)>0) {
             c <- c %>%
               inner_join(c_links[[ds1]],by=match_column) %>%
               select(-all_of(match_column)) %>%
@@ -349,7 +368,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
         }
         if (!is.null(ds2) && length(ds2)>0) {
           match_column <- intersect(names(c),names(c_links[[ds2]]))
-          if (!is.null(match_column)) {
+          if (length(match_column)>0) {
             c <- c %>%
               inner_join(c_links[[ds2]],by=match_column) %>%
               select(-all_of(match_column)) %>%
@@ -369,8 +388,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     correspondence <- estimate_tongfen_correspondence(data,
                                                       geo_identifiers,
                                                       method = method,
-                                                      tolerance=200,
-                                                      computation_crs=3347)
+                                                      tolerance=tolerance,
+                                                      computation_crs=crs)
   }
 
   correspondence
@@ -394,16 +413,15 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
 #' * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
 #' @param base_geo base census year to build up common geography from, `NULL` (the default) to not return
-#' any geographi data
-#' @param na.rm logical, determines how NA values should be treated when aggregating variables
+#' any geographic data
+#' @param na.rm logical, determines how NA values should be treated when aggregating variables,
+#' default is `FALSE`
 #' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
-#' only used when method is 'estimate' or 'identifier'
-#' @param area_mismatch_cutoff discard areas returned by `estimate_tongfen_correspondence` with area mismatch (log ratio) greater than cutoff,
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
 #' @param crs optional CRS to transform data to, and use for spatial intersections if method is
-#' 'identifier' or 'estimate'
+#' 'identifier' or 'estimate', defaults to `3347` (Statistics Canada Lambert) for the intersections
 #' @param data_transform optional transform function to be applied to census data after being returned from cancensus
 #' @return dataframe with variables on common geography
 #' @export
@@ -423,14 +441,21 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                   base_geo=NULL,na.rm=FALSE,
                                   tolerance = 50,
-                                  area_mismatch_cutoff = 0.1,
                                   quiet=FALSE,
                                   refresh=FALSE,
                                   crs=NULL,
                                   data_transform=function(d)d) {
+  require_suggested("cancensus")
   use_cache <- !refresh
 
   geo_datasets <- meta$geo_dataset %>% unique() %>% sort()
+
+  if (!is.null(base_geo)) {
+    base_geo <- normalize_datasets(base_geo)
+    assert(length(base_geo)==1,"base_geo has to be a single dataset")
+    assert(base_geo %in% geo_datasets,
+           paste0("base_geo has to be one of the datasets ",paste0(geo_datasets,collapse=", ")))
+  }
 
   meta <- meta %>% add_census_ca_base_variables()
 
@@ -440,13 +465,15 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
              .data$type != "Base") %>%
       pull(.data$variable) %>%
       as.character()
+    # only the base geography is returned, no need to download geometries for the others
+    geo_format <- if (!is.null(base_geo) && g_ds==base_geo) 'sf' else NA
     c <- cancensus::get_census(dataset=g_ds, regions=regions,
                                vectors=vectors,
-                               level=level, geo_format='sf',
+                               level=level, geo_format=geo_format,
                                labels="short", quiet=quiet, use_cache = use_cache) %>%
       mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
-    if (!is.null(crs)) c <- c %>% sf::st_transform(crs)
-    c
+    if (!is.null(crs) && !is.null(base_geo) && g_ds==base_geo) c <- c %>% sf::st_transform(crs)
+    c %>% data_transform()
   }) %>%
     setNames(geo_datasets)
 
@@ -460,10 +487,11 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                                            level = level,
                                                            method = method,
                                                            tolerance = tolerance,
-                                                           area_mismatch_cutoff = area_mismatch_cutoff,
                                                            quiet = quiet,
-                                                           refresh = refresh)
-    aggregated_data <- tongfen_aggregate(data,correspondence,meta)
+                                                           refresh = refresh,
+                                                           crs = crs %||% 3347)
+    aggregated_data <- tongfen_aggregate(data,correspondence,meta,
+                                         base_geo=base_geo,na.rm=na.rm)
   }
   aggregated_data %>%
     rename_with_meta(meta)

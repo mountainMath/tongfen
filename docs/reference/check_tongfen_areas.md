@@ -6,6 +6,11 @@ Sanity check for areas of estimated tongfen correspondence. This is
 useful if for example the total extent of geo1 and geo2 differ and there
 are regions at the edges with large difference in overlap.
 
+The result is a diagnostic, not a pass/fail test. Geographies for
+different years are simplified independently and differ in how water
+features are cut out, so a sizable area mismatch does not by itself mean
+the regions were matched up incorrectly.
+
 ## Usage
 
 ``` r

@@ -50,6 +50,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
                                        downsample_level = NULL,
                                        na.rm=FALSE,
                                        quiet=FALSE) {
+  require_suggested("cancensus")
   datasets <- meta$geo_dataset %>% unique()
   if (length(datasets)!=1) stop("At this point tongfen_estimate_ca_census can only handle data for a single census geography year")
   regions <- datasets %>%
@@ -67,7 +68,8 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
 
   # So maybe a function like get_tongfen_correspondence_from_seed
   census_data <- get_tongfen_ca_census(regions = regions, meta = meta,
-                                       level = level, na.rm = na.rm, quiet = quiet) %>%
+                                       level = level, base_geo = datasets,
+                                       na.rm = na.rm, quiet = quiet) %>%
     sf::st_transform(st_crs(geometry))
 
   if (!is.null(downsample_level)){

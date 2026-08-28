@@ -9,7 +9,9 @@ get_tongfen_us_census(
   meta,
   level = "tract",
   survey = "census",
-  base_geo = NULL
+  base_geo = NULL,
+  min_area_share = 0.01,
+  sumfile = NULL
 )
 }
 \arguments{
@@ -23,6 +25,14 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``}
 \item{survey}{survey to get data for, supported options is "census"}
 
 \item{base_geo}{census year to use as base geography, default is `2010`.}
+
+\item{min_area_share}{minimum share of area two geographies have to have in common to count
+as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.}
+
+\item{sumfile}{summary file to read the variables from, either a single value used for all
+censuses or a vector named by dataset, for example `c(dec2010="sf1", dec2020="dhc")`. Default
+is `NULL`, which leaves the choice to tidycensus. Note that tidycensus defaults the 2020
+census to the PL 94-171 redistricting file, most 2020 variables need `sumfile="dhc"`.}
 }
 \value{
 sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
@@ -32,6 +42,11 @@ sf object with (wide form) census variables with census year as suffix (separate
 
 This wraps data acquisition via the tidycensus package and tongfen on a common geography into
 a single convenience function.
+
+Data is only available for the 2000, 2010 and 2020 censuses, the Census Bureau has retired the
+1990 API endpoint. To tongfen 1990 data, obtain it elsewhere and combine it with a
+correspondence table from \code{\link{get_tongfen_correspondence_us_census}} via
+\code{\link{tongfen_aggregate}}.
 }
 \examples{
 # Get US census data on population and households for 2000 and 2010 censuses on a uniform geography

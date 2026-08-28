@@ -28,6 +28,8 @@
   : Canadian Census DA level tongfen
 - [`get_tongfen_correspondence_ca_census()`](https://mountainmath.github.io/tongfen/reference/get_tongfen_correspondence_ca_census.md)
   : Get StatCan correspondence data
+- [`get_tongfen_correspondence_us_census()`](https://mountainmath.github.io/tongfen/reference/get_tongfen_correspondence_us_census.md)
+  : Get correspondence table for US census geographies
 - [`get_tongfen_us_census()`](https://mountainmath.github.io/tongfen/reference/get_tongfen_us_census.md)
   : Get US census data for 2000 and 2010 census on common census tract
   based geography
