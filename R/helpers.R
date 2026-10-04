@@ -14,6 +14,49 @@ tongfen_cache_dir <- function(){
     tempdir()
 }
 
+tongfen_session <- new.env(parent=emptyenv())
+
+# ETag of a remote file, NULL if it can't be determined, e.g. when offline
+remote_etag <- function(url){
+  headers <- tryCatch(suppressWarnings(curlGetHeaders(url)),error=function(e) NULL)
+  if (is.null(headers) || !identical(attr(headers,"status"),200L)) return(NULL)
+  etag <- grep("^etag:",headers,ignore.case=TRUE,value=TRUE)
+  if (length(etag)==0) return(NULL)
+  gsub("^etag:\\s*|\"|\\s+$","",etag[length(etag)],ignore.case=TRUE)
+}
+
+# Download a remote file to the local path unless the local copy is still current.
+# The ETag of the downloaded file is kept next to the cached file and compared to the remote ETag
+# the first time the file is requested in a session, the file is only downloaded again if it changed.
+cached_download <- function(url,path,refresh=FALSE){
+  etag_path <- paste0(path,".etag")
+  cached <- file.exists(path) && !refresh
+  if (cached && isTRUE(tongfen_session[[url]])) return(path)
+  etag <- remote_etag(url)
+  if (cached) {
+    if (is.null(etag)) {
+      message(paste0("Could not check ",url," for updates, using cached version."))
+    }
+    local_etag <- if (file.exists(etag_path)) readLines(etag_path,n=1,warn=FALSE)
+    if (is.null(etag) || identical(etag,local_etag)) {
+      tongfen_session[[url]] <- TRUE
+      return(path)
+    }
+  }
+  if (!dir.exists(dirname(path))) dir.create(dirname(path),recursive=TRUE)
+  tmp <- tempfile(tmpdir=dirname(path))
+  on.exit(unlink(tmp))
+  utils::download.file(url,tmp,mode="wb",quiet=TRUE)
+  # S3 ETags of files that were not uploaded in parts are the md5 checksum of the file
+  if (!is.null(etag) && grepl("^[0-9a-f]{32}$",etag) && !identical(unname(tools::md5sum(tmp)),etag)) {
+    stop(paste0("Download of ",url," is corrupted, please try again."))
+  }
+  file.copy(tmp,path,overwrite=TRUE)
+  if (is.null(etag)) unlink(etag_path) else writeLines(etag,etag_path)
+  tongfen_session[[url]] <- TRUE
+  path
+}
+
 inner_join_tongfen_correspondence <- function(data,correspondence,link){
   data %>%
     inner_join(correspondence %>%

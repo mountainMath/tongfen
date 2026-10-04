@@ -1,3 +1,16 @@
+# tongfen v.0.3.9
+## Major changes
+- StatCan correspondence files are now downloaded as parquet files from a mirror, Statistics Canada
+  put the original files behind a browser check that blocks programmatic downloads, which broke
+  `method = "statcan"`. Cached files are checked against the mirror once per session and downloaded
+  again if they changed. The mirror location can be changed via the `tongfen.statcan_correspondence_url`
+  option. Previously cached `statcan_correspondence_*.csv` files in the tongfen cache directory are
+  no longer used and can be removed
+## Minor changes
+- combining correspondences across three or more datasets no longer runs into a cross join when the
+  correspondences happen to be ordered so that consecutive ones don't share a geographic identifier.
+  This gave a dplyr deprecation warning and needlessly large intermediate tables, results are unchanged
+
 # tongfen v.0.3.8
 ## Breaking changes
 - `get_tongfen_ca_census` now honours its `base_geo`, `na.rm`, `tolerance`, `crs` and

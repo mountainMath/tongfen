@@ -29,13 +29,13 @@ library(tongfen)
 
 ### Caching correspondence files
 The `get_tongfen_ca_census` and `get_tongfen_correspondence_ca_census` methods make use of the StatCan correspondence
-files when run with `method = "statcan"`. To speed up this process it is useful to permanently cache these files instead of having to download them repeatedly. If caching is desired, set either 
+files when run with `method = "statcan"`. Statistics Canada no longer allows programmatic downloads of these files, so the package downloads them from a mirror hosting the files in parquet format. To speed up this process it is useful to permanently cache these files instead of having to download them again in every session. If caching is desired, set either 
 
 * `options("tongfen.cache_path"="<your local cache path>")` 
 * `Sys.setenv("tongfen.cache_path"="<your local cache path>")`
 * `options("custom_data_path"="<your local cache path>")` 
 
-in your `.Rprofile` or `.Renviron` file. 
+in your `.Rprofile` or `.Renviron` file. Cached files are checked against the mirror once per session and only get downloaded again if they changed, when offline the cached files are used as they are.
 
 ## General TongFen
 
@@ -84,8 +84,8 @@ Methods to facilitate this are still under active development.
 
 If you wish to cite tongfen:
 
-  von Bergmann, J. (2024). tongfen: R package to
-  Make Data Based on Different Geographies Comparable. v0.3.7.
+  von Bergmann, J. (2026). tongfen: R package to
+  Make Data Based on Different Geographies Comparable. v0.3.9.
   DOI: 10.32614/CRAN.package.tongfen
 
 
@@ -94,9 +94,9 @@ A BibTeX entry for LaTeX users is
   @Manual{tongfen,
     author = {Jens {von Bergmann}},
     title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
-    year = {2024},
+    year = {2026},
     doi = {10.32614/CRAN.package.tongfen},
-    note = {R package version 0.3.7},
+    note = {R package version 0.3.9},
     url = {https://mountainmath.github.io/tongfen/},
   }
 ```

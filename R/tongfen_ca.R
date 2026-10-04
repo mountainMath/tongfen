@@ -1,13 +1,9 @@
-correspondence_ca_census_urls <- list(
-  "2006"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2006_92-156_DB_ID_txt.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2006_92-156_DA_AD_txt.zip"),
-  "2011"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2011_92-156_DB_ID_txt.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2011_92-156_DA_AD_txt.zip"),
-  "2016"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DB_ID_csv.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DA_AD_csv.zip"),
-  "2021"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DB_ID.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DA_AD.zip")
-)
+# StatCan correspondence files as parquet, built by data-raw/statcan_correspondence.R
+correspondence_ca_census_url <- function(year,level){
+  base_url <- nullify_blank(getOption("tongfen.statcan_correspondence_url")) %||%
+    "https://mountainmath.s3.ca-central-1.amazonaws.com/tongfen/statcan_correspondence/v1"
+  paste0(sub("/+$","",base_url),"/statcan_correspondence_",year,"_",level,".parquet")
+}
 
 ca_census_base <- c("Population","Dwellings","Households")
 
@@ -184,6 +180,11 @@ add_census_ca_base_variables <- function(meta){
 #' @description
 #' \lifecycle{maturing}
 #'
+#' The correspondence files are downloaded from a mirror of the Statistics Canada correspondence files
+#' and cached in the tongfen cache directory. The cached files are checked against the mirror once per session
+#' and get downloaded again if they changed. The location of the mirror can be changed via the
+#' `tongfen.statcan_correspondence_url` option.
+#'
 #' @param year census year, only 2006 through 2021 are supported
 #' @param level geographic level, DA or DB
 #' @param refresh reload the correspondence files, default is `FALSE`
@@ -193,36 +194,9 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
   year=as.character(year)[1]
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
   if (!(year %in% c("2006","2011","2016","2021"))) stop("Year needs to be 2006, 2011, 2016, or 2021")
-  new_field=paste0(level,"UID",year)
-  old_field=paste0(level,"UID",as.integer(year)-5)
-  path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".csv"))
-  if (refresh || !file.exists(path)) {
-    url=correspondence_ca_census_urls[[year]][[level]]
-    tmp=tempfile()
-    utils::download.file(url,tmp)
-    exdir=file.path(tempdir(),paste0("correspondence_",year,"_",level))
-    if (dir.exists(exdir)) unlink(exdir,recursive=TRUE)
-    dir.create(exdir,showWarnings = FALSE)
-    utils::unzip(tmp,exdir=exdir)
-    file=dir(exdir,"\\.txt|\\.csv")
-    if (length(file)==0) {
-      p<-dir(exdir)[1]
-      if (dir.exists(file.path(exdir,p))) {
-        exdir=file.path(exdir,p)
-        file=dir(exdir,"\\.txt|\\.csv")
-      }
-    }
-    if (level=="DB") headers=c(new_field,old_field,"flag") else headers=c(new_field,old_field,paste0("DBUID",year),"flag")
-    unwanted <- paste0(level,"UID",year)
-    d<-readr::read_csv(file.path(exdir,file),col_types = readr::cols(.default = "c"),col_names = headers) %>%
-      select(all_of(c(new_field,old_field,"flag"))) %>%
-      unique() %>%
-      filter(!grepl(unwanted,!!as.name(new_field)))
-    readr::write_csv(d,path)
-    unlink(tmp)
-    unlink(exdir,recursive = TRUE)
-  }
-  result <- readr::read_csv(path,col_types = readr::cols(.default = "c"))
+  path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".parquet"))
+  cached_download(correspondence_ca_census_url(year,level),path,refresh=refresh)
+  result <- tibble::as_tibble(nanoparquet::read_parquet(path))
 
   # manual corrections
   if (year=="2021" && level=="DB") {
