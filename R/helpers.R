@@ -191,6 +191,15 @@ assert <- function (expr, error) {
   if (! expr) stop(error, call. = FALSE)
 }
 
+# Pairs of intersecting geometries as row indices into `x` and `y`. The sparse index
+# list is turned into a tibble directly, `as.data.frame()` on an empty result drops
+# the columns we join on.
+intersects_pairs <- function(x, y) {
+  m <- sf::st_intersects(x, y, sparse = TRUE)
+  tibble(row.id = rep(seq_along(m), lengths(m)),
+         col.id = as.integer(unlist(m)))
+}
+
 
 # Dissolve the geometries of `data` by `grouping_var`, the geometric equivalent
 # of `summarize()`. Groups holding a single geometry - the bulk of the groups

@@ -1,5 +1,13 @@
 # tongfen v.0.3.9
 ## Major changes
+- new experimental functions to detect and correct for likely geocoding anomalies in timelines on a
+  common geography, where the same dwellings got assigned to different neighbouring regions in
+  different years. This shows up as a surprising drop in one region that is offset by a jump in a
+  neighbouring region. `tongfen_detect_anomalies` lists the candidate regions,
+  `tongfen_anomaly_joins` determines the regions to join, `tongfen_join_regions` joins them in
+  data that already is on a common geography and `tongfen_join_correspondence` joins them in a
+  correspondence for use with `tongfen_aggregate`. See the new "Geocoding anomalies in TongFen
+  timelines" vignette for details
 - StatCan correspondence files are now downloaded as parquet files from a mirror, Statistics Canada
   put the original files behind a browser check that blocks programmatic downloads, which broke
   `method = "statcan"`. Cached files are checked against the mirror once per session and downloaded

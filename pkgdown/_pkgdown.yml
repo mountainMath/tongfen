@@ -25,6 +25,10 @@ articles:
     navbar: ~
     contents:
     - tongfen_us
+  - title: "Geocoding anomalies"
+    navbar: ~
+    contents:
+    - tongfen_anomalies
 
 authors:
   Jens von Bergmann:

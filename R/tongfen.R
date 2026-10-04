@@ -547,16 +547,8 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
   cgeo1 <- geo1 %>% robust_tolerance_buffer(tolerance = tolerance)
   cgeo2 <- geo2 %>% robust_tolerance_buffer(tolerance = tolerance)
 
-  # Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1). The
-  # sparse index list is turned into a tibble directly, `as.data.frame()` on an empty
-  # result drops the columns we join on.
-  intersects_pairs <- function(x, y) {
-    m <- st_intersects(x, y, sparse = TRUE)
-    tibble(row.id = rep(seq_along(m), lengths(m)),
-           col.id = as.integer(unlist(m)))
-  }
-
-  i1 <- intersects_pairs(cgeo1, geo2) %>%
+  # Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1).
+  i1 <-intersects_pairs(cgeo1, geo2) %>%
     left_join(id1, by = c("row.id" = "id1")) %>%
     left_join(id2, by = c("col.id" = "id2")) %>%
     select(-"row.id",-"col.id")
