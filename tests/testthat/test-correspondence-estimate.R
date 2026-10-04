@@ -72,3 +72,38 @@ test_that("tongfen_tag_largest_overlap: tags each source region by its containin
   expect_equal(tagged$t, c("t1", "t1", "t2", "t2"))
   expect_equal(as.numeric(tagged[["...overlap_fraction"]]), rep(1, 4), tolerance = 1e-9)
 })
+
+test_that("estimate_tongfen_correspondence: geometry column can go by any name", {
+  geo_a <- grid_4("idA")
+  geo_b <- st_sf(idB = c("b1", "b2"),
+                 geometry = st_sfc(sq(0, 0, 2, 1), sq(0, 1, 2, 1), crs = 3347))
+  expected <- estimate_tongfen_correspondence(list(geo_a, geo_b), c("idA", "idB"),
+                                              tolerance = 0.01)
+
+  st_geometry(geo_a) <- "geom"
+  st_geometry(geo_b) <- "shape"
+  correspondence <- estimate_tongfen_correspondence(list(geo_a, geo_b), c("idA", "idB"),
+                                                    tolerance = 0.01)
+  expect_equal(correspondence, expected)
+})
+
+test_that("estimate_tongfen_single_correspondence: robust option repairs invalid geometries", {
+  geo_a <- grid_4("idA")
+  geo_b <- st_sf(idB = c("b1", "b2"),
+                 geometry = st_sfc(sq(0, 0, 2, 1), sq(0, 1, 2, 1), crs = 3347))
+  expected <- tongfen:::estimate_tongfen_single_correspondence(geo_a, geo_b, "idA", "idB",
+                                                               tolerance = 0.01)
+
+  robust <- tongfen:::estimate_tongfen_single_correspondence(geo_a, geo_b, "idA", "idB",
+                                                             tolerance = 0.01, robust = TRUE)
+  expect_equal(robust, expected)
+
+  # same region as b1, but the ring crosses over itself along the bottom edge
+  bowtie <- st_polygon(list(cbind(c(0, 2, 2, 0, 0, 1, 0), c(0, 0, 1, 1, 0, 0, 0))))
+  geo_invalid <- st_sf(idB = c("b1", "b2"),
+                       geometry = st_sfc(bowtie, sq(0, 1, 2, 1), crs = 3347))
+  expect_false(all(st_is_valid(geo_invalid)))
+  robust <- tongfen:::estimate_tongfen_single_correspondence(geo_a, geo_invalid, "idA", "idB",
+                                                             tolerance = 0.01, robust = TRUE)
+  expect_equal(robust, expected)
+})

@@ -23,6 +23,10 @@ tongfen_ca_census_ct(
 
 \item{na.rm}{optional parameter to remove NA values when summing, default = `TRUE`}
 }
+\value{
+`data2` with the variables in `data2_sum_vars` aggregated to a common geography matching `data1`,
+identified by the `GeoUID` of `data1`
+}
 \description{
 \lifecycle{deprecated}
 

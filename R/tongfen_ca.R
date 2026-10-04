@@ -26,15 +26,6 @@ datasets_from_vectors <- function(vs){
   ds
 }
 
-GEO_DATASET_LOOKUP <- c(
-  setNames(rep("CA1996",1),paste0("TX",seq(2000,2000))),
-  setNames(rep("CA01",5),paste0("TX",seq(2001,2005))),
-  setNames(rep("CA06",6),paste0("TX",seq(2006,2011))),
-  setNames(rep("CA11",4),paste0("TX",seq(2012,2015))),
-  setNames(rep("CA16",5),paste0("TX",seq(2016,2020))),
-  setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
-)
-
 geo_dataset_for_years <- function(years){
   require_suggested("cancensus")
   dataset_list <- cancensus::list_census_datasets()
@@ -50,7 +41,6 @@ geo_dataset_for_years <- function(years){
 
 geo_dataset_from_dataset <- function(datasets){
   require_suggested("cancensus")
-  if (TRUE) { # legacy until cancensus updates
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.) %>% gsub("\\d{4}x","",.)
   dataset_list <- cancensus::list_census_datasets()
   lapply(datasets, function(ds){
@@ -60,16 +50,6 @@ geo_dataset_from_dataset <- function(datasets){
       unique()
   }) %>%
     unlist()
-  } else {
-    result <- tibble(dataset=datasets,geo_dataset=GEO_DATASET_LOOKUP[datasets]) %>%
-      mutate(geo_dataset=ifelse(is.na(.data$geo_dataset),.data$dataset %>%
-                                  years_from_datasets() %>%
-                                  as.character() %>%
-                                  substr(3,4) %>%
-                                  paste0("CA",.),
-                                .data$geo_dataset))
-    result$geo_dataset
-  }
 }
 
 #' Generate metadata from Candian census vectors
@@ -88,7 +68,7 @@ geo_dataset_from_dataset <- function(datasets){
 #' @examples
 #' # Build metadata for vectors
 #' \dontrun{
-#' meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+#' meta <- meta_for_ca_census_vectors(c("v_CA16_4836","v_CA16_4838","v_CA16_4899"))
 #'}
 meta_for_ca_census_vectors <- function(vectors){
   require_suggested("cancensus")
@@ -100,9 +80,6 @@ meta_for_ca_census_vectors <- function(vectors){
     nn[nn==""]=vectors[nn==""]
   }
 
-  if (length(vectors)==0) {
-    meta <- tibble::tibble(variable=NA,label=NA,dataset=datasets_from_vectors(vectors))
-  }
   meta <- tibble::tibble(variable=vectors,label=nn,dataset=datasets_from_vectors(vectors)) %>%
     mutate(type="Original", aggregation="0",units=NA)
   datasets <- meta$dataset %>%
@@ -134,13 +111,13 @@ meta_for_ca_census_vectors <- function(vectors){
     select(variable="parent","dataset") %>%
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
     filter(!is.na(.data$variable),!.data$variable %in% meta$variable) %>%
-    filter(!duplicated(.data$variable,.data$dataset)) %>%
+    distinct(.data$variable,.data$dataset,.keep_all=TRUE) %>%
     mutate(label=.data$variable)
 
   if (nrow(extras)>0) {
     meta <- meta %>%
       bind_rows(extras) %>%
-      filter(!duplicated(.data$variable,.data$dataset))
+      distinct(.data$variable,.data$dataset,.keep_all=TRUE)
   }
 
   meta <- meta %>%
@@ -326,7 +303,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     correspondence_years=all_geo_years[-1]
     correspondence <- correspondence_years %>%
       lapply(function(year){
-        c <- get_single_correspondence_ca_census_for(year,statcan_level) %>%
+        c <- get_single_correspondence_ca_census_for(year,statcan_level,refresh=refresh) %>%
           select(-"flag")
         previous_year <- all_geo_years[which(all_geo_years==year)-1]
         ds1 <- all_geo_datasets[all_geo_years==year]

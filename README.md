@@ -67,7 +67,8 @@ The package is well-integrated to work with Canadian census data in two essentia
 
 
 ### US census data
-* `get_tongfen_us_census` integrates the data acquisition (via the [**tidycensus** package](https://walker-data.com/tidycensus/index.html)) with TongFen, and adds the tongfen `method = "census.gov"` to use the US Census Bureau correspondence files for matching.
+* `get_tongfen_us_census` integrates the data acquisition (via the [**tidycensus** package](https://walker-data.com/tidycensus/index.html)) with TongFen, using the US Census Bureau relationship files to build the common geography.
+* `get_tongfen_correspondence_us_census` breaks out the correspondence generation from the US Census Bureau relationship files, to tongfen data that comes on census geographies but is obtained by other means. The relationship files are cached in the `us_data` folder of the cache path described above.
 
 ## Other implementations
 The `tongfen` package is open to add extensions for other specialized data sources, as well as extensions of existing ones. 

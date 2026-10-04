@@ -85,7 +85,7 @@ get_tongfen_census_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,n
 #' @return dataframe with variables on common geography
 #' @export
 get_tongfen_ca_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_cache=TRUE,na.rm=TRUE,quiet=TRUE) {
-  lifecycle::deprecate_warn("0.2.0", "get_tongfen_census_da()", "get_tongfen_census_ca()")
+  lifecycle::deprecate_warn("0.2.0", "get_tongfen_ca_census_ct_from_da()", "get_tongfen_ca_census()")
   meta <- meta_for_ca_census_vectors(vectors)
   base_geo <- if (is.na(geo_format)) NULL else meta$geo_dataset %>% unique() %>% sort() %>% first()
 
@@ -111,6 +111,8 @@ get_tongfen_ca_census_ct_from_da <- function(regions,vectors,geo_format=NA,use_c
 #' @param data2_sum_vars vector of variable names to by summed up when aggregating geographies
 #' @param data2_group_vars optional vector of grouping variables
 #' @param na.rm optional parameter to remove NA values when summing, default = `TRUE`
+#' @return `data2` with the variables in `data2_sum_vars` aggregated to a common geography matching `data1`,
+#' identified by the `GeoUID` of `data1`
 #' @export
 tongfen_ca_census_ct <- function(data1,data2,data2_sum_vars,data2_group_vars=c(),na.rm=TRUE) {
   lifecycle::deprecate_warn("0.2.0", "tongfen_ca_census_ct()", "tongfen_aggregate()")

@@ -13,7 +13,9 @@
 #' @param meta metadata for variable aggregation, see `meta_for_additive_variables` and `meta_for_ca_census_vectors` for more information
 #' on how to construct metadata.
 #' @param na.rm remove NA values when aggregating, default is FALSE
-#' @return `target` with estimated quantities from `source` as specified by `meta`
+#' @return `target` with estimated quantities from `source` as specified by `meta`, regions in `target`
+#' that don't overlap with `source` have `NA` values. Columns in `target` can't have the same name
+#' as the variables to be estimated.
 #' @export
 #'
 #' @examples
@@ -46,6 +48,12 @@ tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
     cut_meta(source,.) %>%
     mutate(var_name=paste0("v",row_number()))
 
+  clashes <- intersect(meta$data_var,names(target))
+  if (length(clashes)>0) {
+    stop(paste0("Target already has columns named ",paste0(clashes,collapse=", "),
+                ", please rename or remove these before estimating."))
+  }
+
   # rename variables, st_interpolate_aw does not handle column names with special characters
   safe_rename_vars <- setNames(meta$data_var,meta$var_name)
   safe_rename_back <- setNames(meta$var_name,meta$data_var)
@@ -54,30 +62,33 @@ tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
   i = suppressMessages(st_intersection(st_geometry(source), st_geometry(target)))
   idx = attr(i, "idx")
 
-  gc = which(st_is(i, "GEOMETRYCOLLECTION"))
-  i[gc] = st_collection_extract(i[gc], "POLYGON")
+  # the area only counts the polygonal parts of intersections, source regions that only
+  # touch a target region along a boundary don't overlap and must not contribute
+  area_st <- as.numeric(st_area(i))
+  overlaps <- which(area_st > 0)
+  idx <- idx[overlaps,,drop=FALSE]
+  area_st <- area_st[overlaps]
 
   source <- source %>% rename(!!!safe_rename_vars)
-  source_area <- unclass(st_area(source))
+  source_area <- as.numeric(st_area(source))
 
   x_st <- source[idx[,1],, drop=FALSE] %>%
+    st_drop_geometry() %>%
     select(names(safe_rename_vars)) %>%
-    pre_scale(meta,meta_var = "var_name") %>%
-    mutate(...area_st = st_area(i) %>% unclass,
-           ...area_s = source_area[idx[,1]]) %>%
-    mutate(...factor = .data$...area_st/.data$...area_s) %>%
-    mutate(...partial = .data$...factor < 0.99) %>%
-    st_drop_geometry()
+    pre_scale(meta,meta_var = "var_name")
 
-  x_st[meta$var_name] <- lapply(x_st[meta$var_name], `*`, x_st$...factor)
+  # variables to sum up, including the weights for averages added when pre-scaling
+  sum_vars <- names(x_st)
+  x_st[sum_vars] <- lapply(x_st[sum_vars], `*`, area_st/source_area[idx[,1]])
 
-  x_st <- stats::aggregate(x_st, list(idx[,2]), sum, na.rm=na.rm)
+  # target regions without overlap with the source don't show up here and end up as NA
+  x_st <- x_st %>%
+    mutate(!!unique_key:=idx[,2]) %>%
+    group_by(.data[[unique_key]]) %>%
+    summarize(across(all_of(sum_vars), \(x) sum(x,na.rm=na.rm)),.groups="drop")
 
   result <- target %>%
-    left_join(x_st %>%
-                select(-all_of(c("...factor", "...partial", "...area_s", "...area_st"))) %>%
-                rename(!!unique_key:="Group.1"),
-              by=unique_key) %>%
+    left_join(x_st,by=unique_key) %>%
     select(-all_of(unique_key)) %>%
     post_scale(meta,meta_var = "var_name") %>%
     rename(!!!safe_rename_back)
@@ -117,17 +128,17 @@ tongfen_estimate <- function(target,source,meta,na.rm=FALSE) {
 #' @param target custom geography
 #' @param source input geography
 #' @param target_id name of the column in `target` table with unique id (character)
-#' @return `source` with extra column with name `"target_id"` and column `...overlap_fraction` with
-#' the proportion of overlap of the target geometry with the respective `target_id`
+#' @return `source` with extra column with the name given by `target_id` and column `...overlap_fraction` with
+#' the proportion of the area of the source region that overlaps with the region in `target` with that id
 #' @export
 #'
 #' @examples
-#' # Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies
+#' # Tag 2016 dissemination areas in the City of Vancouver by the 2006 census tract they overlap
+#' # the most with
 #' \dontrun{
-#' geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='DA')
+#' geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='CT')
 #' geo2 <- cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format='sf',level='DA')
-#' meta <- meta_for_additive_variables("CA06","Population")
-#' result <- tongfen_estimate(geo2 %>% rename(Population_2016=Population),geo1,meta)
+#' result <- tongfen_tag_largest_overlap(geo2,geo1 %>% select(CT_2006=GeoUID),"CT_2006")
 #'}
 tongfen_tag_largest_overlap <- function(source, target, target_id) {
   target_geo_types <- target %>% sf::st_geometry_type() %>% unique

@@ -11,7 +11,7 @@ ByteCompile: yes
 LazyData: true
 NeedsCompilation: no
 Imports: 
-    dplyr (>= 1.0),
+    dplyr (>= 1.1.0),
     tidyr (>= 1.0),
     sf,
     tibble,

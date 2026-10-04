@@ -59,14 +59,9 @@ get_us_ct_correspondence_path <- function(state,year){
 # the blocks they are made up of
 get_us_ct_correspondence_2020 <- function(state,min_area_share=0.01,
                                           cache_path=getOption("tongfen.cache_path")) {
-  cache_path = file.path(cache_path %||% tempdir(),"us_data")
-
   path <- get_us_ct_correspondence_path(state,2020)
-  local_path <-  file.path(cache_path,basename(path))
-  if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
-    utils::download.file(path,local_path,quiet = TRUE)
-  }
+  local_path <- file.path(us_cache_dir(cache_path),basename(path))
+  cached_download(path,local_path,check_remote=FALSE)
   blocks <- readr::read_delim(local_path,delim="|",progress=FALSE,
                               col_types=readr::cols_only(
                                 STATE_2010="c",COUNTY_2010="c",TRACT_2010="c",BLK_2010="c",
@@ -97,13 +92,8 @@ get_us_ct_correspondence_2020 <- function(state,min_area_share=0.01,
 get_us_ct_correspondence_2010 <- function(state,min_area_share=0.01,
                                           cache_path=getOption("tongfen.cache_path")){
   path <- get_us_ct_correspondence_path(state,"2010")
-  file <- basename(path)
-  cache_path = file.path(cache_path %||% tempdir(),"us_data")
-  local_path <- file.path(cache_path,file)
-  if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
-    utils::download.file(path,local_path,quiet=TRUE)
-  }
+  local_path <- file.path(us_cache_dir(cache_path),basename(path))
+  cached_download(path,local_path,check_remote=FALSE)
   d<-readr::read_csv(local_path,progress=FALSE,
                      col_names=c("STATE00","COUNTY00","TRACT00","GEOID00",
                                  "POP00","HU00","PART00","AREA00","AREALAND00",
@@ -130,12 +120,8 @@ get_us_ct_correspondence_2010 <- function(state,min_area_share=0.01,
 get_us_ct_correspondence_2000 <- function(state,min_area_share=0.01,
                                           cache_path=getOption("tongfen.cache_path")){
   path <- get_us_ct_correspondence_path(state,"2000")
-  cache_path = file.path(cache_path %||% tempdir(),"us_data")
-  local_path <- file.path(cache_path,basename(path))
-  if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
-    utils::download.file(path,local_path,quiet=TRUE)
-  }
+  local_path <- file.path(us_cache_dir(cache_path),basename(path))
+  cached_download(path,local_path,check_remote=FALSE)
   d <- readr::read_fwf(local_path,
                   readr::fwf_cols(STATE90=c(1,2),COUNTY90=c(3,5),TRACT90BASE=c(6,9),
                                   TRACT90SUF=c(10,11),PART90=c(12,12),POP90TRACT=c(13,21),
@@ -202,15 +188,21 @@ get_us_ct_correspondence <- function(state, datasets, min_area_share=0.01,
 # the 2000 to 2010 county subdivision comparability file, covering all states
 get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongfen.cache_path")){
   require_suggested("readxl")
-  cache_path = file.path(cache_path %||% tempdir(),"us_data")
+  cache_path = us_cache_dir(cache_path)
   file <- "Cousub_comparability.xlsx"
   local_path <- file.path(cache_path,file)
   if (!file.exists(local_path)) {
     if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
-    tmp=tempfile(fileext = ".zip")
+    # download and unpack in a temporary directory, an interrupted download must not leave
+    # a broken file in the cache
+    tmp_dir <- tempfile()
+    dir.create(tmp_dir)
+    on.exit(unlink(tmp_dir,recursive=TRUE))
+    tmp <- file.path(tmp_dir,"cousub_comparabilityxls.zip")
     path="https://www2.census.gov/geo/docs/maps-data/data/comp/cousub_comparabilityxls.zip"
-    utils::download.file(path,tmp,quiet=TRUE)
-    utils::unzip(tmp,exdir = cache_path)
+    utils::download.file(path,tmp,mode="wb",quiet=TRUE)
+    utils::unzip(tmp,files=file,exdir=tmp_dir)
+    file.copy(file.path(tmp_dir,file),local_path,overwrite=TRUE)
   }
   readxl::read_xlsx(local_path)
 }
@@ -223,14 +215,10 @@ get_us_county_subdivision_correspondence <- function(cache_path=getOption("tongf
 # the share is taken over the larger of the two.
 get_us_county_subdivision_correspondence_2020 <- function(min_area_share=0.01,
                                                           cache_path=getOption("tongfen.cache_path")){
-  cache_path = file.path(cache_path %||% tempdir(),"us_data")
   path <- paste0("https://www2.census.gov/geo/docs/maps-data/data/rel2020/cousub/",
                  "tab20_cousub20_cousub10_natl.txt")
-  local_path <- file.path(cache_path,basename(path))
-  if (!file.exists(local_path)) {
-    if (!dir.exists(cache_path)) dir.create(cache_path, recursive = TRUE)
-    utils::download.file(path,local_path,quiet=TRUE)
-  }
+  local_path <- file.path(us_cache_dir(cache_path),basename(path))
+  cached_download(path,local_path,check_remote=FALSE)
   d <- readr::read_delim(local_path,delim="|",progress=FALSE,
                     col_types=readr::cols_only(GEOID_COUSUB_10="c",GEOID_COUSUB_20="c",
                                                AREALAND_COUSUB_10="d",AREAWATER_COUSUB_10="d",
@@ -300,7 +288,8 @@ get_us_county_subdivision_correspondence_for <- function(state, datasets, min_ar
 #' geographies at the risk of separating regions that did change. No region is ever dropped,
 #' if all of its parts are slivers its largest part is kept.
 #' @param cache_path optional path to cache the relationship files in, defaults to the
-#' `tongfen.cache_path` option and falls back to a temporary directory
+#' `tongfen.cache_path` option. If that is not set the `tongfen.cache_path` environment variable
+#' and the `custom_data_path` option are used, falling back to a temporary directory
 #' @return tibble with one row per census geography, a GEOID column for each requested census,
 #' and the common geography identified by `TongfenID` and `TongfenUID`.
 #' @export
@@ -351,7 +340,7 @@ sumfile_for_dataset <- function(sumfile, ds){
   unname(sumfile[[ds]])
 }
 
-#' Get US census data for 2000 and 2010 census on common census tract based geography
+#' Get US census data for several censuses on a common geography
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -369,7 +358,8 @@ sumfile_for_dataset <- function(sumfile, ds){
 #' @param meta metadata for variables to retrieve
 #' @param level aggregation level to return the data on. At this stage, the only valid levels are 'tract' and 'county subdivision'.
 #' @param survey survey to get data for, supported options is "census"
-#' @param base_geo census year to use as base geography, default is `2010`.
+#' @param base_geo dataset to use as base geography, for example `"dec2010"`, has to be one of
+#' the datasets in `meta`. Default is `NULL`, which uses the first dataset in `meta`.
 #' @param min_area_share minimum share of area two geographies have to have in common to count
 #' as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.
 #' @param sumfile summary file to read the variables from, either a single value used for all
@@ -404,7 +394,7 @@ get_tongfen_us_census <- function(regions,meta,level='tract',survey="census",
   assert(base_geo %in% datasets,paste0("base_geo has to be one of the datasets ",paste0(datasets,collapse=", ")))
   invalid_datasets <- setdiff(datasets,names(valid_us_census_datasets))
   assert(length(invalid_datasets)==0, paste0("Invalid datasets :",paste0(invalid_datasets,collapse = ", ")))
-  assert(level %in% c('tract','county subdivision'),"Only census tracts and counties are supported right now.")
+  assert(level %in% c('tract','county subdivision'),"Only census tracts and county subdivisions are supported right now.")
   assert(survey %in% c('census'),"Only census surveys are supported right now.")
   if (!is.null(sumfile)) {
     if (is.null(names(sumfile))) {

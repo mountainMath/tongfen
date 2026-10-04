@@ -31,7 +31,8 @@ geographies at the risk of separating regions that did change. No region is ever
 if all of its parts are slivers its largest part is kept.}
 
 \item{cache_path}{optional path to cache the relationship files in, defaults to the
-`tongfen.cache_path` option and falls back to a temporary directory}
+`tongfen.cache_path` option. If that is not set the `tongfen.cache_path` environment variable
+and the `custom_data_path` option are used, falling back to a temporary directory}
 }
 \value{
 tibble with one row per census geography, a GEOID column for each requested census,

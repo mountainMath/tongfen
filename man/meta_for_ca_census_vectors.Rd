@@ -22,6 +22,6 @@ Queries list_census_variables to obtain needed information and add in vectors ne
 \examples{
 # Build metadata for vectors
 \dontrun{
-meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+meta <- meta_for_ca_census_vectors(c("v_CA16_4836","v_CA16_4838","v_CA16_4899"))
 }
 }

@@ -10,6 +10,39 @@
 - combining correspondences across three or more datasets no longer runs into a cross join when the
   correspondences happen to be ordered so that consecutive ones don't share a geographic identifier.
   This gave a dplyr deprecation warning and needlessly large intermediate tables, results are unchanged
+- fix `proportional_reaggregate` giving wrong results when the finer level data already has values
+  for the categories to reaggregate. The values were compared to the parent total across all
+  categories instead of per category, and a missing value in one child region discarded the
+  existing values of all its siblings
+- fix `tongfen_estimate` underestimating values when the intersection of a source and a target
+  region is a geometry collection, i.e. several polygons joined by a shared boundary line
+- `tongfen_estimate` with `na.rm = FALSE` no longer returns `NA` for target regions that only
+  share a boundary with a source region with missing values
+- `tongfen_estimate` now returns `NA` for target regions that don't overlap the source instead of
+  erroring out when none of them do, and gives a clear error when `target` already has a column
+  named like one of the variables to estimate
+- fix `tongfen_aggregate` and `aggregate_data_with_meta` scaling averages by their parent variable
+  more than once when the metadata lists the same variable name for several datasets, as is common
+  with US census data. `tongfen_aggregate` now only uses the metadata of the dataset being
+  aggregated, conflicting aggregation rules for the same variable are an error
+- averages aggregated with `na.rm = TRUE` are now taken over the regions that have a value. The
+  parent variable of regions with a missing average still counted toward the total the average
+  was divided by, pulling the result toward zero. This affects `aggregate_data_with_meta`,
+  `tongfen_aggregate`, `tongfen_estimate` and the functions built on them
+- fix "Average to" variables like percentage changes overwriting each other's base when several of
+  them share a parent variable. In that case the base columns in the result are named after the
+  variable (`base_<variable>`) instead of the parent
+- `estimate_tongfen_correspondence` no longer requires the geometry column to be named `geometry`
+- `refresh = TRUE` in `get_tongfen_correspondence_ca_census` and `get_tongfen_ca_census` now also
+  refreshes the cached StatCan correspondence files
+- US Census Bureau relationship files are downloaded to a temporary file first, an interrupted
+  download no longer leaves a broken file in the cache. They are now cached in the same place as
+  the StatCan correspondence files, also honouring the `tongfen.cache_path` environment variable
+  and the `custom_data_path` option
+- `tongfen_estimate_ca_census` returns its result visibly
+- documentation fixes, among others the `tongfen_aggregate` example now passes a named list of
+  datasets matching the metadata
+- requires dplyr 1.1.0 or newer, which the package already relied on
 
 # tongfen v.0.3.8
 ## Breaking changes

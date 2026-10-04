@@ -25,14 +25,22 @@ remote_etag <- function(url){
   gsub("^etag:\\s*|\"|\\s+$","",etag[length(etag)],ignore.case=TRUE)
 }
 
+# location of the cached US Census Bureau relationship files
+us_cache_dir <- function(cache_path=NULL){
+  file.path(nullify_blank(cache_path) %||% tongfen_cache_dir(),"us_data")
+}
+
 # Download a remote file to the local path unless the local copy is still current.
 # The ETag of the downloaded file is kept next to the cached file and compared to the remote ETag
 # the first time the file is requested in a session, the file is only downloaded again if it changed.
-cached_download <- function(url,path,refresh=FALSE){
+# Files that never change don't need to be checked against the remote, with `check_remote=FALSE`
+# the cached file is used as is. The download goes to a temporary file first so that an
+# interrupted download does not leave a broken file in the cache.
+cached_download <- function(url,path,refresh=FALSE,check_remote=TRUE){
   etag_path <- paste0(path,".etag")
   cached <- file.exists(path) && !refresh
-  if (cached && isTRUE(tongfen_session[[url]])) return(path)
-  etag <- remote_etag(url)
+  if (cached && (!check_remote || isTRUE(tongfen_session[[url]]))) return(path)
+  etag <- if (check_remote) remote_etag(url)
   if (cached) {
     if (is.null(etag)) {
       message(paste0("Could not check ",url," for updates, using cached version."))

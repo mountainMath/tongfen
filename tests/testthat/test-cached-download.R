@@ -73,3 +73,37 @@ test_that("cached_download: rejects downloads not matching the md5 ETag", {
   expect_error(tongfen:::cached_download(remote$url, path), "corrupted")
   expect_false(file.exists(path))
 })
+
+test_that("cached_download: check_remote = FALSE uses the cached file without contacting the remote", {
+  remote <- local_remote("a")
+  path <- file.path(tempfile(), "file.txt")
+  local_mocked_bindings(remote_etag = function(url) stop("remote should not be checked"))
+  expect_equal(tongfen:::cached_download(remote$url, path, check_remote = FALSE), path)
+  expect_equal(readLines(path), "a")
+  expect_false(file.exists(paste0(path, ".etag")))
+  # only the downloaded file ends up in the cache directory
+  expect_equal(list.files(dirname(path)), "file.txt")
+
+  # the cached file is used as is, also in a new session and if the remote changed
+  writeLines("b", remote$path)
+  tongfen:::cached_download(remote$url, path, check_remote = FALSE)
+  expect_equal(readLines(path), "a")
+
+  tongfen:::cached_download(remote$url, path, refresh = TRUE, check_remote = FALSE)
+  expect_equal(readLines(path), "b")
+})
+
+test_that("cached_download: failed downloads don't leave files in the cache", {
+  missing <- paste0("file://", normalizePath(tempdir(), winslash = "/"), "/does-not-exist.txt")
+  path <- file.path(tempfile(), "file.txt")
+  expect_error(suppressWarnings(tongfen:::cached_download(missing, path, check_remote = FALSE)))
+  expect_false(file.exists(path))
+  expect_equal(list.files(dirname(path)), character(0))
+})
+
+test_that("us_cache_dir: uses the given path and falls back to the tongfen cache directory", {
+  local_mocked_bindings(tongfen_cache_dir = function() "tongfen/cache")
+  expect_equal(tongfen:::us_cache_dir("some/path"), file.path("some/path", "us_data"))
+  expect_equal(tongfen:::us_cache_dir(NULL), file.path("tongfen/cache", "us_data"))
+  expect_equal(tongfen:::us_cache_dir(""), file.path("tongfen/cache", "us_data"))
+})
