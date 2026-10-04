@@ -196,18 +196,22 @@ aggregate_correspondences <- function(correspondences){
       select(!matches("Tongfen") | matches("TongfenMethod"))
   }
   # compute full correspondence, smallest table first to keep intermediate
-  # join results as small as possible
-  index_order <- correspondences %>% lapply(nrow) %>% unlist() %>% order()
-
-  correspondence <- correspondences[[index_order[1]]] %>%
-    clean_correspondence_names()
-  if (length(correspondences)>1) for (index in index_order[-1]) {
-    c <- correspondences[[index]] %>%
-      clean_correspondence_names()
-    match_columns <- intersect(names(correspondence),names(c))
-    match_columns <- match_columns[!grepl("TongfenMethod",match_columns)]
-    correspondence <- inner_join(correspondence,c,by=match_columns) %>%
+  # join results as small as possible, but only join tables that share an identifier
+  # with the tables joined so far, joining unrelated tables gives a cross join
+  remaining <- correspondences[order(vapply(correspondences,nrow,integer(1)))] %>%
+    lapply(clean_correspondence_names)
+  correspondence <- remaining[[1]]
+  remaining <- remaining[-1]
+  while (length(remaining)>0) {
+    match_columns <- lapply(remaining,function(c) {
+      match_columns <- intersect(names(correspondence),names(c))
+      match_columns[!grepl("TongfenMethod",match_columns)]
+    })
+    index <- which(lengths(match_columns)>0)[1]
+    if (is.na(index)) stop("Correspondences can't be combined, they don't share a common geographic identifier.")
+    correspondence <- inner_join(correspondence,remaining[[index]],by=match_columns[[index]]) %>%
       unique()
+    remaining <- remaining[-index]
   }
 
   method_columns <- names(correspondence)[grepl("TongfenMethod",names(correspondence))]

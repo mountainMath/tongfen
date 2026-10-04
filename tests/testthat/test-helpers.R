@@ -192,6 +192,21 @@ test_that("aggregate_correspondences: uses every input correspondence exactly on
   expect_equal(nrow(result), 2L)
 })
 
+test_that("aggregate_correspondences: only joins correspondences sharing an identifier", {
+  # ordered by size the first two correspondences have no identifier in common
+  cl <- list(
+    tibble(A = c("a1", "a2"), B = c("b1", "b2"), TongfenMethod = "statcan"),
+    tibble(B = c("b1", "b2", "b3", "b4"), C = c("c1", "c2", "c3", "c4"), TongfenMethod = "statcan"),
+    tibble(C = c("c1", "c2", "c3"), D = c("d1", "d2", "d3"), TongfenMethod = "statcan")
+  )
+  rlang::local_options(lifecycle_verbosity = "error")
+  result <- tongfen:::aggregate_correspondences(cl)
+  expect_equal(sort(names(result)), c("A", "B", "C", "D", "TongfenMethod"))
+  expect_equal(nrow(result), 2L)
+
+  expect_error(tongfen:::aggregate_correspondences(cl[c(1, 3)]), "common geographic identifier")
+})
+
 # ── summarize_geometry_by_group ───────────────────────────────────────────────
 
 test_that("summarize_geometry_by_group: matches grouped st_union", {
