@@ -69,11 +69,16 @@ tongfen_estimate_ca_census(
 
   suppress progress messages
 
+## Value
+
+\`geometry\` with the estimated values for the census variables
+specified by \`meta\`
+
 ## Examples
 
 ``` r
-# Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver
-# based on the geographic data and check estimation errors
+# Estimate the 2016 population within 1 km of Toronto City Hall from dissemination area level
+# census data
 if (FALSE) { # \dontrun{
 toronto_city_hall <- sf::st_point(c(-79.3839,43.6534)) %>%
   sf::st_sfc(crs=4326) %>%
@@ -86,7 +91,7 @@ meta <- meta_for_additive_variables("CA16","Population")
 data <- tongfen_estimate_ca_census(toronto_city_hall,meta,level="DA",intersection_level="CT")
 
 print(paste0("Approximately ",scales::comma(data$Population,accuracy=100),
-             " people live within a 1 km radius of Toronto City."))
+             " people live within a 1 km radius of Toronto City Hall."))
 
 } # }
 ```

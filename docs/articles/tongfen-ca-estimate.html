@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tongfen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/tongfen_ca.html">TongFen for Canadian census data</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen-ca-estimate.html">Estimating Canadian data on custom geographies</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen_us.html">TongFen for US census data</a></li>
+    <li><a class="dropdown-item" href="../articles/tongfen_anomalies.html">Geocoding anomalies in TongFen timelines</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -80,7 +81,7 @@
 full pipeline to estimate census data on custom geographies.</p>
 <p>As an example, we estimate the share of people in low income in
 Vancouver’s skytrain station neighbourhoods. The station neighbourhoods
-are available as part of the <code>cancenus</code> package.</p>
+are available as part of the <code>cancensus</code> package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">station_buffers</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="va"><a href="https://mountainmath.github.io/cancensus/reference/COV_SKYTRAIN_STATIONS.html" class="external-link">COV_SKYTRAIN_STATIONS</a></span></span></code></pre></div>
 <p>Next we assemble the required metadata for the share of people in
@@ -116,7 +117,7 @@ otherwise for further analysis.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

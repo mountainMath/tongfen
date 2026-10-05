@@ -1,4 +1,4 @@
-# Check geographic integrety
+# Check geographic integrity
 
 **\[maturing\]**
 
@@ -21,7 +21,7 @@ check_tongfen_areas(data, correspondence)
 
 - data:
 
-  alist of geogrpahic data of class sf
+  a list of geographic data of class sf
 
 - correspondence:
 

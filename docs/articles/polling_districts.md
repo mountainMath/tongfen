@@ -15,6 +15,7 @@ library(ggplot2)
 library(tidyr)
 library(tongfen)
 library(sf)
+#> Warning: package 'sf' was built under R version 4.6.1
 #> Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
 ```
 

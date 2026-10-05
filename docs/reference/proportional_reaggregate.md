@@ -46,8 +46,8 @@ proportional_reaggregate(
 - base:
 
   Column name to use for proportional weighting when re-aggregating, or
-  named vector with column name for each category. Categries that should
-  be re-aggregated as means should be set to NA and will only be
+  named vector with column name for each category. Categories that
+  should be re-aggregated as means should be set to NA and will only be
   reaggregated if the base data has NA values.
 
 ## Value

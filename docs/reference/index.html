@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tongfen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@
     <li><a class="dropdown-item" href="../articles/tongfen_ca.html">TongFen for Canadian census data</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen-ca-estimate.html">Estimating Canadian data on custom geographies</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen_us.html">TongFen for US census data</a></li>
+    <li><a class="dropdown-item" href="../articles/tongfen_anomalies.html">Geocoding anomalies in TongFen timelines</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -53,7 +54,7 @@
           <code><a href="add_census_ca_base_variables.html">add_census_ca_base_variables()</a></code>
 
         </dt>
-        <dd>Generate metadata from Candian census vectors</dd>
+        <dd>Generate metadata from Canadian census vectors</dd>
 
         <dt>
 
@@ -67,28 +68,28 @@
           <code><a href="check_tongfen_areas.html">check_tongfen_areas()</a></code>
 
         </dt>
-        <dd>Check geographic integrety</dd>
+        <dd>Check geographic integrity</dd>
 
         <dt>
 
           <code><a href="check_tongfen_single_areas.html">check_tongfen_single_areas()</a></code>
 
         </dt>
-        <dd>Check geographic integrety</dd>
+        <dd>Check geographic integrity</dd>
 
         <dt>
 
           <code><a href="estimate_tongfen_correspondence.html">estimate_tongfen_correspondence()</a></code>
 
         </dt>
-        <dd>Generate togfen correspondence for list of geographies</dd>
+        <dd>Generate tongfen correspondence for list of geographies</dd>
 
         <dt>
 
           <code><a href="estimate_tongfen_single_correspondence.html">estimate_tongfen_single_correspondence()</a></code>
 
         </dt>
-        <dd>Generate togfen correspondence for two geographies</dd>
+        <dd>Generate tongfen correspondence for two geographies</dd>
 
         <dt>
 
@@ -109,7 +110,7 @@
           <code><a href="get_tongfen_ca_census.html">get_tongfen_ca_census()</a></code>
 
         </dt>
-        <dd>Togfen data from several Canadian censuses</dd>
+        <dd>Tongfen data from several Canadian censuses</dd>
 
         <dt>
 
@@ -151,7 +152,7 @@
           <code><a href="get_tongfen_us_census.html">get_tongfen_us_census()</a></code>
 
         </dt>
-        <dd>Get US census data for 2000 and 2010 census on common census tract based geography</dd>
+        <dd>Get US census data for several censuses on a common geography</dd>
 
         <dt>
 
@@ -165,7 +166,7 @@
           <code><a href="meta_for_ca_census_vectors.html">meta_for_ca_census_vectors()</a></code>
 
         </dt>
-        <dd>Generate metadata from Candian census vectors</dd>
+        <dd>Generate metadata from Canadian census vectors</dd>
 
         <dt>
 
@@ -183,10 +184,24 @@
 
         <dt>
 
+          <code><a href="tongfen_anomaly_joins.html">tongfen_anomaly_joins()</a></code>
+
+        </dt>
+        <dd>Determine regions to join to correct for likely geocoding anomalies</dd>
+
+        <dt>
+
           <code><a href="tongfen_ca_census_ct.html">tongfen_ca_census_ct()</a></code>
 
         </dt>
         <dd>Canadian census CT level tongfen via identifier matching</dd>
+
+        <dt>
+
+          <code><a href="tongfen_detect_anomalies.html">tongfen_detect_anomalies()</a></code>
+
+        </dt>
+        <dd>Detect likely geocoding anomalies in timelines on a common geography</dd>
 
         <dt>
 
@@ -201,6 +216,20 @@
 
         </dt>
         <dd>Tongfen estimate data for given geometry</dd>
+
+        <dt>
+
+          <code><a href="tongfen_join_correspondence.html">tongfen_join_correspondence()</a></code>
+
+        </dt>
+        <dd>Join regions in a correspondence</dd>
+
+        <dt>
+
+          <code><a href="tongfen_join_regions.html">tongfen_join_regions()</a></code>
+
+        </dt>
+        <dd>Join regions in data on a common geography</dd>
 
         <dt>
 
@@ -245,7 +274,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

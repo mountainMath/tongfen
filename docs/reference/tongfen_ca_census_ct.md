@@ -21,12 +21,12 @@ tongfen_ca_census_ct(
 
 - data1:
 
-  cancensus CT level datatset for year1 \< year2 to serve as base for
+  cancensus CT level dataset for year1 \< year2 to serve as base for
   common geography
 
 - data2:
 
-  cancensus CT level datatset for year2 to be aggregated to common
+  cancensus CT level dataset for year2 to be aggregated to common
   geography
 
 - data2_sum_vars:
@@ -41,3 +41,9 @@ tongfen_ca_census_ct(
 
   optional parameter to remove NA values when summing, default =
   \`TRUE\`
+
+## Value
+
+\`data2\` with the variables in \`data2_sum_vars\` aggregated to a
+common geography matching \`data1\`, identified by the \`GeoUID\` of
+\`data1\`

@@ -1,4 +1,4 @@
-# Generate metadata from Candian census vectors
+# Generate metadata from Canadian census vectors
 
 **\[maturing\]**
 
@@ -14,7 +14,7 @@ add_census_ca_base_variables(meta)
 
 - meta:
 
-  ribble with metadata as for example provided by
+  tibble with metadata as for example provided by
   \`meta_for_ca_census_vectors\`
 
 ## Value

@@ -67,7 +67,10 @@ get_tongfen_correspondence_us_census(
 - cache_path:
 
   optional path to cache the relationship files in, defaults to the
-  \`tongfen.cache_path\` option and falls back to a temporary directory
+  \`tongfen.cache_path\` option. If that is not set the
+  \`tongfen.cache_path\` environment variable and the
+  \`custom_data_path\` option are used, falling back to a temporary
+  directory
 
 ## Value
 

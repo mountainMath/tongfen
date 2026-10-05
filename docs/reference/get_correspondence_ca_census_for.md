@@ -1,6 +1,6 @@
 # Get StatCan DA or DB level correspondence file
 
-**\[deprecated\]** Joins the StatCan correspodence files for several
+**\[deprecated\]** Joins the StatCan correspondence files for several
 census years
 
 ## Usage

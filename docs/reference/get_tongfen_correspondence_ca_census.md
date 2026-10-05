@@ -2,7 +2,7 @@
 
 **\[maturing\]**
 
-Get correspondence file for several Candian censuses on a common
+Get correspondence file for several Canadian censuses on a common
 geography. Requires sf and cancensus package to be available
 
 ## Usage
@@ -48,7 +48,7 @@ get_tongfen_correspondence_ca_census(
 
 - tolerance:
 
-  tolerance for \`estimate_tongen_correspondence\` in metres, default
+  tolerance for \`estimate_tongfen_correspondence\` in metres, default
   value is 50 metres, only used when method is 'estimate' or
   'identifier'
 

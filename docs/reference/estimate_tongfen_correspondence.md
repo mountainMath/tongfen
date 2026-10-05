@@ -1,4 +1,4 @@
-# Generate togfen correspondence for list of geographies
+# Generate tongfen correspondence for list of geographies
 
 **\[maturing\]**
 

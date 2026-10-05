@@ -2,7 +2,7 @@
 
 **\[maturing\]**
 
-Aggregate variables secified in meta for several datasets according to
+Aggregate variables specified in meta for several datasets according to
 correspondence.
 
 ## Usage
@@ -21,7 +21,11 @@ tongfen_aggregate(
 
 - data:
 
-  list of datasets to be aggregated
+  named list of datasets to be aggregated. The names identify the
+  datasets, they are matched against the \`geo_dataset\` column in
+  \`meta\` to pick the aggregation rules and labels for each dataset.
+  Without names, or with names not found in \`meta\`, the rules for all
+  datasets are applied and the variables keep their original names
 
 - correspondence:
 
@@ -51,16 +55,16 @@ type sf or tibble otherwise.
 ## Examples
 
 ``` r
-# aggregate census tract level 2006 population data on common gepgraphy build through
+# aggregate census tract level 2006 and 2016 population data on common geography built through
 # correspondence from 2006 and 2016 census tracts in the City of Vancouver.
 if (FALSE) { # \dontrun{
 regions <- list(CSD="5915022")
 geo1 <- cancensus::get_census("CA06",regions=regions,geo_format='sf',level='CT')
 geo2 <- cancensus::get_census("CA16",regions=regions,geo_format='sf',level='CT')
-meta <- meta_for_additive_variables("CA06","Population")
+meta <- meta_for_additive_variables(c("CA06","CA16"),"Population")
 correspondence <- get_tongfen_correspondence_ca_census(geo_datasets=c('CA06','CA16'),
                                                        regions=regions,level='CT')
-result <- tongfen_aggregate(list(geo1 %>% rename(GeoUIDCA06=GeoUID),
-                                 geo2 %>% rename(GeoUIDCA16=GeoUID)),correspondence,meta)
+result <- tongfen_aggregate(list(CA06=geo1 %>% rename(GeoUIDCA06=GeoUID),
+                                 CA16=geo2 %>% rename(GeoUIDCA16=GeoUID)),correspondence,meta)
 } # }
 ```

@@ -31,16 +31,21 @@ The latest development version can be installed from GitHub.
 
 ### Caching correspondence files
 
-The `get_tongfen_census_ct` and `get_tongfen_census_ct_from_da` methods
-make use of the StatCan correspondence files. To speed up this process
-it is useful to permanently cache these files instead of having to
-download them repeatedly. If caching is desired, set either
+The `get_tongfen_ca_census` and `get_tongfen_correspondence_ca_census`
+methods make use of the StatCan correspondence files when run with
+`method = "statcan"`. Statistics Canada no longer allows programmatic
+downloads of these files, so the package downloads them from a mirror
+hosting the files in parquet format. To speed up this process it is
+useful to permanently cache these files instead of having to download
+them again in every session. If caching is desired, set either
 
 - `options("tongfen.cache_path"="<your local cache path>")`
 - `Sys.setenv("tongfen.cache_path"="<your local cache path>")`
 - `options("custom_data_path"="<your local cache path>")`
 
-in your `.Rprofile` or `.Renviron` file.
+in your `.Rprofile` or `.Renviron` file. Cached files are checked
+against the mirror once per session and only get downloaded again if
+they changed, when offline the cached files are used as they are.
 
 ## General TongFen
 
@@ -90,7 +95,7 @@ and
 This facilitates running the example vignette on polling districts
 without having to download external data. Both are available as open
 data covered under the [Open Government Licence -
-Canda](https://open.canada.ca/en/open-government-licence-canada).
+Canada](https://open.canada.ca/en/open-government-licence-canada).
 
 ## Data-specific implementations
 
@@ -129,8 +134,13 @@ for example [CMHC data](https://www03.cmhc-schl.gc.ca/hmip-pimh).
 - `get_tongfen_us_census` integrates the data acquisition (via the
   [**tidycensus**
   package](https://walker-data.com/tidycensus/index.html)) with TongFen,
-  and adds the tongfen `method = "census.gov"` to use the US Census
-  Bureau correspondence files for matching.
+  using the US Census Bureau relationship files to build the common
+  geography.
+- `get_tongfen_correspondence_us_census` breaks out the correspondence
+  generation from the US Census Bureau relationship files, to tongfen
+  data that comes on census geographies but is obtained by other means.
+  The relationship files are cached in the `us_data` folder of the cache
+  path described above.
 
 ## Other implementations
 
@@ -145,7 +155,7 @@ data on a common geography but have to instead rely on estimates. The
 `tongfen_estimate` makes no assumption on the underlying geographies and
 returns estimates of the data on the target geography. It uses
 area-weighted interpolation to achieve this, and can be refined to
-dasymmetric estimates using the `proportional_reaggregate` function.
+dasymetric estimates using the `proportional_reaggregate` function.
 
 This method has the example that it works independent of the nature of
 the underlying geographies, but comes at the heavy price of only being
@@ -159,8 +169,8 @@ Methods to facilitate this are still under active development.
 
 If you wish to cite tongfen:
 
-von Bergmann, J. (2024). tongfen: R package to Make Data Based on
-Different Geographies Comparable. v0.3.7. DOI:
+von Bergmann, J. (2026). tongfen: R package to Make Data Based on
+Different Geographies Comparable. v0.3.9. DOI:
 10.32614/CRAN.package.tongfen
 
 A BibTeX entry for LaTeX users is
@@ -168,8 +178,8 @@ A BibTeX entry for LaTeX users is
       @Manual{tongfen,
         author = {Jens {von Bergmann}},
         title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
-        year = {2024},
+        year = {2026},
         doi = {10.32614/CRAN.package.tongfen},
-        note = {R package version 0.3.7},
+        note = {R package version 0.3.9},
         url = {https://mountainmath.github.io/tongfen/},
       }
