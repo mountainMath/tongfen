@@ -14,6 +14,57 @@ tongfen_cache_dir <- function(){
     tempdir()
 }
 
+tongfen_session <- new.env(parent=emptyenv())
+
+# ETag of a remote file, NULL if it can't be determined, e.g. when offline
+remote_etag <- function(url){
+  headers <- tryCatch(suppressWarnings(curlGetHeaders(url)),error=function(e) NULL)
+  if (is.null(headers) || !identical(attr(headers,"status"),200L)) return(NULL)
+  etag <- grep("^etag:",headers,ignore.case=TRUE,value=TRUE)
+  if (length(etag)==0) return(NULL)
+  gsub("^etag:\\s*|\"|\\s+$","",etag[length(etag)],ignore.case=TRUE)
+}
+
+# location of the cached US Census Bureau relationship files
+us_cache_dir <- function(cache_path=NULL){
+  file.path(nullify_blank(cache_path) %||% tongfen_cache_dir(),"us_data")
+}
+
+# Download a remote file to the local path unless the local copy is still current.
+# The ETag of the downloaded file is kept next to the cached file and compared to the remote ETag
+# the first time the file is requested in a session, the file is only downloaded again if it changed.
+# Files that never change don't need to be checked against the remote, with `check_remote=FALSE`
+# the cached file is used as is. The download goes to a temporary file first so that an
+# interrupted download does not leave a broken file in the cache.
+cached_download <- function(url,path,refresh=FALSE,check_remote=TRUE){
+  etag_path <- paste0(path,".etag")
+  cached <- file.exists(path) && !refresh
+  if (cached && (!check_remote || isTRUE(tongfen_session[[url]]))) return(path)
+  etag <- if (check_remote) remote_etag(url)
+  if (cached) {
+    if (is.null(etag)) {
+      message(paste0("Could not check ",url," for updates, using cached version."))
+    }
+    local_etag <- if (file.exists(etag_path)) readLines(etag_path,n=1,warn=FALSE)
+    if (is.null(etag) || identical(etag,local_etag)) {
+      tongfen_session[[url]] <- TRUE
+      return(path)
+    }
+  }
+  if (!dir.exists(dirname(path))) dir.create(dirname(path),recursive=TRUE)
+  tmp <- tempfile(tmpdir=dirname(path))
+  on.exit(unlink(tmp))
+  utils::download.file(url,tmp,mode="wb",quiet=TRUE)
+  # S3 ETags of files that were not uploaded in parts are the md5 checksum of the file
+  if (!is.null(etag) && grepl("^[0-9a-f]{32}$",etag) && !identical(unname(tools::md5sum(tmp)),etag)) {
+    stop(paste0("Download of ",url," is corrupted, please try again."))
+  }
+  file.copy(tmp,path,overwrite=TRUE)
+  if (is.null(etag)) unlink(etag_path) else writeLines(etag,etag_path)
+  tongfen_session[[url]] <- TRUE
+  path
+}
+
 inner_join_tongfen_correspondence <- function(data,correspondence,link){
   data %>%
     inner_join(correspondence %>%
@@ -140,6 +191,15 @@ assert <- function (expr, error) {
   if (! expr) stop(error, call. = FALSE)
 }
 
+# Pairs of intersecting geometries as row indices into `x` and `y`. The sparse index
+# list is turned into a tibble directly, `as.data.frame()` on an empty result drops
+# the columns we join on.
+intersects_pairs <- function(x, y) {
+  m <- sf::st_intersects(x, y, sparse = TRUE)
+  tibble(row.id = rep(seq_along(m), lengths(m)),
+         col.id = as.integer(unlist(m)))
+}
+
 
 # Dissolve the geometries of `data` by `grouping_var`, the geometric equivalent
 # of `summarize()`. Groups holding a single geometry - the bulk of the groups
@@ -196,18 +256,22 @@ aggregate_correspondences <- function(correspondences){
       select(!matches("Tongfen") | matches("TongfenMethod"))
   }
   # compute full correspondence, smallest table first to keep intermediate
-  # join results as small as possible
-  index_order <- correspondences %>% lapply(nrow) %>% unlist() %>% order()
-
-  correspondence <- correspondences[[index_order[1]]] %>%
-    clean_correspondence_names()
-  if (length(correspondences)>1) for (index in index_order[-1]) {
-    c <- correspondences[[index]] %>%
-      clean_correspondence_names()
-    match_columns <- intersect(names(correspondence),names(c))
-    match_columns <- match_columns[!grepl("TongfenMethod",match_columns)]
-    correspondence <- inner_join(correspondence,c,by=match_columns) %>%
+  # join results as small as possible, but only join tables that share an identifier
+  # with the tables joined so far, joining unrelated tables gives a cross join
+  remaining <- correspondences[order(vapply(correspondences,nrow,integer(1)))] %>%
+    lapply(clean_correspondence_names)
+  correspondence <- remaining[[1]]
+  remaining <- remaining[-1]
+  while (length(remaining)>0) {
+    match_columns <- lapply(remaining,function(c) {
+      match_columns <- intersect(names(correspondence),names(c))
+      match_columns[!grepl("TongfenMethod",match_columns)]
+    })
+    index <- which(lengths(match_columns)>0)[1]
+    if (is.na(index)) stop("Correspondences can't be combined, they don't share a common geographic identifier.")
+    correspondence <- inner_join(correspondence,remaining[[index]],by=match_columns[[index]]) %>%
       unique()
+    remaining <- remaining[-index]
   }
 
   method_columns <- names(correspondence)[grepl("TongfenMethod",names(correspondence))]

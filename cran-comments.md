@@ -1,63 +1,29 @@
-# tongfen v.0.3.8
-## Breaking changes
-- `get_tongfen_ca_census` now honours its `base_geo`, `na.rm`, `tolerance`, `crs` and
-  `data_transform` arguments, all of which were silently ignored
-- removed the `area_mismatch_cutoff` argument from `get_tongfen_ca_census` and
-  `get_tongfen_correspondence_ca_census`, it never had any effect
+# tongfen v.0.3.9
 ## Major changes
-- correspondence tables are now built via a vectorised connected components pass instead of
-  a row-by-row union-find, making tongfen on large geographies dramatically faster
-- the "statcan" method no longer downloads census geometries it does not use
-- dissolving geometries skips regions that don't need to be merged
-- new `get_tongfen_correspondence_us_census`, US tract correspondence tables now reach back to
-  the 1990 census and county subdivisions forward to the 2020 census
-- US correspondence tables no longer chain regions together over slivers, and no longer strip
-  leading zeros off 2020 census tract identifiers
+- new experimental functions `tongfen_detect_anomalies`, `tongfen_anomaly_joins`, `tongfen_join_regions`
+  and `tongfen_join_correspondence` to detect and correct for likely geocoding anomalies in timelines
+  on a common geography, together with a new vignette
+- StatCan correspondence files are now downloaded as parquet files from a mirror, Statistics Canada
+  put the original files behind a browser check that blocks programmatic downloads, which broke
+  `method = "statcan"`
 ## Minor changes
-- `get_tongfen_us_census` gained a `sumfile` argument, passed through to tidycensus
-- `get_tongfen_correspondence_ca_census` gained a `crs` argument for the spatial intersections
-- missing geographic identifiers no longer merge unrelated regions into one common geography
-- fix crash when tongfen-ing census tracts across non-adjacent censuses
-- US county subdivision data errors out up front on censuses it can't be matched across
-- several fixes to the deprecated `get_tongfen_census_*` functions
-- fix `proportional_reaggregate` ignoring all but the first base variable when `base` names a
-  different variable per category
-- fix `estimate_tongfen_correspondence` with `method="identifier"` erroring out when every
-  geographic identifier matches
-- packages in Suggests (`cancensus`, `tidycensus`, `readxl`) are now used conditionally, with an
-  actionable message when they are not installed
-- faster `check_tongfen_areas` and `aggregate_correspondences`
-
-# tongfen v.0.3.7
-## Major changes
-- accommodate factors in proportional_reaggregate
-- sizable performance increases
-- squish several edge case bugs
-
-# tongfen v.0.3.6
-## Major changs
-- better downsampling that can also accommodate averages
-- performance improvements
-## Minor changes
-- better documentation
-- allow for datasets vartiables by census year for canadian data
-- fix issue where some metadata might get duplicated
-
-
-# Update v.0.3.3
-- Fix compatibility issue with changes in {sf} package
-- More reliable GitHub action CRAN checks
-
-# Update v.0.3.2
-- Added `tongfen_estimate_ca_census` function for new CensusMapper endpoint, tying into new {cancensus} functionality.
-- Custom impelementation of `tongfen_etimate` for finer control
-- Fix compatibility issue with changes in {sf} package
-
-# Submission - v.0.3
+- combining correspondences across three or more datasets no longer runs into a cross join
+- fix `proportional_reaggregate` giving wrong results when the finer level data already has values
+- fix `tongfen_estimate` mishandling intersections that are geometry collections, regions that only
+  touch the target, and targets without overlap with the source
+- fix averages getting scaled more than once in `tongfen_aggregate` when the metadata lists the same
+  variable name for several datasets
+- fix averages with missing values being pulled toward zero when aggregating with `na.rm = TRUE`,
+  and "Average to" variables sharing a parent variable overwriting each other's base
+- `estimate_tongfen_correspondence` no longer requires the geometry column to be named `geometry`
+- `refresh = TRUE` now also refreshes the cached StatCan correspondence files
+- US Census Bureau relationship files are downloaded to a temporary file before being moved to the cache
+- added missing `\value` documentation for `tongfen_estimate_ca_census` and `tongfen_ca_census_ct`
+- fixed typos in the documentation
 
 # Test environments
 * local macOS installation, R 4.6.0
-* GitHub actions (windows-latest, macOS-latest, ubuntu-latest) on release, devel and oldrel
+* GitHub actions: macOS-latest (release), windows-latest (release), ubuntu-latest (devel, release, oldrel-1)
 
 # R CMD check results
 0 errors | 0 warnings | 0 notes

@@ -48,7 +48,7 @@ data <- years %>%
 }) %>% setNames(years)
 ```
 
-Plotting the cenus tracts for our four census years shows how census
+Plotting the census tracts for our four census years shows how census
 tracts changed over the years.
 
 ``` r
@@ -68,14 +68,15 @@ For this example we will estimate the correspondence between these
 regions from the geographic data using the
 `estimate_tongfen_correspondence` function. Unfortunately this is not an
 exact science, for example over the years census regions get adjusted to
-better align with the road network. Other harmless boundary adjustemens
+better align with the road network. Other harmless boundary adjustments
 can happen along water boundaries, or re-jigging boundaries in
 unpopulated areas.
 
 We are going to impose a tolerance of 200m, where we are calling two
 census tract the same if they differ by no more than 200m. We are
 specifying that these calculations should be carried out in the
-Statistics Canada Lambert (EPSG:3347) refernce system with units metres.
+Statistics Canada Lambert (EPSG:3347) reference system with units
+metres.
 
 ``` r
 
@@ -176,7 +177,7 @@ years %>%
 It’s time to go back to our original goal of mapping population change.
 For this we need to specify how to aggregate up the population data,
 which is by simply adding them up. The `meta_for_additive_variables`
-convenience function generates the appropriate metatdata that specifies
+convenience function generates the appropriate metadata that specifies
 how to deal with this data.
 
 ``` r

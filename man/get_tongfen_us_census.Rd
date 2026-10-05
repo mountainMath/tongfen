@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen_us.R
 \name{get_tongfen_us_census}
 \alias{get_tongfen_us_census}
-\title{Get US census data for 2000 and 2010 census on common census tract based geography}
+\title{Get US census data for several censuses on a common geography}
 \usage{
 get_tongfen_us_census(
   regions,
@@ -24,7 +24,8 @@ valid list is a vector of states, i.e. `regions = list(state=c("CA","OR"))``}
 
 \item{survey}{survey to get data for, supported options is "census"}
 
-\item{base_geo}{census year to use as base geography, default is `2010`.}
+\item{base_geo}{dataset to use as base geography, for example `"dec2010"`, has to be one of
+the datasets in `meta`. Default is `NULL`, which uses the first dataset in `meta`.}
 
 \item{min_area_share}{minimum share of area two geographies have to have in common to count
 as related, default is `0.01`, see \code{\link{get_tongfen_correspondence_us_census}}.}
@@ -35,7 +36,7 @@ is `NULL`, which leaves the choice to tidycensus. Note that tidycensus defaults 
 census to the PL 94-171 redistricting file, most 2020 variables need `sumfile="dhc"`.}
 }
 \value{
-sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
+sf object with (wide form) census variables with census year as suffix (separated by underscore "_").
 }
 \description{
 \lifecycle{maturing}

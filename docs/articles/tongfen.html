@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tongfen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/tongfen_ca.html">TongFen for Canadian census data</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen-ca-estimate.html">Estimating Canadian data on custom geographies</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen_us.html">TongFen for US census data</a></li>
+    <li><a class="dropdown-item" href="../articles/tongfen_anomalies.html">Geocoding anomalies in TongFen timelines</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -112,7 +113,7 @@ package</a> to import the data for three separate census years.</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/name.html" class="external-link">as.name</a></span><span class="op">(</span><span class="va">uid_label</span><span class="op">)</span><span class="op">:=</span><span class="va">GeoUID</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Year<span class="op">=</span><span class="va">year</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">years</span><span class="op">)</span></span></code></pre></div>
-<p>Plotting the cenus tracts for our four census years shows how census
+<p>Plotting the census tracts for our four census years shows how census
 tracts changed over the years.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -128,12 +129,12 @@ regions from the geographic data using the
 <code>estimate_tongfen_correspondence</code> function. Unfortunately
 this is not an exact science, for example over the years census regions
 get adjusted to better align with the road network. Other harmless
-boundary adjustemens can happen along water boundaries, or re-jigging
+boundary adjustments can happen along water boundaries, or re-jigging
 boundaries in unpopulated areas.</p>
 <p>We are going to impose a tolerance of 200m, where we are calling two
 census tract the same if they differ by no more than 200m. We are
 specifying that these calculations should be carried out in the
-Statistics Canada Lambert (EPSG:3347) refernce system with units
+Statistics Canada Lambert (EPSG:3347) reference system with units
 metres.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">correspondence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_tongfen_correspondence.html">estimate_tongfen_correspondence</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">geo_identifiers</span>,</span>
@@ -218,7 +219,7 @@ geographies based on all four input geographies.</p>
 change. For this we need to specify how to aggregate up the population
 data, which is by simply adding them up. The
 <code>meta_for_additive_variables</code> convenience function generates
-the appropriate metatdata that specifies how to deal with this data.</p>
+the appropriate metadata that specifies how to deal with this data.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="va">years</span>,<span class="st">"Population"</span><span class="op">)</span></span>
 <span><span class="va">meta</span></span>
@@ -271,7 +272,7 @@ base year as the clipped boundaries look better.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

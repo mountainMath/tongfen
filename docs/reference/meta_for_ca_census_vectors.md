@@ -1,4 +1,4 @@
-# Generate metadata from Candian census vectors
+# Generate metadata from Canadian census vectors
 
 **\[maturing\]**
 
@@ -28,6 +28,6 @@ additional variables needed for tongfen operations
 ``` r
 # Build metadata for vectors
 if (FALSE) { # \dontrun{
-meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+meta <- meta_for_ca_census_vectors(c("v_CA16_4836","v_CA16_4838","v_CA16_4899"))
 } # }
 ```

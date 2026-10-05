@@ -1,13 +1,9 @@
-correspondence_ca_census_urls <- list(
-  "2006"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2006_92-156_DB_ID_txt.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2006_92-156_DA_AD_txt.zip"),
-  "2011"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2011_92-156_DB_ID_txt.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2011_92-156_DA_AD_txt.zip"),
-  "2016"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DB_ID_csv.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2016/2016_92-156_DA_AD_csv.zip"),
-  "2021"=list("DB"="https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DB_ID.zip",
-              "DA"="https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DA_AD.zip")
-)
+# StatCan correspondence files as parquet, built by data-raw/statcan_correspondence.R
+correspondence_ca_census_url <- function(year,level){
+  base_url <- nullify_blank(getOption("tongfen.statcan_correspondence_url")) %||%
+    "https://mountainmath.s3.ca-central-1.amazonaws.com/tongfen/statcan_correspondence/v1"
+  paste0(sub("/+$","",base_url),"/statcan_correspondence_",year,"_",level,".parquet")
+}
 
 ca_census_base <- c("Population","Dwellings","Households")
 
@@ -30,15 +26,6 @@ datasets_from_vectors <- function(vs){
   ds
 }
 
-GEO_DATASET_LOOKUP <- c(
-  setNames(rep("CA1996",1),paste0("TX",seq(2000,2000))),
-  setNames(rep("CA01",5),paste0("TX",seq(2001,2005))),
-  setNames(rep("CA06",6),paste0("TX",seq(2006,2011))),
-  setNames(rep("CA11",4),paste0("TX",seq(2012,2015))),
-  setNames(rep("CA16",5),paste0("TX",seq(2016,2020))),
-  setNames(rep("CA16",21),paste0("CA",seq(2000,2020),"RMS"))
-)
-
 geo_dataset_for_years <- function(years){
   require_suggested("cancensus")
   dataset_list <- cancensus::list_census_datasets()
@@ -54,7 +41,6 @@ geo_dataset_for_years <- function(years){
 
 geo_dataset_from_dataset <- function(datasets){
   require_suggested("cancensus")
-  if (TRUE) { # legacy until cancensus updates
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.) %>% gsub("\\d{4}x","",.)
   dataset_list <- cancensus::list_census_datasets()
   lapply(datasets, function(ds){
@@ -64,19 +50,9 @@ geo_dataset_from_dataset <- function(datasets){
       unique()
   }) %>%
     unlist()
-  } else {
-    result <- tibble(dataset=datasets,geo_dataset=GEO_DATASET_LOOKUP[datasets]) %>%
-      mutate(geo_dataset=ifelse(is.na(.data$geo_dataset),.data$dataset %>%
-                                  years_from_datasets() %>%
-                                  as.character() %>%
-                                  substr(3,4) %>%
-                                  paste0("CA",.),
-                                .data$geo_dataset))
-    result$geo_dataset
-  }
 }
 
-#' Generate metadata from Candian census vectors
+#' Generate metadata from Canadian census vectors
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -92,7 +68,7 @@ geo_dataset_from_dataset <- function(datasets){
 #' @examples
 #' # Build metadata for vectors
 #' \dontrun{
-#' meta <- meta_for_ca_census_vectors("v_CA16_4836","v_CA16_4838","v_CA16_4899")
+#' meta <- meta_for_ca_census_vectors(c("v_CA16_4836","v_CA16_4838","v_CA16_4899"))
 #'}
 meta_for_ca_census_vectors <- function(vectors){
   require_suggested("cancensus")
@@ -104,9 +80,6 @@ meta_for_ca_census_vectors <- function(vectors){
     nn[nn==""]=vectors[nn==""]
   }
 
-  if (length(vectors)==0) {
-    meta <- tibble::tibble(variable=NA,label=NA,dataset=datasets_from_vectors(vectors))
-  }
   meta <- tibble::tibble(variable=vectors,label=nn,dataset=datasets_from_vectors(vectors)) %>%
     mutate(type="Original", aggregation="0",units=NA)
   datasets <- meta$dataset %>%
@@ -138,13 +111,13 @@ meta_for_ca_census_vectors <- function(vectors){
     select(variable="parent","dataset") %>%
     mutate(type="Extra",aggregation="Additive",rule="Additive") %>%
     filter(!is.na(.data$variable),!.data$variable %in% meta$variable) %>%
-    filter(!duplicated(.data$variable,.data$dataset)) %>%
+    distinct(.data$variable,.data$dataset,.keep_all=TRUE) %>%
     mutate(label=.data$variable)
 
   if (nrow(extras)>0) {
     meta <- meta %>%
       bind_rows(extras) %>%
-      filter(!duplicated(.data$variable,.data$dataset))
+      distinct(.data$variable,.data$dataset,.keep_all=TRUE)
   }
 
   meta <- meta %>%
@@ -155,13 +128,13 @@ meta_for_ca_census_vectors <- function(vectors){
 
 
 
-#' Generate metadata from Candian census vectors
+#' Generate metadata from Canadian census vectors
 #'
 #' @description
 #' \lifecycle{maturing}
 #'
 #' Add Population, Dwellings, and Household counts to metadata
-#' @param meta ribble with metadata as for example provided by `meta_for_ca_census_vectors`
+#' @param meta tibble with metadata as for example provided by `meta_for_ca_census_vectors`
 #' @return tibble with metadata
 add_census_ca_base_variables <- function(meta){
   new_meta <- meta$geo_dataset %>%
@@ -184,6 +157,11 @@ add_census_ca_base_variables <- function(meta){
 #' @description
 #' \lifecycle{maturing}
 #'
+#' The correspondence files are downloaded from a mirror of the Statistics Canada correspondence files
+#' and cached in the tongfen cache directory. The cached files are checked against the mirror once per session
+#' and get downloaded again if they changed. The location of the mirror can be changed via the
+#' `tongfen.statcan_correspondence_url` option.
+#'
 #' @param year census year, only 2006 through 2021 are supported
 #' @param level geographic level, DA or DB
 #' @param refresh reload the correspondence files, default is `FALSE`
@@ -193,36 +171,9 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
   year=as.character(year)[1]
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
   if (!(year %in% c("2006","2011","2016","2021"))) stop("Year needs to be 2006, 2011, 2016, or 2021")
-  new_field=paste0(level,"UID",year)
-  old_field=paste0(level,"UID",as.integer(year)-5)
-  path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".csv"))
-  if (refresh || !file.exists(path)) {
-    url=correspondence_ca_census_urls[[year]][[level]]
-    tmp=tempfile()
-    utils::download.file(url,tmp)
-    exdir=file.path(tempdir(),paste0("correspondence_",year,"_",level))
-    if (dir.exists(exdir)) unlink(exdir,recursive=TRUE)
-    dir.create(exdir,showWarnings = FALSE)
-    utils::unzip(tmp,exdir=exdir)
-    file=dir(exdir,"\\.txt|\\.csv")
-    if (length(file)==0) {
-      p<-dir(exdir)[1]
-      if (dir.exists(file.path(exdir,p))) {
-        exdir=file.path(exdir,p)
-        file=dir(exdir,"\\.txt|\\.csv")
-      }
-    }
-    if (level=="DB") headers=c(new_field,old_field,"flag") else headers=c(new_field,old_field,paste0("DBUID",year),"flag")
-    unwanted <- paste0(level,"UID",year)
-    d<-readr::read_csv(file.path(exdir,file),col_types = readr::cols(.default = "c"),col_names = headers) %>%
-      select(all_of(c(new_field,old_field,"flag"))) %>%
-      unique() %>%
-      filter(!grepl(unwanted,!!as.name(new_field)))
-    readr::write_csv(d,path)
-    unlink(tmp)
-    unlink(exdir,recursive = TRUE)
-  }
-  result <- readr::read_csv(path,col_types = readr::cols(.default = "c"))
+  path=file.path(tongfen_cache_dir(),paste0("statcan_correspondence_",year,"_",level,".parquet"))
+  cached_download(correspondence_ca_census_url(year,level),path,refresh=refresh)
+  result <- tibble::as_tibble(nanoparquet::read_parquet(path))
 
   # manual corrections
   if (year=="2021" && level=="DB") {
@@ -243,7 +194,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available
+#' Get correspondence file for several Canadian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param geo_datasets vector of census geography dataset identifiers
@@ -253,7 +204,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' this method only works for "DB", "DA" and "CT" levels.
 #' * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
 #' * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
-#' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+#' @param tolerance tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
@@ -352,7 +303,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     correspondence_years=all_geo_years[-1]
     correspondence <- correspondence_years %>%
       lapply(function(year){
-        c <- get_single_correspondence_ca_census_for(year,statcan_level) %>%
+        c <- get_single_correspondence_ca_census_for(year,statcan_level,refresh=refresh) %>%
           select(-"flag")
         previous_year <- all_geo_years[which(all_geo_years==year)-1]
         ds1 <- all_geo_datasets[all_geo_years==year]
@@ -396,15 +347,15 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 }
 
 
-#' Togfen data from several Canadian censuses
+#' Tongfen data from several Canadian censuses
 #'
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
+#' Get data from several Canadian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
-#' @param meta metadata for the census veraiables to aggregate, for example as returned
+#' @param meta metadata for the census variables to aggregate, for example as returned
 #' by \code{meta_for_ca_census_vectors}.
 #' @param level aggregation level to return data on (default is "CT")
 #' @param method tongfen method, options are "statcan" (the default), "estimate", "identifier".
@@ -416,7 +367,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' any geographic data
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables,
 #' default is `FALSE`
-#' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+#' @param tolerance tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)

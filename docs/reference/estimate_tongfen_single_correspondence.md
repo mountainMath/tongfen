@@ -1,4 +1,4 @@
-# Generate togfen correspondence for two geographies
+# Generate tongfen correspondence for two geographies
 
 **\[maturing\]**
 

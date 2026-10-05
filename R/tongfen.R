@@ -5,8 +5,8 @@
 #'
 #' Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.
 #'
-#' @param dataset identifier for the dataset contianing the variable
-#' @param variables (named) vecotor with additive variables
+#' @param dataset identifier for the dataset containing the variable
+#' @param variables (named) vector with additive variables
 #' @return a tibble to be used in tongfen_aggregate
 #' @export
 #'
@@ -28,6 +28,21 @@ meta_for_additive_variables <- function(dataset,variables){
 }
 
 
+
+# Averages are aggregated by scaling them by their parent variable, summing up, and dividing
+# by the summed up parent again. The parent of regions where the average is missing must not
+# count toward the total the sum gets divided by, so each average carries its own weight column.
+average_weight_name <- function(variables) {
+  if (length(variables)==0) return(character(0))
+  paste0("...weight_",variables)
+}
+
+average_weight_exprs <- function(to_scale,parent_lookup) {
+  lapply(setNames(to_scale, average_weight_name(to_scale)), \(col) {
+    parent <- as.name(unname(parent_lookup[col]))
+    rlang::expr(replace(as.numeric(!!parent),is.na(!!as.name(col)),NA_real_))
+  })
+}
 
 cut_meta <- function(data,meta){
   meta <- meta %>%
@@ -52,14 +67,16 @@ pre_scale <- function(data,meta,meta_var="data_var",quiet=FALSE) {
 
 
   if (length(to_scale) > 0) {
+    weight_exprs <- average_weight_exprs(to_scale,parent_lookup)
     scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
       rlang::expr(!!as.name(col) * !!as.name(unname(parent_lookup[col]))))
-    data <- data %>% mutate(!!!scale_exprs)
+    data <- data %>% mutate(!!!weight_exprs) %>% mutate(!!!scale_exprs)
   }
 
   data
 }
 
+# divides by the weights added in `pre_scale` if they are still around, and by the parent otherwise
 post_scale <- function(data,meta,meta_var="data_var") {
   meta_name_lookup <- setNames(meta %>% pull(meta_var),meta$variable)
   meta$parent_name <- meta_name_lookup[meta$parent]
@@ -67,9 +84,14 @@ post_scale <- function(data,meta,meta_var="data_var") {
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average")) %>% pull(meta_var)
 
   if (length(to_scale) > 0) {
-    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
-      rlang::expr(!!as.name(col) / !!as.name(unname(parent_lookup[col]))))
-    data <- data %>% mutate(!!!scale_exprs)
+    scale_exprs <- lapply(setNames(to_scale, to_scale), \(col) {
+      weight <- average_weight_name(col)
+      if (!(weight %in% names(data))) weight <- unname(parent_lookup[col])
+      rlang::expr(!!as.name(col) / !!as.name(weight))
+    })
+    data <- data %>%
+      mutate(!!!scale_exprs) %>%
+      select(-any_of(average_weight_name(to_scale)))
   }
 
   data
@@ -102,6 +124,17 @@ post_scale <- function(data,meta,meta_var="data_var") {
 #'}
 aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE){
   meta <- meta %>% filter(.data$variable %in% names(data))
+  # the same variable can be listed several times if meta spans several datasets,
+  # each variable must only be aggregated (and scaled) once
+  duplicates <- duplicated(meta$variable)
+  if (any(duplicates)) {
+    rules <- meta %>% select(any_of(c("variable","rule","parent","units"))) %>% unique()
+    ambiguous <- unique(rules$variable[duplicated(rules$variable)])
+    if (length(ambiguous)>0)
+      stop(paste0("Conflicting aggregation rules in metadata for ",paste0(ambiguous,collapse = ", "),
+                  ", please only pass the metadata for the dataset that is being aggregated."))
+    meta <- meta[!duplicates,]
+  }
   grouping_var=groups(data) %>% as.character
   parent_lookup <- setNames(meta$parent,meta$variable)
   to_scale <-  filter(meta,.data$rule %in% c("Median","Average"))$variable
@@ -116,16 +149,25 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
       message(paste0("Can't TongFen medians, will approximate by treating as averages: ",paste0(median_vars,collapse = ", ")))
   }
 
+  weight_variables <- average_weight_name(to_scale)
   if (length(to_scale) > 0) {
+    weight_exprs <- average_weight_exprs(to_scale,parent_lookup)
     scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
       rlang::expr(!!as.name(col) * !!as.name(unname(parent_lookup[col]))))
-    data <- data %>% mutate(!!!scale_exprs)
+    data <- data %>% mutate(!!!weight_exprs) %>% mutate(!!!scale_exprs)
   }
+
+  # the base an "Average to" variable gets scaled by depends on the variable, variables
+  # sharing a parent each need their own base column
+  scale_from_parents <- unname(parent_lookup[to_scale_from])
+  shared_parent <- scale_from_parents %in% scale_from_parents[duplicated(scale_from_parents)]
+  base_vectors <- setNames(paste0("base_",ifelse(shared_parent,to_scale_from,scale_from_parents)),
+                           to_scale_from)
 
   base_variables <- c()
   for (x in to_scale_from) {
     scale_type <- meta %>% filter(.data$variable==x) %>% pull(units) %>% as.character()
-    base_vector <- paste0("base_",parent_lookup[x])
+    base_vector <- unname(base_vectors[x])
     base_variables <- c(base_variables,base_vector)
     if (scale_type=="Percentage ratio (0.0-1.0)") {
       data <- data %>% mutate(!!base_vector:=!!as.name(parent_lookup[x])/(!!as.name(x)+1))
@@ -144,22 +186,24 @@ aggregate_data_with_meta <- function(data,meta,geo=FALSE,na.rm=TRUE,quiet=FALSE)
     data <- left_join(summarize_geometry_by_group(data,grouping_var),
                       data %>%
                         sf::st_set_geometry(NULL) %>%
-                        summarize_at(meta$variable,sum,na.rm=na.rm),
+                        summarize_at(c(meta$variable,weight_variables),sum,na.rm=na.rm),
                       by=grouping_var)
   } else {
-    data <- data %>% summarize_at(meta$variable,sum,na.rm=na.rm)
+    data <- data %>% summarize_at(c(meta$variable,weight_variables),sum,na.rm=na.rm)
   }
 
   if (length(to_scale) > 0) {
     scale_exprs <- lapply(setNames(to_scale, to_scale), \(col)
-      rlang::expr(!!as.name(col) / !!as.name(unname(parent_lookup[col]))))
-    data <- data %>% mutate(!!!scale_exprs)
+      rlang::expr(!!as.name(col) / !!as.name(average_weight_name(col))))
+    data <- data %>%
+      mutate(!!!scale_exprs) %>%
+      select(-all_of(weight_variables))
   }
 
   # Optimized: Vectorized division by base vectors
   if (length(to_scale_from) > 0) {
     for (x in to_scale_from) {
-      base_vector <- paste0("base_", parent_lookup[x])
+      base_vector <- unname(base_vectors[x])
       data[[x]] <- data[[x]] / data[[base_vector]]
     }
   }
@@ -186,9 +230,12 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Aggregate variables secified in meta for several datasets according to correspondence.
+#' Aggregate variables specified in meta for several datasets according to correspondence.
 #'
-#' @param data list of datasets to be aggregated
+#' @param data named list of datasets to be aggregated. The names identify the datasets, they are
+#' matched against the `geo_dataset` column in `meta` to pick the aggregation rules and labels
+#' for each dataset. Without names, or with names not found in `meta`, the rules for all
+#' datasets are applied and the variables keep their original names
 #' @param correspondence correspondence data for gluing up the datasets
 #' @param meta metadata containing aggregation rules as for example returned by `meta_for_ca_census_vectors`
 #' @param base_geo identifier for which data element to base the final geography on,
@@ -200,17 +247,17 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' @export
 #'
 #' @examples
-#' # aggregate census tract level 2006 population data on common gepgraphy build through
+#' # aggregate census tract level 2006 and 2016 population data on common geography built through
 #' # correspondence from 2006 and 2016 census tracts in the City of Vancouver.
 #' \dontrun{
 #' regions <- list(CSD="5915022")
 #' geo1 <- cancensus::get_census("CA06",regions=regions,geo_format='sf',level='CT')
 #' geo2 <- cancensus::get_census("CA16",regions=regions,geo_format='sf',level='CT')
-#' meta <- meta_for_additive_variables("CA06","Population")
+#' meta <- meta_for_additive_variables(c("CA06","CA16"),"Population")
 #' correspondence <- get_tongfen_correspondence_ca_census(geo_datasets=c('CA06','CA16'),
 #'                                                        regions=regions,level='CT')
-#' result <- tongfen_aggregate(list(geo1 %>% rename(GeoUIDCA06=GeoUID),
-#'                                  geo2 %>% rename(GeoUIDCA16=GeoUID)),correspondence,meta)
+#' result <- tongfen_aggregate(list(CA06=geo1 %>% rename(GeoUIDCA06=GeoUID),
+#'                                  CA16=geo2 %>% rename(GeoUIDCA16=GeoUID)),correspondence,meta)
 #'}
 tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL, na.rm = TRUE){
   data <- ensure_names(data)
@@ -239,7 +286,13 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL, na
                    by=match_column) %>%
         group_by(.data$TongfenID,.data$TongfenUID)
       if (!is.null(meta)) {
-        d <- d %>%  aggregate_data_with_meta(meta,na.rm=na.rm)
+        # only use the aggregation rules for this dataset if meta distinguishes datasets,
+        # the same variable name can come with different rules in different datasets
+        ds_meta <- meta
+        if (ds %in% as.character(meta$geo_dataset)) {
+          ds_meta <- meta %>% filter(as.character(.data$geo_dataset)==ds)
+        }
+        d <- d %>%  aggregate_data_with_meta(ds_meta,na.rm=na.rm)
       } else {
         if ("sf" %in% class(d)) {
           d <- summarize_geometry_by_group(d,c("TongfenID","TongfenUID"))
@@ -291,7 +344,7 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL, na
 #' @param geo_match A named string informing on what column names to match data and parent_data
 #' @param categories Vector of column names to re-aggregate
 #' @param base Column name to use for proportional weighting when re-aggregating, or named vector with column name for each category.
-#' Categries that should be re-aggregated as means should be set to NA and will only be reaggregated if the base data has NA values.
+#' Categories that should be re-aggregated as means should be set to NA and will only be reaggregated if the base data has NA values.
 #' @return dataframe with downsampled variables from parent_data
 #' @keywords reaggregate proportionally wrt base variable
 #' @export
@@ -397,7 +450,9 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
                             values_to="p_value")
       if (vt %in% c("numeric","integer","integer64")) {
         d_combined <- full_join(d_base,d_parent,by=c(geo_match,"category"="category")) %>%
-          mutate(s_value=sum(.data$value),.by=names(geo_match)) %>%
+          # the parent value gets compared to what the children of the same category
+          # already add up to, missing child values count as zero
+          mutate(s_value=sum(.data$value,na.rm=TRUE),.by=c(names(geo_match),"category")) %>%
           mutate(across(any_of(c("p_value","s_value")),\(x)coalesce(x,0))) %>%
           mutate(value=case_when(.data$agg_type=="additive" ~ coalesce(.data$value,0) + .data$weight*(.data$p_value-.data$s_value),
                                  is.na(.data$value) ~ .data$p_value,
@@ -422,7 +477,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
     select(-any_of(id))
 }
 
-#' Generate togfen correspondence for two geographies
+#' Generate tongfen correspondence for two geographies
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -465,42 +520,35 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
 
 
   if (robust) {
-    if (!st_is_valid(geo1)) geo1 <- geo1 %>% st_make_valid()
-    if (!st_is_valid(geo2)) geo2 <- geo2 %>% st_make_valid()
+    if (!isTRUE(all(st_is_valid(geo1)))) geo1 <- geo1 %>% st_make_valid()
+    if (!isTRUE(all(st_is_valid(geo2)))) geo2 <- geo2 %>% st_make_valid()
   }
 
 
-  robust_tolerance_buffer <- function(geo,geo_uid,tolerance,max_tries=20) {
+  # works on the geometries directly, the geometry column can go by any name
+  robust_tolerance_buffer <- function(geo,tolerance,max_tries=20) {
     t <- tolerance
-    d <- geo
-    d$geometry=st_buffer(geo$geometry,-t)
+    geometry <- st_geometry(geo)
+    buffered <- st_buffer(geometry,-t)
     count=0
-    empties <- st_is_empty(d)
+    empties <- st_is_empty(buffered)
     while (sum(empties) > 0 & count<max_tries) {
       t <- t/2
-      d[empties,]$geometry=st_buffer(geo$geometry[empties],-t)
-      empties <- st_is_empty(d)
+      buffered[empties] <- st_buffer(geometry[empties],-t)
+      empties <- st_is_empty(buffered)
       count <- count + 1
     }
     if (sum(empties) > 0) {
       stop("Unable to match within given tolerance, some geographies are too fine.")
     }
-    d
+    st_set_geometry(geo,buffered)
   }
 
-  cgeo1 <- geo1 %>% robust_tolerance_buffer(geo_uid = geo1_uid,tolerance = tolerance)
-  cgeo2 <- geo2 %>% robust_tolerance_buffer(geo_uid = geo2_uid,tolerance = tolerance)
+  cgeo1 <- geo1 %>% robust_tolerance_buffer(tolerance = tolerance)
+  cgeo2 <- geo2 %>% robust_tolerance_buffer(tolerance = tolerance)
 
-  # Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1). The
-  # sparse index list is turned into a tibble directly, `as.data.frame()` on an empty
-  # result drops the columns we join on.
-  intersects_pairs <- function(x, y) {
-    m <- st_intersects(x, y, sparse = TRUE)
-    tibble(row.id = rep(seq_along(m), lengths(m)),
-           col.id = as.integer(unlist(m)))
-  }
-
-  i1 <- intersects_pairs(cgeo1, geo2) %>%
+  # Both intersections are necessary (buffered cgeo1 vs geo2, and cgeo2 vs geo1).
+  i1 <-intersects_pairs(cgeo1, geo2) %>%
     left_join(id1, by = c("row.id" = "id1")) %>%
     left_join(id2, by = c("col.id" = "id2")) %>%
     select(-"row.id",-"col.id")
@@ -518,7 +566,7 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
   correspondence
 }
 
-#' Generate togfen correspondence for list of geographies
+#' Generate tongfen correspondence for list of geographies
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -614,7 +662,7 @@ estimate_tongfen_correspondence <- function(data,
 
 
 
-#' Check geographic integrety
+#' Check geographic integrity
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -626,7 +674,7 @@ estimate_tongfen_correspondence <- function(data,
 #' simplified independently and differ in how water features are cut out, so a sizable area
 #' mismatch does not by itself mean the regions were matched up incorrectly.
 #'
-#' @param data alist of geogrpahic data of class sf
+#' @param data a list of geographic data of class sf
 #' @param correspondence Correspondence table with columns the unique geographic identifiers for each of the
 #' geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)
 #' returned by `estimate_tongfen_correspondence`.

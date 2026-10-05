@@ -11,7 +11,7 @@ to estimate census data on custom geographies.
 
 As an example, we estimate the share of people in low income in
 Vancouver’s skytrain station neighbourhoods. The station neighbourhoods
-are available as part of the `cancenus` package.
+are available as part of the `cancensus` package.
 
 ``` r
 

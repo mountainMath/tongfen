@@ -17,7 +17,9 @@ on how to construct metadata.}
 \item{na.rm}{remove NA values when aggregating, default is FALSE}
 }
 \value{
-`target` with estimated quantities from `source` as specified by `meta`
+`target` with estimated quantities from `source` as specified by `meta`, regions in `target`
+that don't overlap with `source` have `NA` values. Columns in `target` can't have the same name
+as the variables to be estimated.
 }
 \description{
 \lifecycle{maturing}

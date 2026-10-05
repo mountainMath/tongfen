@@ -27,18 +27,18 @@ tongfen_tag_largest_overlap(source, target, target_id)
 
 ## Value
 
-\`source\` with extra column with name \`"target_id"\` and column
-\`...overlap_fraction\` with the proportion of overlap of the target
-geometry with the respective \`target_id\`
+\`source\` with extra column with the name given by \`target_id\` and
+column \`...overlap_fraction\` with the proportion of the area of the
+source region that overlaps with the region in \`target\` with that id
 
 ## Examples
 
 ``` r
-# Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies
+# Tag 2016 dissemination areas in the City of Vancouver by the 2006 census tract they overlap
+# the most with
 if (FALSE) { # \dontrun{
-geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='DA')
+geo1 <- cancensus::get_census("CA06",regions=list(CSD="5915022"),geo_format='sf',level='CT')
 geo2 <- cancensus::get_census("CA16",regions=list(CSD="5915022"),geo_format='sf',level='DA')
-meta <- meta_for_additive_variables("CA06","Population")
-result <- tongfen_estimate(geo2 %>% rename(Population_2016=Population),geo1,meta)
+result <- tongfen_tag_largest_overlap(geo2,geo1 %>% select(CT_2006=GeoUID),"CT_2006")
 } # }
 ```

@@ -1,4 +1,4 @@
-# Get US census data for 2000 and 2010 census on common census tract based geography
+# Get US census data for several censuses on a common geography
 
 **\[maturing\]**
 
@@ -48,7 +48,9 @@ get_tongfen_us_census(
 
 - base_geo:
 
-  census year to use as base geography, default is \`2010\`.
+  dataset to use as base geography, for example \`"dec2010"\`, has to be
+  one of the datasets in \`meta\`. Default is \`NULL\`, which uses the
+  first dataset in \`meta\`.
 
 - min_area_share:
 
@@ -68,7 +70,7 @@ get_tongfen_us_census(
 ## Value
 
 sf object with (wide form) census variables with census year as suffix
-(separated by underdcore "\_").
+(separated by underscore "\_").
 
 ## Examples
 

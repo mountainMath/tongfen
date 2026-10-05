@@ -29,13 +29,13 @@ library(tongfen)
 
 ### Caching correspondence files
 The `get_tongfen_ca_census` and `get_tongfen_correspondence_ca_census` methods make use of the StatCan correspondence
-files when run with `method = "statcan"`. To speed up this process it is useful to permanently cache these files instead of having to download them repeatedly. If caching is desired, set either 
+files when run with `method = "statcan"`. Statistics Canada no longer allows programmatic downloads of these files, so the package downloads them from a mirror hosting the files in parquet format. To speed up this process it is useful to permanently cache these files instead of having to download them again in every session. If caching is desired, set either 
 
 * `options("tongfen.cache_path"="<your local cache path>")` 
 * `Sys.setenv("tongfen.cache_path"="<your local cache path>")`
 * `options("custom_data_path"="<your local cache path>")` 
 
-in your `.Rprofile` or `.Renviron` file. 
+in your `.Rprofile` or `.Renviron` file. Cached files are checked against the mirror once per session and only get downloaded again if they changed, when offline the cached files are used as they are.
 
 ## General TongFen
 
@@ -52,7 +52,7 @@ A convenience function to validate geographic TongFen fit via area comparison is
 Finding a common tiling of several different yet congruent geographies is only one part of the problem TongFen addresses, aggregating up the variables is the other part. The `tongfen` package deals with this using a *metadata* table that specifies how variables should be aggregated. In it's simplest form values are simply added up. The `meta_for_additive_variables` convenience function builds the metadata for additive variables. Metadata for non-additive variables like averages, ratios or percentages needs more care to build, it requires additional information on the **parent variable** that specifies the denominator of the average, ratio or percentage. Other data, like medians, can't be aggregated up, although `tongfen` can provide estimates of medians on aggregated geographies by treating them as averages.
 
 ### Packaged data
-The package ships with a subset of [voting data from Elections Canada](https://www.elections.ca/content.aspx?section=ele&dir=pas&document=index&lang=e) for the 42nd and 43rd federal elections as well as the polling district geographies for the [42nd](https://open.canada.ca/data/en/dataset/6a78ccfd-6bba-4109-b040-87cb8c71ec35) and [43rd](https://open.canada.ca/data/en/dataset/e70e3263-8584-4f22-94cb-8c15b616cbfc). This facilitates running the example vignette on polling districts without having to download external data. Both are available as open data covered under the [Open Government Licence - Canda](https://open.canada.ca/en/open-government-licence-canada).
+The package ships with a subset of [voting data from Elections Canada](https://www.elections.ca/content.aspx?section=ele&dir=pas&document=index&lang=e) for the 42nd and 43rd federal elections as well as the polling district geographies for the [42nd](https://open.canada.ca/data/en/dataset/6a78ccfd-6bba-4109-b040-87cb8c71ec35) and [43rd](https://open.canada.ca/data/en/dataset/e70e3263-8584-4f22-94cb-8c15b616cbfc). This facilitates running the example vignette on polling districts without having to download external data. Both are available as open data covered under the [Open Government Licence - Canada](https://open.canada.ca/en/open-government-licence-canada).
 
 ## Data-specific implementations
 The need for TongFen comes up frequently with certain types of geographies. Census geographies is one such example. In some cases these data sources come with their own correspondence files that go beyond geographic matchup but also join regions to alleviate data integrity problems like geocoding issues. 
@@ -67,14 +67,15 @@ The package is well-integrated to work with Canadian census data in two essentia
 
 
 ### US census data
-* `get_tongfen_us_census` integrates the data acquisition (via the [**tidycensus** package](https://walker-data.com/tidycensus/index.html)) with TongFen, and adds the tongfen `method = "census.gov"` to use the US Census Bureau correspondence files for matching.
+* `get_tongfen_us_census` integrates the data acquisition (via the [**tidycensus** package](https://walker-data.com/tidycensus/index.html)) with TongFen, using the US Census Bureau relationship files to build the common geography.
+* `get_tongfen_correspondence_us_census` breaks out the correspondence generation from the US Census Bureau relationship files, to tongfen data that comes on census geographies but is obtained by other means. The relationship files are cached in the `us_data` folder of the cache path described above.
 
 ## Other implementations
 The `tongfen` package is open to add extensions for other specialized data sources, as well as extensions of existing ones. 
 
 
 ## Fixed target geography estimation
-When geographies aren't sufficiently congruent or the target geography is fixed, we won't be able to use the `tongfen` methods to compute the data on a common geography but have to instead rely on estimates. The  `tongfen_estimate` makes no assumption on the underlying geographies and returns estimates of the data on the target geography. It uses area-weighted interpolation to achieve this, and can be refined to dasymmetric estimates using the `proportional_reaggregate` function.
+When geographies aren't sufficiently congruent or the target geography is fixed, we won't be able to use the `tongfen` methods to compute the data on a common geography but have to instead rely on estimates. The  `tongfen_estimate` makes no assumption on the underlying geographies and returns estimates of the data on the target geography. It uses area-weighted interpolation to achieve this, and can be refined to dasymetric estimates using the `proportional_reaggregate` function.
 
 This method has the example that it works independent of the nature of the underlying geographies, but comes at the heavy price of only being an estimate. To be useful for research purposes we also need methods to estimate the errors this introduces and the effects this has on subsequent analysis results.
 
@@ -84,8 +85,8 @@ Methods to facilitate this are still under active development.
 
 If you wish to cite tongfen:
 
-  von Bergmann, J. (2024). tongfen: R package to
-  Make Data Based on Different Geographies Comparable. v0.3.7.
+  von Bergmann, J. (2026). tongfen: R package to
+  Make Data Based on Different Geographies Comparable. v0.3.9.
   DOI: 10.32614/CRAN.package.tongfen
 
 
@@ -94,9 +95,9 @@ A BibTeX entry for LaTeX users is
   @Manual{tongfen,
     author = {Jens {von Bergmann}},
     title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
-    year = {2024},
+    year = {2026},
     doi = {10.32614/CRAN.package.tongfen},
-    note = {R package version 0.3.7},
+    note = {R package version 0.3.9},
     url = {https://mountainmath.github.io/tongfen/},
   }
 ```

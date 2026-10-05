@@ -1,8 +1,8 @@
-# Togfen data from several Canadian censuses
+# Tongfen data from several Canadian censuses
 
 **\[maturing\]**
 
-Get data from several Candian censuses on a common geography. Requires
+Get data from several Canadian censuses on a common geography. Requires
 sf and cancensus package to be available
 
 ## Usage
@@ -32,7 +32,7 @@ get_tongfen_ca_census(
 
 - meta:
 
-  metadata for the census veraiables to aggregate, for example as
+  metadata for the census variables to aggregate, for example as
   returned by `meta_for_ca_census_vectors`.
 
 - level:
@@ -62,7 +62,7 @@ get_tongfen_ca_census(
 
 - tolerance:
 
-  tolerance for \`estimate_tongen_correspondence\` in metres, default
+  tolerance for \`estimate_tongfen_correspondence\` in metres, default
   value is 50 metres, only used when method is 'estimate' or
   'identifier'
 

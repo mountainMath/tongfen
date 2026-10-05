@@ -2,12 +2,12 @@
 % Please edit documentation in R/tongfen.R
 \name{check_tongfen_areas}
 \alias{check_tongfen_areas}
-\title{Check geographic integrety}
+\title{Check geographic integrity}
 \usage{
 check_tongfen_areas(data, correspondence)
 }
 \arguments{
-\item{data}{alist of geogrpahic data of class sf}
+\item{data}{a list of geographic data of class sf}
 
 \item{correspondence}{Correspondence table with columns the unique geographic identifiers for each of the
 geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)

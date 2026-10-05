@@ -28,7 +28,7 @@ this method only works for "DB", "DA" and "CT" levels.
 * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
 * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.}
 
-\item{tolerance}{tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+\item{tolerance}{tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 only used when method is 'estimate' or 'identifier'}
 
 \item{quiet}{suppress download progress output, default is `FALSE`}
@@ -44,7 +44,7 @@ dataframe with the multi-census correspondence file
 \description{
 \lifecycle{maturing}
 
-Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available
+Get correspondence file for several Canadian censuses on a common geography. Requires sf and cancensus package to be available
 }
 \examples{
 # Get correspondance files between CTs in 2006 and 2016 censuses in Vancouver CMA

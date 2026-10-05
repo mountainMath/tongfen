@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen.R
 \name{estimate_tongfen_correspondence}
 \alias{estimate_tongfen_correspondence}
-\title{Generate togfen correspondence for list of geographies}
+\title{Generate tongfen correspondence for list of geographies}
 \usage{
 estimate_tongfen_correspondence(
   data,

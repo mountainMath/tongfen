@@ -2,6 +2,12 @@
 
 **\[maturing\]**
 
+The correspondence files are downloaded from a mirror of the Statistics
+Canada correspondence files and cached in the tongfen cache directory.
+The cached files are checked against the mirror once per session and get
+downloaded again if they changed. The location of the mirror can be
+changed via the \`tongfen.statcan_correspondence_url\` option.
+
 ## Usage
 
 ``` r

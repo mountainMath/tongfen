@@ -25,11 +25,12 @@
 #' one of these for all variables.
 #' @param na.rm how to deal with NA values, default is \code{FALSE}.
 #' @param quiet suppress progress messages
+#' @return `geometry` with the estimated values for the census variables specified by `meta`
 #' @export
 #'
 #' @examples
-#' # Estimate a common geography for 2006 and 2016 dissemination areas in the City of Vancouver
-#' # based on the geographic data and check estimation errors
+#' # Estimate the 2016 population within 1 km of Toronto City Hall from dissemination area level
+#' # census data
 #' \dontrun{
 #' toronto_city_hall <- sf::st_point(c(-79.3839,43.6534)) %>%
 #'   sf::st_sfc(crs=4326) %>%
@@ -42,7 +43,7 @@
 #' data <- tongfen_estimate_ca_census(toronto_city_hall,meta,level="DA",intersection_level="CT")
 #'
 #' print(paste0("Approximately ",scales::comma(data$Population,accuracy=100),
-#'              " people live within a 1 km radius of Toronto City."))
+#'              " people live within a 1 km radius of Toronto City Hall."))
 #'
 #'}
 tongfen_estimate_ca_census <- function(geometry, meta, level,
@@ -85,7 +86,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
     census_data <- g
   }
 
-  result <- tongfen_estimate(target = geometry, source = census_data, meta = meta,na.rm = na.rm)
+  tongfen_estimate(target = geometry, source = census_data, meta = meta,na.rm = na.rm)
 }
 
 

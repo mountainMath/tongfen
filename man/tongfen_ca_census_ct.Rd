@@ -13,15 +13,19 @@ tongfen_ca_census_ct(
 )
 }
 \arguments{
-\item{data1}{cancensus CT level datatset for year1 < year2 to serve as base for common geography}
+\item{data1}{cancensus CT level dataset for year1 < year2 to serve as base for common geography}
 
-\item{data2}{cancensus CT level datatset for year2 to be aggregated to common geography}
+\item{data2}{cancensus CT level dataset for year2 to be aggregated to common geography}
 
 \item{data2_sum_vars}{vector of variable names to by summed up when aggregating geographies}
 
 \item{data2_group_vars}{optional vector of grouping variables}
 
 \item{na.rm}{optional parameter to remove NA values when summing, default = `TRUE`}
+}
+\value{
+`data2` with the variables in `data2_sum_vars` aggregated to a common geography matching `data1`,
+identified by the `GeoUID` of `data1`
 }
 \description{
 \lifecycle{deprecated}

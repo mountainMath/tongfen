@@ -21,3 +21,8 @@
 
 - [TongFen for US census
   data](https://mountainmath.github.io/tongfen/articles/tongfen_us.md):
+
+### Geocoding anomalies
+
+- [Geocoding anomalies in TongFen
+  timelines](https://mountainmath.github.io/tongfen/articles/tongfen_anomalies.md):

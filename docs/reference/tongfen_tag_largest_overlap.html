@@ -9,7 +9,7 @@ tags regions in `source` by `target_id` of region in `target` with the largest o
 
     <a class="navbar-brand me-2" href="../index.html">tongfen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@ tags regions in `source` by `target_id` of region in `target` with the largest o
     <li><a class="dropdown-item" href="../articles/tongfen_ca.html">TongFen for Canadian census data</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen-ca-estimate.html">Estimating Canadian data on custom geographies</a></li>
     <li><a class="dropdown-item" href="../articles/tongfen_us.html">TongFen for US census data</a></li>
+    <li><a class="dropdown-item" href="../articles/tongfen_anomalies.html">Geocoding anomalies in TongFen timelines</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -70,18 +71,18 @@ tags regions in `source` by `target_id` of region in `target` with the largest o
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>`source` with extra column with name `"target_id"` and column `...overlap_fraction` with
-the proportion of overlap of the target geometry with the respective `target_id`</p>
+    <p>`source` with extra column with the name given by `target_id` and column `...overlap_fraction` with
+the proportion of the area of the source region that overlaps with the region in `target` with that id</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Estimate 2006 Populatino in the City of Vancouver dissemination ares on 2016 census geoographies</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Tag 2016 dissemination areas in the City of Vancouver by the 2006 census tract they overlap</span></span></span>
+<span class="r-in"><span><span class="co"># the most with</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">geo1</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA06"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'DA'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">geo1</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA06"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'CT'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">geo2</span> <span class="op">&lt;-</span> <span class="fu">cancensus</span><span class="fu">::</span><span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,geo_format<span class="op">=</span><span class="st">'sf'</span>,level<span class="op">=</span><span class="st">'DA'</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="meta_for_additive_variables.html">meta_for_additive_variables</a></span><span class="op">(</span><span class="st">"CA06"</span>,<span class="st">"Population"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="tongfen_estimate.html">tongfen_estimate</a></span><span class="op">(</span><span class="va">geo2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>Population_2016<span class="op">=</span><span class="va">Population</span><span class="op">)</span>,<span class="va">geo1</span>,<span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">tongfen_tag_largest_overlap</span><span class="op">(</span><span class="va">geo2</span>,<span class="va">geo1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>CT_2006<span class="op">=</span><span class="va">GeoUID</span><span class="op">)</span>,<span class="st">"CT_2006"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
@@ -94,7 +95,7 @@ the proportion of overlap of the target geometry with the respective `target_id`
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

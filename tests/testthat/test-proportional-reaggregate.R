@@ -312,3 +312,63 @@ test_that("proportional_reaggregate: each category uses its own base variable", 
   expect_equal(result$v1, c(50, 0), tolerance = 1e-9)
   expect_equal(result$v2, c(0, 50), tolerance = 1e-9)
 })
+
+# ── Existing child values are compared to the parent per category ─────────────
+
+test_that("proportional_reaggregate: several categories with existing child values match their parent totals", {
+  parent <- tibble(
+    parent_id = "P1",
+    pop       = 100,
+    x         = 50,
+    y         = 6
+  ) %>% as_point_sf()
+
+  child <- tibble(
+    child_id  = c("C1", "C2", "C3"),
+    parent_id = "P1",
+    pop       = c(20, 30, 50),
+    x         = c(10, 15, 20),
+    y         = c(1, 2, 3)
+  ) %>% as_point_sf()
+
+  result <- proportional_reaggregate(
+    child, parent,
+    geo_match  = c("parent_id" = "parent_id"),
+    categories = c("x", "y"),
+    base       = "pop"
+  ) %>%
+    sf::st_drop_geometry() %>%
+    arrange(.data$child_id)
+
+  # x is 5 short of the parent and gets topped up by population share, y already matches
+  expect_equal(result$x, c(11, 16.5, 22.5), tolerance = 1e-9)
+  expect_equal(result$y, c(1, 2, 3), tolerance = 1e-9)
+})
+
+test_that("proportional_reaggregate: missing child values are filled so that children sum to parent", {
+  parent <- tibble(
+    parent_id = "P1",
+    pop       = 300,
+    x         = 50
+  ) %>% as_point_sf()
+
+  child <- tibble(
+    child_id  = c("C1", "C2", "C3"),
+    parent_id = "P1",
+    pop       = c(100, 100, 100),
+    x         = c(10, NA, 20)
+  ) %>% as_point_sf()
+
+  result <- proportional_reaggregate(
+    child, parent,
+    geo_match  = c("parent_id" = "parent_id"),
+    categories = "x",
+    base       = "pop"
+  ) %>%
+    sf::st_drop_geometry() %>%
+    arrange(.data$child_id)
+
+  # the 20 missing from the children get distributed evenly
+  expect_equal(result$x, c(10, 0, 20) + 20/3, tolerance = 1e-9)
+  expect_equal(sum(result$x), 50, tolerance = 1e-9)
+})

@@ -1,4 +1,4 @@
-#' Check geographic integrety
+#' Check geographic integrity
 #'
 #' @description
 #' \lifecycle{deprecated}

@@ -15,11 +15,11 @@ meta_for_additive_variables(dataset, variables)
 
 - dataset:
 
-  identifier for the dataset contianing the variable
+  identifier for the dataset containing the variable
 
 - variables:
 
-  (named) vecotor with additive variables
+  (named) vector with additive variables
 
 ## Value
 

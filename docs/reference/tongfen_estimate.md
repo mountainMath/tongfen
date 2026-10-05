@@ -37,7 +37,9 @@ tongfen_estimate(target, source, meta, na.rm = FALSE)
 ## Value
 
 \`target\` with estimated quantities from \`source\` as specified by
-\`meta\`
+\`meta\`, regions in \`target\` that don't overlap with \`source\` have
+\`NA\` values. Columns in \`target\` can't have the same name as the
+variables to be estimated.
 
 ## Examples
 
