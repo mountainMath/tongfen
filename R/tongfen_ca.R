@@ -52,7 +52,7 @@ geo_dataset_from_dataset <- function(datasets){
     unlist()
 }
 
-#' Generate metadata from Candian census vectors
+#' Generate metadata from Canadian census vectors
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -128,13 +128,13 @@ meta_for_ca_census_vectors <- function(vectors){
 
 
 
-#' Generate metadata from Candian census vectors
+#' Generate metadata from Canadian census vectors
 #'
 #' @description
 #' \lifecycle{maturing}
 #'
 #' Add Population, Dwellings, and Household counts to metadata
-#' @param meta ribble with metadata as for example provided by `meta_for_ca_census_vectors`
+#' @param meta tibble with metadata as for example provided by `meta_for_ca_census_vectors`
 #' @return tibble with metadata
 add_census_ca_base_variables <- function(meta){
   new_meta <- meta$geo_dataset %>%
@@ -194,7 +194,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Get correspondence file for several Candian censuses on a common geography. Requires sf and cancensus package to be available
+#' Get correspondence file for several Canadian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
 #' @param geo_datasets vector of census geography dataset identifiers
@@ -204,7 +204,7 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' this method only works for "DB", "DA" and "CT" levels.
 #' * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
 #' * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
-#' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+#' @param tolerance tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)
@@ -347,15 +347,15 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 }
 
 
-#' Togfen data from several Canadian censuses
+#' Tongfen data from several Canadian censuses
 #'
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
+#' Get data from several Canadian censuses on a common geography. Requires sf and cancensus package to be available
 #'
 #' @param regions census region list, should be inclusive list of GeoUIDs across censuses
-#' @param meta metadata for the census veraiables to aggregate, for example as returned
+#' @param meta metadata for the census variables to aggregate, for example as returned
 #' by \code{meta_for_ca_census_vectors}.
 #' @param level aggregation level to return data on (default is "CT")
 #' @param method tongfen method, options are "statcan" (the default), "estimate", "identifier".
@@ -367,7 +367,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' any geographic data
 #' @param na.rm logical, determines how NA values should be treated when aggregating variables,
 #' default is `FALSE`
-#' @param tolerance tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+#' @param tolerance tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
 #' @param refresh optional character, refresh data cache for this call, (default `FALSE`)

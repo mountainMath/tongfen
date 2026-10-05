@@ -2,7 +2,7 @@
 % Please edit documentation in R/tonfen_deprecated.R
 \name{check_tongfen_single_areas}
 \alias{check_tongfen_single_areas}
-\title{Check geographic integrety}
+\title{Check geographic integrity}
 \usage{
 check_tongfen_single_areas(geo1, geo2, correspondence)
 }

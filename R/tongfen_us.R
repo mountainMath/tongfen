@@ -366,7 +366,7 @@ sumfile_for_dataset <- function(sumfile, ds){
 #' censuses or a vector named by dataset, for example `c(dec2010="sf1", dec2020="dhc")`. Default
 #' is `NULL`, which leaves the choice to tidycensus. Note that tidycensus defaults the 2020
 #' census to the PL 94-171 redistricting file, most 2020 variables need `sumfile="dhc"`.
-#' @return sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
+#' @return sf object with (wide form) census variables with census year as suffix (separated by underscore "_").
 #' @export
 #'
 #' @examples

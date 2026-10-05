@@ -18,5 +18,5 @@ tibble with correspondence table`spanning all years
 }
 \description{
 \lifecycle{deprecated}
-Joins the StatCan correspodence files for several census years
+Joins the StatCan correspondence files for several census years
 }

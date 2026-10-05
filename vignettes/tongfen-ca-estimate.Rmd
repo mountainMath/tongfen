@@ -24,7 +24,7 @@ library(ggplot2)
 
 The `tongfen_estimate_ca_census` function implements the full pipeline to estimate census data on custom geographies.
 
-As an example, we estimate the share of people in low income in Vancouver's skytrain station neighbourhoods. The station neighbourhoods are available as part of the `cancenus` package.
+As an example, we estimate the share of people in low income in Vancouver's skytrain station neighbourhoods. The station neighbourhoods are available as part of the `cancensus` package.
 
 ```{r}
 station_buffers <- cancensus::COV_SKYTRAIN_STATIONS

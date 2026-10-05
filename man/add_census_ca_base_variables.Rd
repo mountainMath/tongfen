@@ -2,12 +2,12 @@
 % Please edit documentation in R/tongfen_ca.R
 \name{add_census_ca_base_variables}
 \alias{add_census_ca_base_variables}
-\title{Generate metadata from Candian census vectors}
+\title{Generate metadata from Canadian census vectors}
 \usage{
 add_census_ca_base_variables(meta)
 }
 \arguments{
-\item{meta}{ribble with metadata as for example provided by `meta_for_ca_census_vectors`}
+\item{meta}{tibble with metadata as for example provided by `meta_for_ca_census_vectors`}
 }
 \value{
 tibble with metadata

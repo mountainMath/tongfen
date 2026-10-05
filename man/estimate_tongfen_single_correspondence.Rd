@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen.R
 \name{estimate_tongfen_single_correspondence}
 \alias{estimate_tongfen_single_correspondence}
-\title{Generate togfen correspondence for two geographies}
+\title{Generate tongfen correspondence for two geographies}
 \usage{
 estimate_tongfen_single_correspondence(
   geo1,

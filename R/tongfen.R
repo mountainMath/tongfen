@@ -5,8 +5,8 @@
 #'
 #' Generates metadata to be used in tongfen_aggregate. Variables need to be additive like counts.
 #'
-#' @param dataset identifier for the dataset contianing the variable
-#' @param variables (named) vecotor with additive variables
+#' @param dataset identifier for the dataset containing the variable
+#' @param variables (named) vector with additive variables
 #' @return a tibble to be used in tongfen_aggregate
 #' @export
 #'
@@ -230,7 +230,7 @@ rename_with_meta <- function(data,meta,ds=NULL){
 #' @description
 #' \lifecycle{maturing}
 #'
-#' Aggregate variables secified in meta for several datasets according to correspondence.
+#' Aggregate variables specified in meta for several datasets according to correspondence.
 #'
 #' @param data named list of datasets to be aggregated. The names identify the datasets, they are
 #' matched against the `geo_dataset` column in `meta` to pick the aggregation rules and labels
@@ -344,7 +344,7 @@ tongfen_aggregate <- function(data,correspondence,meta=NULL, base_geo = NULL, na
 #' @param geo_match A named string informing on what column names to match data and parent_data
 #' @param categories Vector of column names to re-aggregate
 #' @param base Column name to use for proportional weighting when re-aggregating, or named vector with column name for each category.
-#' Categries that should be re-aggregated as means should be set to NA and will only be reaggregated if the base data has NA values.
+#' Categories that should be re-aggregated as means should be set to NA and will only be reaggregated if the base data has NA values.
 #' @return dataframe with downsampled variables from parent_data
 #' @keywords reaggregate proportionally wrt base variable
 #' @export
@@ -477,7 +477,7 @@ proportional_reaggregate <- function(data,parent_data,geo_match,categories,base=
     select(-any_of(id))
 }
 
-#' Generate togfen correspondence for two geographies
+#' Generate tongfen correspondence for two geographies
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -566,7 +566,7 @@ estimate_tongfen_single_correspondence <- function(geo1,geo2,geo1_uid,geo2_uid,
   correspondence
 }
 
-#' Generate togfen correspondence for list of geographies
+#' Generate tongfen correspondence for list of geographies
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -662,7 +662,7 @@ estimate_tongfen_correspondence <- function(data,
 
 
 
-#' Check geographic integrety
+#' Check geographic integrity
 #'
 #' @description
 #' \lifecycle{maturing}
@@ -674,7 +674,7 @@ estimate_tongfen_correspondence <- function(data,
 #' simplified independently and differ in how water features are cut out, so a sizable area
 #' mismatch does not by itself mean the regions were matched up incorrectly.
 #'
-#' @param data alist of geogrpahic data of class sf
+#' @param data a list of geographic data of class sf
 #' @param correspondence Correspondence table with columns the unique geographic identifiers for each of the
 #' geographies and the TongfenID (and optionally TongfenUID and TongfenMethod)
 #' returned by `estimate_tongfen_correspondence`.

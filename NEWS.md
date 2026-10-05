@@ -122,12 +122,12 @@
 - squish several edge case bugs
 
 # tongfen v.0.3.6
-## Major changs
+## Major changes
 - better downsampling that can also accommodate averages
 - performance improvements
 ## Minor changes
 - better documentation
-- allow for datasets vartiables by census year for canadian data
+- allow for datasets variables by census year for Canadian data
 - fix issue where some metadata might get duplicated
 
 # tongfen 0.3.2
@@ -139,7 +139,7 @@
 ## Major changes
 - Added `tongfen_estimate_ca_census` function for new CensusMapper endpoint, tying into new {cancensus} functionality.
 ## Minor changes
-- Custom impelementation of `tongfen_etimate` for finer control
+- Custom implementation of `tongfen_estimate` for finer control
 - Fix compatibility issue with changes in {sf} package
 
 # tongfen 0.3

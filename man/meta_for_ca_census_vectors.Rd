@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen_ca.R
 \name{meta_for_ca_census_vectors}
 \alias{meta_for_ca_census_vectors}
-\title{Generate metadata from Candian census vectors}
+\title{Generate metadata from Canadian census vectors}
 \usage{
 meta_for_ca_census_vectors(vectors)
 }

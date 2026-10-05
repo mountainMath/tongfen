@@ -2,7 +2,7 @@
 % Please edit documentation in R/tongfen_ca.R
 \name{get_tongfen_ca_census}
 \alias{get_tongfen_ca_census}
-\title{Togfen data from several Canadian censuses}
+\title{Tongfen data from several Canadian censuses}
 \usage{
 get_tongfen_ca_census(
   regions,
@@ -21,7 +21,7 @@ get_tongfen_ca_census(
 \arguments{
 \item{regions}{census region list, should be inclusive list of GeoUIDs across censuses}
 
-\item{meta}{metadata for the census veraiables to aggregate, for example as returned
+\item{meta}{metadata for the census variables to aggregate, for example as returned
 by \code{meta_for_ca_census_vectors}.}
 
 \item{level}{aggregation level to return data on (default is "CT")}
@@ -38,7 +38,7 @@ any geographic data}
 \item{na.rm}{logical, determines how NA values should be treated when aggregating variables,
 default is `FALSE`}
 
-\item{tolerance}{tolerance for `estimate_tongen_correspondence` in metres, default value is 50 metres,
+\item{tolerance}{tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 only used when method is 'estimate' or 'identifier'}
 
 \item{quiet}{suppress download progress output, default is `FALSE`}
@@ -56,7 +56,7 @@ dataframe with variables on common geography
 \description{
 \lifecycle{maturing}
 
-Get data from several Candian censuses on a common geography. Requires sf and cancensus package to be available
+Get data from several Canadian censuses on a common geography. Requires sf and cancensus package to be available
 }
 \examples{
 # Get rent data for census years 2001 through 2016

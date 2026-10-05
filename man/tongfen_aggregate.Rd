@@ -35,7 +35,7 @@ aggregated dataset of class sf if base_geo is not NULL and data is of type sf or
 \description{
 \lifecycle{maturing}
 
-Aggregate variables secified in meta for several datasets according to correspondence.
+Aggregate variables specified in meta for several datasets according to correspondence.
 }
 \examples{
 # aggregate census tract level 2006 and 2016 population data on common geography built through

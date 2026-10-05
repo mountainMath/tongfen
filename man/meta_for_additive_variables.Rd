@@ -7,9 +7,9 @@
 meta_for_additive_variables(dataset, variables)
 }
 \arguments{
-\item{dataset}{identifier for the dataset contianing the variable}
+\item{dataset}{identifier for the dataset containing the variable}
 
-\item{variables}{(named) vecotor with additive variables}
+\item{variables}{(named) vector with additive variables}
 }
 \value{
 a tibble to be used in tongfen_aggregate

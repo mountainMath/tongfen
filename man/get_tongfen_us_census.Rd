@@ -36,7 +36,7 @@ is `NULL`, which leaves the choice to tidycensus. Note that tidycensus defaults 
 census to the PL 94-171 redistricting file, most 2020 variables need `sumfile="dhc"`.}
 }
 \value{
-sf object with (wide form) census variables with census year as suffix (separated by underdcore "_").
+sf object with (wide form) census variables with census year as suffix (separated by underscore "_").
 }
 \description{
 \lifecycle{maturing}
