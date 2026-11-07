@@ -1,3 +1,19 @@
+# tongfen v.0.4.0
+## Breaking changes
+- the `tongfen.statcan_correspondence_url` option now has to point to a directory with the
+  `correspondence_<year>.parquet` files in the layout of https://data.mountainmath.ca/census/correspondence/.
+  Mirrors set up for the `statcan_correspondence_<year>_<level>.parquet` files of v0.3.9 no longer work
+## Major changes
+- `method = "statcan"` now covers the censuses back to 1981, using the Statistics Canada correspondence
+  files for each step from 2001 back to 1981. Up to 1996 the smallest census geography were enumeration
+  areas (EA), these are at the "DA" level, and `level = "EA"` works as an alias for `level = "DA"`. The
+  "DB" level still needs all censuses to be from 2001 on. The geographies of the 1981 and 1986 censuses
+  are incomplete, so these only work with `method = "statcan"`, and `base_geo` has to be one of the
+  later censuses
+- the correspondence files are now read from https://data.mountainmath.ca/census/correspondence/, with
+  one file for each census year that has the DA and DB level links. Previously cached
+  `statcan_correspondence_<year>_<level>.parquet` files are no longer used and can be removed
+
 # tongfen v.0.3.9
 ## Major changes
 - new experimental functions to detect and correct for likely geocoding anomalies in timelines on a

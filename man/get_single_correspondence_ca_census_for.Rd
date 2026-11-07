@@ -11,14 +11,20 @@ get_single_correspondence_ca_census_for(
 )
 }
 \arguments{
-\item{year}{census year, only 2006 through 2021 are supported}
+\item{year}{census year, the correspondence links this year to the previous census, 1981 through 2021}
 
 \item{level}{geographic level, DA or DB}
 
 \item{refresh}{reload the correspondence files, default is `FALSE`}
 }
 \value{
-tibble with correspondence table`
+tibble with correspondence table with the identifiers of the regions in both years, named
+by level and year, e.g. `DAUID2021` and `DAUID2016` or `DAUID2001` and `EAUID1996`, and the `flag`
+column with the flag from the source file. From 2006 on this is the relationship flag, with values 1 (one
+new region was one old region), 2 (one new was many old), 3 (many new were one old) and 4 (many new were
+many old). For 2001 and before it is the part flag, 1 if the older enumeration area corresponds to more
+than one of the newer regions (more than one DA in 2001) and 0 otherwise. The part flags disagree with the
+links in a few cases, the "statcan" method only uses the links.
 }
 \description{
 \lifecycle{maturing}
@@ -27,4 +33,7 @@ The correspondence files are downloaded from a mirror of the Statistics Canada c
 and cached in the tongfen cache directory. The cached files are checked against the mirror once per session
 and get downloaded again if they changed. The location of the mirror can be changed via the
 `tongfen.statcan_correspondence_url` option.
+
+Up to 1996 the smallest census geography were enumeration areas (EA), so the 2001 file links DAs or DBs
+to 1996 EAs, and the files before that link EAs to EAs, independent of `level`.
 }

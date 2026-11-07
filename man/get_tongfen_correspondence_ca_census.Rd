@@ -20,13 +20,17 @@ get_tongfen_correspondence_ca_census(
 
 \item{regions}{census region list, should be inclusive list of GeoUIDs across censuses}
 
-\item{level}{aggregation level to return data on (default is "CT")}
+\item{level}{aggregation level to return data on (default is "CT"), "EA" works as an alias for "DA"}
 
 \item{method}{tongfen method, options are "statcan" (the default), "estimate", "identifier".
 * "statcan" method builds up the common geography using Statistics Canada correspondence files, at this point
-this method only works for "DB", "DA" and "CT" levels.
+this method only works for "DB", "DA" and "CT" levels, and for the censuses from 1981 through 2021. Up to 1996
+the smallest census geography were enumeration areas (EA), at the "DA" level these take the place of
+dissemination areas for those censuses. The "DB" level only works for the censuses from 2001 on.
 * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
-* "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.}
+* "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
+
+The geographies of the 1981 and 1986 censuses are incomplete, these censuses only work with the "statcan" method.}
 
 \item{tolerance}{tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 only used when method is 'estimate' or 'identifier'}

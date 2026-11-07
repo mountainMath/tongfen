@@ -24,16 +24,21 @@ get_tongfen_ca_census(
 \item{meta}{metadata for the census variables to aggregate, for example as returned
 by \code{meta_for_ca_census_vectors}.}
 
-\item{level}{aggregation level to return data on (default is "CT")}
+\item{level}{aggregation level to return data on (default is "CT"). Enumeration areas, the smallest census
+geography up to 1996, are at the "DA" level, "EA" works as an alias for "DA".}
 
 \item{method}{tongfen method, options are "statcan" (the default), "estimate", "identifier".
 * "statcan" method builds up the common geography using Statistics Canada correspondence files, at this point
-this method only works for "DB", "DA" and "CT" levels.
+this method only works for "DB", "DA" and "CT" levels, and for the censuses from 1981 through 2021. The
+"DB" level only works for the censuses from 2001 on.
 * "estimate" uses `estimate_tongfen_correspondence` to build up the common geography from scratch based on geographies.
-* "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.}
+* "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
+
+The geographies of the 1981 and 1986 censuses are incomplete, these censuses only work with the "statcan" method.}
 
 \item{base_geo}{base census year to build up common geography from, `NULL` (the default) to not return
-any geographic data}
+any geographic data. The geographies of the 1981 and 1986 censuses are incomplete, use one of the later
+censuses for the common geography.}
 
 \item{na.rm}{logical, determines how NA values should be treated when aggregating variables,
 default is `FALSE`}
