@@ -56,7 +56,7 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
   if (length(datasets)!=1) stop("At this point tongfen_estimate_ca_census can only handle data for a single census geography year")
   regions <- datasets %>%
     lapply(function(ds){
-      cancensus::get_intersecting_geometries(dataset=ds, level=intersection_level, geometry=geometry, quiet = quiet)
+      with_tongfen_user_agent(cancensus::get_intersecting_geometries(dataset=ds, level=intersection_level, geometry=geometry, quiet = quiet))
     }) %>%
     lapply(as_tibble) %>%
     bind_rows() %>%
@@ -76,8 +76,8 @@ tongfen_estimate_ca_census <- function(geometry, meta, level,
   if (!is.null(downsample_level)){
     if (!("downsample" %in% names(meta))) stop("The downsample column in meta needs to be set")
     base_vars <- setNames(meta$downsample, meta$label)
-    dg <- cancensus::get_census(dataset=datasets,regions = regions,
-                                level = downsample_level, quiet = quiet, geo_format = "sf") %>%
+    dg <- with_tongfen_user_agent(cancensus::get_census(dataset=datasets,regions = regions,
+                                level = downsample_level, quiet = quiet, geo_format = "sf")) %>%
       sf::st_transform(st_crs(geometry))
 
     g <- proportional_reaggregate(dg, census_data,

@@ -52,7 +52,7 @@ datasets_from_vectors <- function(vs){
 
 geo_dataset_for_years <- function(years){
   require_suggested("cancensus")
-  dataset_list <- cancensus::list_census_datasets()
+  dataset_list <- with_tongfen_user_agent(cancensus::list_census_datasets())
   years %>%
     lapply(function(year){
       dataset_list %>%
@@ -66,7 +66,7 @@ geo_dataset_for_years <- function(years){
 geo_dataset_from_dataset <- function(datasets){
   require_suggested("cancensus")
   datasets <- datasets %>% gsub("^CA11[NF]$","CA11",.) %>% gsub("\\d{4}x","",.)
-  dataset_list <- cancensus::list_census_datasets()
+  dataset_list <- with_tongfen_user_agent(cancensus::list_census_datasets())
   lapply(datasets, function(ds){
     dataset_list %>%
       filter(.data$dataset == ds) %>%
@@ -110,7 +110,7 @@ meta_for_ca_census_vectors <- function(vectors){
     unique %>%
     sort
   for (dataset in datasets){
-    d <- cancensus::list_census_vectors(dataset) %>%
+    d <- with_tongfen_user_agent(cancensus::list_census_vectors(dataset)) %>%
       filter(.data$vector %in% (filter(meta,.data$dataset==dataset)$variable)) %>%
       select("vector","aggregation","units")
     aggregation_lookup <- setNames(d$aggregation,d$vector)
@@ -396,8 +396,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     data <- list()
   } else {
     data <- lapply(geo_datasets,function(g_ds){
-      cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format=geo_format,
-                            labels="short", quiet=quiet, use_cache = use_cache) %>%
+      with_tongfen_user_agent(cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format=geo_format,
+                            labels="short", quiet=quiet, use_cache = use_cache)) %>%
         mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
     }) %>%
       setNames(geo_datasets)
@@ -412,8 +412,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     all_geo_datasets <- geo_dataset_for_years(all_geo_years)
     if (level!="CT") {
       for (g_ds in setdiff(all_geo_datasets,geo_datasets)) {
-        data[[g_ds]] <- cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format=geo_format,
-                                         labels="short", quiet=quiet, use_cache = use_cache) %>%
+        data[[g_ds]] <- with_tongfen_user_agent(cancensus::get_census(dataset=g_ds, regions=regions, level=level, geo_format=geo_format,
+                                         labels="short", quiet=quiet, use_cache = use_cache)) %>%
           mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
       }
     }
@@ -424,7 +424,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
           year <- years_from_datasets(ds)
           da_column <- paste0(statcan_unit_level(year,"DA"),"UID",year)
           match_column <- ds %>% paste0("GeoUID",.)
-          cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache,quiet=quiet) %>%
+          with_tongfen_user_agent(cancensus::get_census(dataset=ds,regions=regions,level="DA",use_cache = use_cache,quiet=quiet)) %>%
             select("GeoUID","CT_UID") %>%
             rename(!!match_column:="CT_UID",
                    !!da_column:="GeoUID")
@@ -583,10 +583,10 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
       as.character()
     # only the base geography is returned, no need to download geometries for the others
     geo_format <- if (!is.null(base_geo) && g_ds==base_geo) 'sf' else NA
-    c <- cancensus::get_census(dataset=g_ds, regions=regions,
+    c <- with_tongfen_user_agent(cancensus::get_census(dataset=g_ds, regions=regions,
                                vectors=vectors,
                                level=level, geo_format=geo_format,
-                               labels="short", quiet=quiet, use_cache = use_cache) %>%
+                               labels="short", quiet=quiet, use_cache = use_cache)) %>%
       mutate(!!paste0("GeoUID",g_ds):=.data$GeoUID)
     if (!is.null(crs) && !is.null(base_geo) && g_ds==base_geo) c <- c %>% sf::st_transform(crs)
     c %>% data_transform()

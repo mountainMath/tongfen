@@ -4,6 +4,9 @@
   `correspondence_<year>.parquet` files in the layout of https://data.mountainmath.ca/census/correspondence/.
   Mirrors set up for the `statcan_correspondence_<year>_<level>.parquet` files of v0.3.9 no longer work
 ## Major changes
+- requests to the CensusMapper API made through **cancensus** now identify **tongfen** and its version in the user agent,
+  e.g. `tongfen/0.4.0 cancensus/0.6.2 httr/1.4.9 R/4.6.1`. This needs **cancensus** v0.6.2 or later, earlier versions ignore it.
+  A prefix set via the `cancensus.user_agent_prefix` option is kept in front of it
 - `method = "statcan"` now covers the censuses back to 1981, using the Statistics Canada correspondence
   files for each step from 2001 back to 1981. Up to 1996 the smallest census geography were enumeration
   areas (EA), these are at the "DA" level, and `level = "EA"` works as an alias for `level = "DA"`. The
