@@ -284,8 +284,8 @@ aggregate_correspondences <- function(correspondences){
 normalize_datasets <- function(geo_datasets) {
   geo_datasets <- as.character(geo_datasets)
   dataset_translation <- setNames(
-    c("CA21","CA16","CA11","CA06","CA01") %>% rev(),
-    as.character(seq(2001,2021,5)))
+    c("CA1981","CA1986","CA1991","CA1996","CA01","CA06","CA11","CA16","CA21"),
+    as.character(seq(1981,2021,5)))
   geo_datasets <- geo_datasets %>% dplyr::recode(!!!dataset_translation)
   geo_datasets
 }
@@ -318,3 +318,22 @@ ensure_names <- function(list,default_names=seq(1,length(list))){
 NULL
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
+
+# Prefix for the cancensus user agent that identifies tongfen and its version to the
+# CensusMapper API. A prefix the user has set is kept in front of it.
+tongfen_user_agent_prefix <- function(){
+  ua <- paste0("tongfen/", utils::packageVersion("tongfen"))
+  prefix <- getOption("cancensus.user_agent_prefix")
+  if (is.character(prefix) && length(prefix) == 1 && !is.na(prefix) && nzchar(trimws(prefix))) {
+    ua <- paste(trimws(prefix), ua)
+  }
+  ua
+}
+
+# Evaluate a cancensus call so that its CensusMapper API requests identify tongfen in the
+# user agent. Versions of cancensus before 0.6.2 ignore the option.
+with_tongfen_user_agent <- function(expr){
+  old <- options(cancensus.user_agent_prefix = tongfen_user_agent_prefix())
+  on.exit(options(old), add = TRUE)
+  expr
+}

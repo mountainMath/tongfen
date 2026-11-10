@@ -1,5 +1,9 @@
 ## code to prepare the StatCan DA and DB correspondence files hosted on S3
 ##
+## No longer used: tongfen now reads the correspondence files for 1981 through 2021 from
+## https://data.mountainmath.ca/census/correspondence/, which are built outside this package. Kept
+## for reference on how the 2006 to 2021 files were derived from the Statistics Canada files.
+##
 ## StatCan put the correspondence files behind a browser check, so they can't be downloaded
 ## programmatically any more. Download and extract the zip files manually from
 ## https://www12.statcan.gc.ca/census-recensement/2011/geo/ref/files-fichiers/2006_92-156_DB_ID_txt.zip

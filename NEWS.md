@@ -1,3 +1,29 @@
+# tongfen v.0.4.0
+## Breaking changes
+- the `tongfen.statcan_correspondence_url` option now has to point to a directory with the
+  `correspondence_<year>.parquet` files in the layout of https://data.mountainmath.ca/census/correspondence/.
+  Mirrors set up for the `statcan_correspondence_<year>_<level>.parquet` files of v0.3.9 no longer work
+## Major changes
+- requests to the CensusMapper API made through **cancensus** now identify **tongfen** and its version in the user agent,
+  e.g. `tongfen/0.4.0 cancensus/0.6.2 httr/1.4.9 R/4.6.1`. This needs **cancensus** v0.6.2 or later, earlier versions ignore it.
+  A prefix set via the `cancensus.user_agent_prefix` option is kept in front of it
+- `method = "statcan"` now covers the censuses back to 1981, using the Statistics Canada correspondence
+  files for each step from 2001 back to 1981. Up to 1996 the smallest census geography were enumeration
+  areas (EA), these are at the "DA" level, and `level = "EA"` works as an alias for `level = "DA"`. The
+  "DB" level still needs all censuses to be from 2001 on. The geographies of the 1981 and 1986 censuses
+  are incomplete, so these only work with `method = "statcan"`, and `base_geo` has to be one of the
+  later censuses
+- the correspondence files are now read from https://data.mountainmath.ca/census/correspondence/, with
+  one file for each census year that has the DA and DB level links. Previously cached
+  `statcan_correspondence_<year>_<level>.parquet` files are no longer used and can be removed
+- new `links` argument for `get_tongfen_ca_census` and `get_tongfen_correspondence_ca_census` with
+  `method = "statcan"`. `links = "statcan"` (the default) uses the links as supplied by Statistics Canada,
+  `links = "adjusted"` uses the audited links that drop StatCan links the geography contradicts and add
+  links for regions left without one. At this point audited links are available for the 1991 to 1986 and
+  1986 to 1981 steps. A message lists the steps that have audited links, and with `links = "adjusted"` there is
+  a warning if none of the steps have them. `get_single_correspondence_ca_census_for` also takes
+  `links = "linkflag"` to return all links with the `LINKFLAG` and `LINKREASON` columns
+
 # tongfen v.0.3.9
 ## Major changes
 - new experimental functions to detect and correct for likely geocoding anomalies in timelines on a
