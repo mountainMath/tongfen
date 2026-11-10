@@ -192,14 +192,37 @@ add_census_ca_base_variables <- function(meta){
 #' @param year census year, the correspondence links this year to the previous census, 1981 through 2021
 #' @param level geographic level, DA or DB
 #' @param refresh reload the correspondence files, default is `FALSE`
+#' @param links which version of the links to use, one of "statcan" (the default), "adjusted" or "linkflag".
+#' Some of the older correspondence files carry a `LINKFLAG` from an audit of the StatCan links against the
+#' geography of the regions, at this point these are the 1991 to 1986 and 1986 to 1981 files. The flag is 0 for
+#' StatCan links the audit has no problem with, 1 for StatCan links the geography contradicts, and 2 for links
+#' added by the audit for newer regions that are left without a link once the flagged links are dropped.
+#' * "statcan" returns the links as supplied by Statistics Canada (flags 0 and 1).
+#' * "adjusted" returns the audited links (flags 0 and 2).
+#' * "linkflag" returns all links together with the `LINKFLAG` and `LINKREASON` columns.
+#'
+#' Files without link flags are returned as is, with a warning if "adjusted" or "linkflag" was requested.
 #' @return tibble with correspondence table with the identifiers of the regions in both years, named
 #' by level and year, e.g. `DAUID2021` and `DAUID2016` or `DAUID2001` and `EAUID1996`, and the `flag`
 #' column with the flag from the source file. From 2006 on this is the relationship flag, with values 1 (one
 #' new region was one old region), 2 (one new was many old), 3 (many new were one old) and 4 (many new were
 #' many old). For 2001 and before it is the part flag, 1 if the older enumeration area corresponds to more
 #' than one of the newer regions (more than one DA in 2001) and 0 otherwise. The part flags disagree with the
-#' links in a few cases, the "statcan" method only uses the links.
-get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refresh=FALSE) {
+#' links in a few cases, and refer to the StatCan links, so they don't account for the links dropped or added
+#' with `links = "adjusted"`. The "statcan" method only uses the links. With `links = "linkflag"` the table
+#' also has the `LINKFLAG` and `LINKREASON` columns, if the file has link flags.
+get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refresh=FALSE,
+                                                    links=c("statcan","adjusted","linkflag")) {
+  links <- match.arg(links)
+  result <- read_statcan_correspondence(year,level,refresh=refresh,links=links)
+  report_link_adjustments(list(attr(result,"link_adjustment")),links)
+  attr(result,"link_adjustment") <- NULL
+  result
+}
+
+# reads the StatCan correspondence file for the year and selects the links for the level, without messages
+# about the link adjustments. The "link_adjustment" attribute has the details for `report_link_adjustments`.
+read_statcan_correspondence <- function(year,level=c("DA","DB"),refresh=FALSE,links="statcan") {
   level=level[1]
   year=as.character(year)[1]
   if (!(level %in% c("DA","DB"))) stop("Level needs to be DA or DB")
@@ -219,6 +242,23 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
     stop(paste0("Correspondence file for ",year," does not have the expected columns ",
                 paste0(missing_columns,collapse=", "),"."))
   }
+
+  has_flags <- "LINKFLAG" %in% names(result)
+  adjustment <- list(year=year, has_flags=has_flags)
+  if (has_flags) {
+    link_flag <- as.integer(result$LINKFLAG)
+    adjustment$dropped <- sum(link_flag==1L, na.rm=TRUE)
+    adjustment$added <- sum(link_flag==2L, na.rm=TRUE)
+    adjustment$data_version <- correspondence_data_version(path)
+    if (links=="statcan") {
+      result <- result[link_flag %in% c(0L,1L),]
+    } else if (links=="adjusted") {
+      result <- result[link_flag %in% c(0L,2L),]
+    } else {
+      columns <- c(columns,intersect(c("LINKFLAG","LINKREASON"),names(result)))
+    }
+  }
+
   # the DA links are repeated for each DB in the files that have both
   result <- result %>%
     select(all_of(columns)) %>%
@@ -234,7 +274,47 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
     result <- result %>% filter(!(.data$DAUID2021=="59150934" & .data$DAUID2016 == "59150936"))
   }
 
+  attr(result,"link_adjustment") <- adjustment
   result
+}
+
+# the data version from the parquet metadata of the correspondence file, NULL if not available
+correspondence_data_version <- function(path){
+  tryCatch({
+    kv <- nanoparquet::read_parquet_metadata(path)$file_meta_data$key_value_metadata[[1]]
+    nullify_blank(kv$value[kv$key=="data_version"][1])
+  }, error=function(e) NULL)
+}
+
+# messages about the link adjustments for a list of "link_adjustment" attributes, one for each correspondence
+# step. Steps with link flags get a message, if none of the steps have link flags and adjusted links or link flags
+# were requested this issues a warning.
+report_link_adjustments <- function(adjustments,links){
+  step_label <- function(a) paste0(a$year," to ",as.integer(a$year)-5)
+  flagged <- Filter(function(a) isTRUE(a$has_flags),adjustments)
+  if (length(flagged)==0) {
+    if (links!="statcan") {
+      steps <- vapply(adjustments,step_label,character(1))
+      warning(paste0("No link adjustment data is available for the correspondence ",
+                     ifelse(length(steps)==1,"step ","steps "),paste0(steps,collapse=", "),
+                     ", using the StatCan correspondence as is. ",
+                     "If the cached correspondence files predate the link adjustments, use `refresh = TRUE`."),
+              call.=FALSE)
+    }
+    return(invisible(NULL))
+  }
+  details <- vapply(flagged,function(a){
+    version <- if (is.null(a$data_version)) "" else paste0(", data version ",a$data_version)
+    paste0(step_label(a),": ",a$dropped," StatCan ",ifelse(a$dropped==1,"link","links")," flagged, ",
+           a$added," ",ifelse(a$added==1,"link","links")," added",version)
+  },character(1))
+  intro <- switch(links,
+                  statcan=paste0("Using the StatCan links. Audited link adjustments are available, ",
+                                 "use `links = \"adjusted\"` to apply them:"),
+                  adjusted="Using the adjusted links, StatCan links flagged by the audit are dropped and audited links added:",
+                  linkflag="Returning all links with link flags:")
+  message(paste0(c(intro,paste0("  ",details)),collapse="\n"))
+  invisible(NULL)
 }
 
 
@@ -258,6 +338,12 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #' * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
 #'
 #' The geographies of the 1981 and 1986 censuses are incomplete, these censuses only work with the "statcan" method.
+#' @param links which version of the StatCan links to use with the "statcan" method, "statcan" (the default) for
+#' the links as supplied by Statistics Canada, or "adjusted" for the audited links. The audit checked the StatCan links
+#' against the geography of the regions, flagged links the geography contradicts and added links for regions left
+#' without one. At this point audited links are available for the 1991 to 1986 and 1986 to 1981 steps, the other steps
+#' use the StatCan links either way. A message lists the steps with audited links, and with "adjusted" there is a
+#' warning if none of the steps have them. Ignored for the other methods.
 #' @param tolerance tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 #' only used when method is 'estimate' or 'identifier'
 #' @param quiet suppress download progress output, default is `FALSE`
@@ -274,12 +360,14 @@ get_single_correspondence_ca_census_for <- function(year,level=c("DA","DB"),refr
 #'                                                        regions=list(CMA="59933"),level='CT')
 #'}
 get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="CT", method="statcan",
+                                                 links = c("statcan","adjusted"),
                                                  tolerance = 50,
                                                  quiet = FALSE, refresh = FALSE, crs = 3347) {
   require_suggested("cancensus")
 
   geo_datasets <- normalize_datasets(geo_datasets)
   level <- normalize_ca_level(level)
+  links <- match.arg(links)
   assert(length(unique(geo_datasets)) >= 2,
          "Need at least two census geographies to build a correspondence table.")
   if (method=="statcan") {
@@ -359,9 +447,15 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
     }
 
     correspondence_years=all_geo_years[-1]
-    correspondence <- correspondence_years %>%
+    steps <- correspondence_years %>%
       lapply(function(year){
-        c <- get_single_correspondence_ca_census_for(year,statcan_level,refresh=refresh) %>%
+        read_statcan_correspondence(year,statcan_level,refresh=refresh,links=links)
+      })
+    report_link_adjustments(lapply(steps,attr,"link_adjustment"),links)
+    correspondence <- seq_along(correspondence_years) %>%
+      lapply(function(i){
+        year <- correspondence_years[i]
+        c <- steps[[i]] %>%
           select(-"flag")
         previous_year <- all_geo_years[which(all_geo_years==year)-1]
         ds1 <- all_geo_datasets[all_geo_years==year]
@@ -425,6 +519,8 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #' * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
 #'
 #' The geographies of the 1981 and 1986 censuses are incomplete, these censuses only work with the "statcan" method.
+#' @param links which version of the StatCan links to use with the "statcan" method, "statcan" (the default)
+#' or "adjusted", see `get_tongfen_correspondence_ca_census` for details.
 #' @param base_geo base census year to build up common geography from, `NULL` (the default) to not return
 #' any geographic data. The geographies of the 1981 and 1986 censuses are incomplete, use one of the later
 #' censuses for the common geography.
@@ -453,6 +549,7 @@ get_tongfen_correspondence_ca_census <- function(geo_datasets, regions, level="C
 #'
 #'}
 get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
+                                  links=c("statcan","adjusted"),
                                   base_geo=NULL,na.rm=FALSE,
                                   tolerance = 50,
                                   quiet=FALSE,
@@ -464,6 +561,7 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
 
   geo_datasets <- meta$geo_dataset %>% unique() %>% sort()
   level <- normalize_ca_level(level)
+  links <- match.arg(links)
 
   if (!is.null(base_geo)) {
     base_geo <- normalize_datasets(base_geo)
@@ -504,6 +602,7 @@ get_tongfen_ca_census <- function(regions,meta,level="CT",method="statcan",
                                                            regions = regions,
                                                            level = level,
                                                            method = method,
+                                                           links = links,
                                                            tolerance = tolerance,
                                                            quiet = quiet,
                                                            refresh = refresh,

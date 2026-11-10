@@ -13,6 +13,13 @@
 - the correspondence files are now read from https://data.mountainmath.ca/census/correspondence/, with
   one file for each census year that has the DA and DB level links. Previously cached
   `statcan_correspondence_<year>_<level>.parquet` files are no longer used and can be removed
+- new `links` argument for `get_tongfen_ca_census` and `get_tongfen_correspondence_ca_census` with
+  `method = "statcan"`. `links = "statcan"` (the default) uses the links as supplied by Statistics Canada,
+  `links = "adjusted"` uses the audited links that drop StatCan links the geography contradicts and add
+  links for regions left without one. At this point audited links are available for the 1991 to 1986 and
+  1986 to 1981 steps. A message lists the steps that have audited links, and with `links = "adjusted"` there is
+  a warning if none of the steps have them. `get_single_correspondence_ca_census_for` also takes
+  `links = "linkflag"` to return all links with the `LINKFLAG` and `LINKREASON` columns
 
 # tongfen v.0.3.9
 ## Major changes

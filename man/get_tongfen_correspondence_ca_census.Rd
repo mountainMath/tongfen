@@ -9,6 +9,7 @@ get_tongfen_correspondence_ca_census(
   regions,
   level = "CT",
   method = "statcan",
+  links = c("statcan", "adjusted"),
   tolerance = 50,
   quiet = FALSE,
   refresh = FALSE,
@@ -31,6 +32,13 @@ dissemination areas for those censuses. The "DB" level only works for the census
 * "identifier" assumes regions with identical geographic identifier are identical, and builds up the the correspondence for regions with unmatched geographic identifiers.
 
 The geographies of the 1981 and 1986 censuses are incomplete, these censuses only work with the "statcan" method.}
+
+\item{links}{which version of the StatCan links to use with the "statcan" method, "statcan" (the default) for
+the links as supplied by Statistics Canada, or "adjusted" for the audited links. The audit checked the StatCan links
+against the geography of the regions, flagged links the geography contradicts and added links for regions left
+without one. At this point audited links are available for the 1991 to 1986 and 1986 to 1981 steps, the other steps
+use the StatCan links either way. A message lists the steps with audited links, and with "adjusted" there is a
+warning if none of the steps have them. Ignored for the other methods.}
 
 \item{tolerance}{tolerance for `estimate_tongfen_correspondence` in metres, default value is 50 metres,
 only used when method is 'estimate' or 'identifier'}
