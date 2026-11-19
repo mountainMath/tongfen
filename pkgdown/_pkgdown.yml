@@ -1,11 +1,57 @@
-pandoc: 2.11.3.1
-pkgdown_sha: ~
-
 url: https://mountainmath.github.io/tongfen/
 
 home:
   title: Make Data Based on Different Geographies Comparable
 
+reference:
+  - title: TongFen on custom geographies
+  - contents:
+    - estimate_tongfen_correspondence
+    - tongfen_aggregate
+    - check_tongfen_areas
+    - tongfen_tag_largest_overlap
+    - aggregate_data_with_meta
+    - meta_for_additive_variables
+  - title: Estimates for custom geographies
+  - contents:
+    - tongfen_estimate
+    - proportional_reaggregate
+  - title: Canadian census data
+  - contents:
+    - get_tongfen_ca_census
+    - get_tongfen_correspondence_ca_census
+    - meta_for_ca_census_vectors
+    - tongfen_estimate_ca_census
+  - title: US census data
+  - contents:
+    - get_tongfen_us_census
+    - get_tongfen_correspondence_us_census
+  - title: Geocoding anomalies
+  - contents:
+    - tongfen_detect_anomalies
+    - tongfen_anomaly_joins
+    - tongfen_join_regions
+    - tongfen_join_correspondence
+  - title: Data
+  - contents:
+    - vancouver_elections_data_2015
+    - vancouver_elections_data_2019
+    - vancouver_elections_geos_2015
+    - vancouver_elections_geos_2019
+  - title: Lower level helpers
+    desc: Not exported, use with `tongfen:::`
+  - contents:
+    - add_census_ca_base_variables
+    - estimate_tongfen_single_correspondence
+    - get_single_correspondence_ca_census_for
+  - title: Deprecated functions
+  - contents:
+    - check_tongfen_single_areas
+    - get_correspondence_ca_census_for
+    - get_tongfen_ca_census_ct_from_da
+    - get_tongfen_census_ct
+    - get_tongfen_census_da
+    - tongfen_ca_census_ct
 
 articles:
   - title: "General TongFen"
@@ -36,6 +82,7 @@ authors:
 
 template:
   bootstrap: 5
+  light-switch: true
   bootswatch: simplex
   opengraph:
     image:

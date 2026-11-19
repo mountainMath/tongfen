@@ -1,0 +1,8 @@
+img.logo, .template-home img.logo {
+  width: 25%;
+  min-width: 100px;
+}
+
+main#main img#readme-logo {
+  display:none;
+}

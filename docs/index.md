@@ -1,5 +1,8 @@
 # tongfen
 
+[![tongfen
+logo](https://raw.githubusercontent.com/mountainMath/tongfen/main/man/figures/logo.png)](https://mountainmath.github.io/tongfen/index.html)
+
 TongFen (通分) means to convert two fractions to the least common
 denominator, typically in preparation for further manipulation like
 addition or subtraction. In English, that’s a mouthful and sounds
@@ -170,7 +173,7 @@ Methods to facilitate this are still under active development.
 If you wish to cite tongfen:
 
 von Bergmann, J. (2026). tongfen: R package to Make Data Based on
-Different Geographies Comparable. v0.3.9. DOI:
+Different Geographies Comparable. v0.4.0. DOI:
 10.32614/CRAN.package.tongfen
 
 A BibTeX entry for LaTeX users is
@@ -180,6 +183,6 @@ A BibTeX entry for LaTeX users is
         title = {tongfen: R package to Make Data Based on Different Geographies Comparable},
         year = {2026},
         doi = {10.32614/CRAN.package.tongfen},
-        note = {R package version 0.3.9},
+        note = {R package version 0.4.0},
         url = {https://mountainmath.github.io/tongfen/},
       }
