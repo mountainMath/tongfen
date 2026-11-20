@@ -29,8 +29,8 @@ generate_cancensus_sticker <- function() {
   id06 <- map_data$TongfenUID %>% strsplit(" ") %>% map(first) %>% unlist  %>% strsplit(":") %>% map(last) %>% unlist %>% strsplit(",") %>% unlist
   id16 <- map_data$TongfenUID %>% strsplit(" ") %>% map(last) %>% unlist  %>% strsplit(":") %>% map(last) %>% unlist %>% strsplit(",") %>% unlist
 
-  map_data_06 <- cancensus::get_census("CA06",regions=list(DA=id06),vectors=c(lico_2006="v_CA06_1981"),geo_format="sf")
-  map_data_16 <- cancensus::get_census("CA16",regions=list(DA=id16),vectors=c(lico_2016="v_CA16_2555"),geo_format="sf")
+  map_data_06 <- with_tongfen_user_agent(cancensus::get_census("CA06",regions=list(DA=id06),vectors=c(lico_2006="v_CA06_1981"),geo_format="sf"))
+  map_data_16 <- with_tongfen_user_agent(cancensus::get_census("CA16",regions=list(DA=id16),vectors=c(lico_2016="v_CA16_2555"),geo_format="sf"))
 
 
   g06 <- ggplot(map_data_06) + geom_sf(aes(fill=lico_2006),color="grey80") + scale_fill_viridis_c(guide=FALSE) + coord_sf(datum=NA)+ theme_void()
